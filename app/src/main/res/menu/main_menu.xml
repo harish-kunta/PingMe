@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <item
+        android:id="@+id/menu_account_settings"
+        android:title="Account Settings" />
+    <item
+        android:id="@+id/menu_all_users"
+        android:title="All Users" />
+    <item
+        android:id="@+id/share_app_button"
+        android:title="Share App" />
+    <item
+        android:id="@+id/main_feedback_button"
+        android:title="Feedback" />
+    <item
+        android:id="@+id/main_logout_button"
+        android:title="Log out" />
+</menu>

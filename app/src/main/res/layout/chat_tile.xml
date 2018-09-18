@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userdp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="4dp"
+        android:src="@drawable/noobie" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@+id/userdp"
+        android:background="@drawable/balloon_incoming_normal"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/textview_time"
+            style="@style/chat_timings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:paddingRight="5dp"
+            android:text="11:15 PM" />
+
+        <TextView
+            android:id="@+id/content"
+            style="@style/chat_text_message_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="54dp"
+            android:autoLink="web"
+            android:padding="8dp"
+            android:paddingRight="4dp"
+            android:text="@string/com_facebook_loading" />
+
+    </FrameLayout>
+
+</RelativeLayout>

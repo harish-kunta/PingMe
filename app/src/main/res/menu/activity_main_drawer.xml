@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:title="My Pins" />
+    <group android:checkableBehavior="single">
+        <!--<item-->
+            <!--android:id="@+id/Explore"-->
+            <!--android:icon="@drawable/ic_explore_deep_orange_500_24dp"-->
+            <!--android:title="Explore" />-->
+
+        <!--<item-->
+            <!--android:id="@+id/Articles"-->
+            <!--android:icon="@drawable/ic_note_pink_700_24dp"-->
+            <!--android:title="Feed" />-->
+        <item
+            android:id="@+id/myRequests"
+            android:icon="@drawable/ic_people_blue_500_24dp"
+            android:title="Requests" />
+
+        <item
+            android:id="@+id/allUsers"
+            android:icon="@drawable/ic_chat_black_24dp"
+            android:title="All Users" />
+
+        <!--<item-->
+            <!--android:id="@+id/tagsmain"-->
+            <!--android:icon="@drawable/ic_loyalty_brown_500_24dp"-->
+            <!--android:title="Tags" />-->
+
+
+        <!--<item-->
+            <!--android:id="@+id/page"-->
+            <!--android:icon="@drawable/ic_flag_red_500_24dp"-->
+            <!--android:title="Pages" />-->
+
+
+        <!--<item-->
+            <!--android:id="@+id/favourites"-->
+            <!--android:icon="@drawable/ic_stars_amber_500_36dp"-->
+            <!--android:title="Favourites" />-->
+
+
+
+        <!--<item-->
+            <!--android:id="@+id/scoreboard"-->
+            <!--android:icon="@drawable/ic_local_play_purple_500_24dp"-->
+            <!--android:title="Score Board" />-->
+
+        <item
+            android:id="@+id/myaccount"
+            android:icon="@drawable/ic_account_circle_green_500_24dp"
+            android:title="My Account" />
+
+        <item
+        android:id="@+id/logout_button"
+        android:icon="@drawable/ic_exit_to_app_red_500_24dp"
+        android:title="Logout" />
+
+
+    </group>
+
+
+    <item android:title="Communicate">
+        <menu>
+
+
+            <!--<item-->
+                <!--android:id="@+id/scorechart"-->
+                <!--android:title="Score Chart" />-->
+
+            <!--<item-->
+                <!--android:id="@+id/how"-->
+                <!--android:title="How to use" />-->
+
+            <!--<item-->
+                <!--android:id="@+id/invite"-->
+                <!--android:title="Invite via Email / SMS" />-->
+
+            <item
+                android:id="@+id/share"
+                android:title="Share" />
+
+            <item
+                android:id="@+id/aboutus"
+                android:title="About Us" />
+
+            <item
+                android:id="@+id/feedback"
+                android:title="Feedback" />
+
+
+
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/header_cover_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/b" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/settings_display_image"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="117dp"
+
+            android:elevation="5dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_account_circle_white_48dp" />
+        <!--android:background="@drawable/profile_circular_border_imageview"-->
+
+        <RelativeLayout
+            android:id="@+id/profile_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header_cover_image"
+            android:background="#ebca0707"
+            android:elevation="4dp"
+            android:paddingBottom="24dp">
+
+
+            <!--<ImageView-->
+            <!--android:id="@+id/add_friend"-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_marginLeft="16dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:layout_toLeftOf="@+id/drop_down_option_menu"-->
+            <!--android:src="@drawable/ic_person_add_white_24dp" />-->
+
+            <!--<ImageView-->
+            <!--android:id="@+id/drop_down_option_menu"-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_marginLeft="16dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:src="@drawable/ic_more_vert_white_24dp" />-->
+
+            <TextView
+                android:id="@+id/settings_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="76dp"
+                android:drawableRight="@drawable/ic_edit_white_24dp"
+                android:text="User Name"
+                android:textColor="#fff"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/settings_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/settings_user_name"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:drawableRight="@drawable/ic_edit_white_24dp"
+                android:text="User Status"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_layout"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/settings_user_email"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="#fff"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:text="Email"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/settings_user_log_out"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginTop="3dp"
+                android:background="#fff"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:text="Logout" />
+
+            <!--<TextView-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:background="#fff"-->
+            <!--android:clickable="true"-->
+            <!--android:elevation="4dp"-->
+            <!--android:padding="20dp"-->
+            <!--android:text="Android Profile UI Design" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/user_profile_send_request"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_marginBottom="3dp"-->
+            <!--android:layout_marginTop="3dp"-->
+            <!--android:background="#fff"-->
+            <!--android:clickable="true"-->
+            <!--android:elevation="4dp"-->
+            <!--android:padding="20dp"-->
+            <!--android:text="Send Friend Request" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/user_profile_decline_request"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:background="#fff"-->
+            <!--android:clickable="true"-->
+            <!--android:elevation="4dp"-->
+            <!--android:padding="20dp"-->
+            <!--android:text="Decline friend request" />-->
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/settings_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@null"
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_arrow_back_white_24dp" />
+
+
+    </RelativeLayout>
+
+</ScrollView><!--<?xml version="1.0" encoding="utf-8"?>--><!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:background="@color/colorPrimaryDark"--><!--tools:context=".SettingsActivity">--><!--<include--><!--android:id="@+id/users_profile_appbar"--><!--layout="@layout/profile_bar_layout" />--><!--<LinearLayout--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:orientation="vertical">-->
+
+    <!--<de.hdodenhof.circleimageview.CircleImageView--><!--android:id="@+id/settings_display_image"--><!--android:layout_width="170dp"--><!--android:layout_height="170dp"--><!--android:layout_gravity="center_horizontal"--><!--android:layout_marginTop="50dp"--><!--android:src="@drawable/ic_user_image"--><!--tools:layout_editor_absoluteX="96dp"--><!--tools:layout_editor_absoluteY="92dp" />-->
+
+    <!--<TextView--><!--android:id="@+id/settings_user_name"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_gravity="center_horizontal"--><!--android:layout_margin="10dp"--><!--android:text="Display Name"--><!--android:textColor="@android:color/white"--><!--android:textStyle="bold" />-->
+
+    <!--<TextView--><!--android:id="@+id/settings_status"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_margin="10dp"--><!--android:text="Hey There Iam using Chatter Box"--><!--android:textColor="@android:color/white"--><!--android:layout_gravity="center_horizontal" />--><!--<Button--><!--android:id="@+id/settings_change_image"--><!--android:layout_width="150dp"--><!--android:layout_height="wrap_content"--><!--android:background="@android:color/white"--><!--android:padding="10dp"--><!--android:layout_marginTop="80dp"--><!--android:layout_gravity="center_horizontal"-->
+
+    <!--android:text="Change Image"--><!--android:textColor="@color/colorPrimary" />-->
+
+    <!--&lt;!&ndash;<Button&ndash;&gt;--><!--&lt;!&ndash;android:id="@+id/settings_change_status"&ndash;&gt;--><!--&lt;!&ndash;android:layout_width="150dp"&ndash;&gt;--><!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;--><!--&lt;!&ndash;android:layout_gravity="center_horizontal"&ndash;&gt;--><!--&lt;!&ndash;android:padding="10dp"&ndash;&gt;--><!--&lt;!&ndash;android:layout_margin="10dp"&ndash;&gt;--><!--&lt;!&ndash;android:background="@color/colorAccent"&ndash;&gt;--><!--&lt;!&ndash;android:text="Change Status"&ndash;&gt;--><!--&lt;!&ndash;android:textColor="@android:color/white" />&ndash;&gt;--><!--&lt;!&ndash;<Button&ndash;&gt;--><!--&lt;!&ndash;android:id="@+id/settings_change_name"&ndash;&gt;--><!--&lt;!&ndash;android:layout_width="150dp"&ndash;&gt;--><!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;--><!--&lt;!&ndash;android:layout_gravity="center_horizontal"&ndash;&gt;--><!--&lt;!&ndash;android:padding="10dp"&ndash;&gt;--><!--&lt;!&ndash;android:background="@color/colorPrimary"&ndash;&gt;--><!--&lt;!&ndash;android:text="Change Name"&ndash;&gt;--><!--&lt;!&ndash;android:textColor="@android:color/white" />&ndash;&gt;--><!--</LinearLayout>-->
+
+    <!--</RelativeLayout>-->
