@@ -361,10 +361,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         myData = new MyData();
 
-        if(!myData.isInternetConnected(MainActivity.this))
-        {
-            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-        }
+
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         Fabric.with(this, new Crashlytics());

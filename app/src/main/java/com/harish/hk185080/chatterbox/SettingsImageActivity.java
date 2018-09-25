@@ -74,8 +74,10 @@ public class SettingsImageActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private Uri mHighQualityImageUri = null;
-    static final int REQUEST_IMAGE_CAPTURE = 3;
+    static final int REQUEST_TAKE_PHOTO = 6;
     private Bitmap mImageBitmap;
+
+
     private String mCurrentPhotoPath;
 
 
@@ -154,10 +156,9 @@ public class SettingsImageActivity extends AppCompatActivity {
                     Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
                 }
                 return true;
-           // case R.id.take_photo:
-                //takePhoto();
-                //takeHighQualityPhoto();
-               // return true;
+            case R.id.take_photo:
+                takeHighQualityPhoto();
+                return true;
             case R.id.remove_image:
                 if (myData.isInternetConnected(SettingsImageActivity.this)) {
                     removeImage();
@@ -170,75 +171,33 @@ public class SettingsImageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
     private void takeHighQualityPhoto() {
-        if (checkSelfPermission(Manifest.permission.CAMERA)+checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_CAMERA_PERMISSION_CODE);
-        } else {
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                // Create the File where the photo should go
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
-                    ex.printStackTrace();
-                }
-                // Continue only if the File was successfully created
-                if (photoFile != null) {
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                    startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
-                }
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
 
-    private Uri generateTimeStampPhotoFileUri() {
 
-        Uri photoFileUri = null;
-        File outputDir = getPhotoDirectory();
-        if (outputDir != null) {
-            Time t = new Time();
-            t.setToNow();
-            File photoFile = new File(outputDir, System.currentTimeMillis()
-                    + ".jpg");
-            photoFileUri = Uri.fromFile(photoFile);
-        }
-        return photoFileUri;
-    }
-    private File getPhotoDirectory() {
-        File outputDir = null;
-        String externalStorageStagte = Environment.getExternalStorageState();
-        if (externalStorageStagte.equals(Environment.MEDIA_MOUNTED)) {
-            File photoDir = Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            outputDir = new File(photoDir, getString(R.string.app_name));
-            if (!outputDir.exists())
-                if (!outputDir.mkdirs()) {
-                    Toast.makeText(
-                            this,
-                            "Failed to create directory "
-                                    + outputDir.getAbsolutePath(),
-                            Toast.LENGTH_SHORT).show();
-                    outputDir = null;
-                }
-        }
-        return outputDir;
-    }
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void takePhoto() {
-        if (checkSelfPermission(Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                    MY_CAMERA_PERMISSION_CODE);
-        } else {
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(cameraIntent, CAMERA_REQUEST);
-        }
-    }
+
+
 
 
     private void chooseImage() {
@@ -300,23 +259,42 @@ public class SettingsImageActivity extends AppCompatActivity {
 
 
     }
+    private void setPic() {
+        // Get the dimensions of the View
+
+
+        int targetW = profileImage.getWidth();
+        int targetH = profileImage.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        profileImage.setImageBitmap(bitmap);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         //img.setImageURI(imageUri);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            try {
-                mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
-                profileImage.setImageBitmap(mImageBitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+           //setPic();
+            Uri imageUri= Uri.fromFile(new File(mCurrentPhotoPath));
+            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
         }
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            profileImage.setImageBitmap(photo);
-        }
+
         if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
             CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
@@ -437,22 +415,7 @@ public class SettingsImageActivity extends AppCompatActivity {
         return true;
     }
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  // prefix
-                ".jpg",         // suffix
-                storageDir      // directory
-        );
 
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -467,6 +430,21 @@ public class SettingsImageActivity extends AppCompatActivity {
             }
 
         }
+    }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
 }

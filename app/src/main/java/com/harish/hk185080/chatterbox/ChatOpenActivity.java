@@ -1,14 +1,17 @@
 package com.harish.hk185080.chatterbox;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -150,6 +153,10 @@ public class ChatOpenActivity extends AppCompatActivity {
 
         mChatUser = getIntent().getStringExtra("user_id");
         userName = getIntent().getStringExtra("user_name");
+
+//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        manager.cancelAll();
+
 
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(ChatOpenActivity.this).edit();
         prefEditor.putString("ChatOpenUserID", mChatUser);
@@ -744,6 +751,7 @@ public class ChatOpenActivity extends AppCompatActivity {
         profileIntent.putExtra("user_id", mChatUser);
         startActivity(profileIntent);
     }
+
 
 
 }
