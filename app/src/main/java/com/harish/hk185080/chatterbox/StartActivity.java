@@ -481,7 +481,7 @@ public class StartActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
-            Snackbar.make(rootLayout, "Success", Snackbar.LENGTH_LONG).show();
+            //Snackbar.make(rootLayout, "Success", Snackbar.LENGTH_LONG).show();
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }

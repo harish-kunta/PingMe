@@ -83,8 +83,8 @@ public class FavouritesFragment extends Fragment {
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("Favourites")
-                .child(mCurrent_user_id)
-                .limitToLast(50);
+                .child(mCurrent_user_id);
+
 
         FirebaseRecyclerOptions<Friends> friendOptions =
                 new FirebaseRecyclerOptions.Builder<Friends>()

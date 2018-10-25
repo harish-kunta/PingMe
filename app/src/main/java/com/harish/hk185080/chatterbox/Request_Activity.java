@@ -180,8 +180,8 @@ public class Request_Activity extends AppCompatActivity {
                 .getReference()
                 .child("Friend_req")
                 .child(mCurrent_user_id)
-                .orderByChild("request_type").equalTo("received")
-                .limitToLast(50);
+                .orderByChild("request_type").equalTo("received");
+
 
         FirebaseRecyclerOptions<Friends> friendOptions =
                 new FirebaseRecyclerOptions.Builder<Friends>()

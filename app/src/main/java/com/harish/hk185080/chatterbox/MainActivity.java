@@ -806,6 +806,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, AboutActivity.class));
             return false;
         }
+
         //else if (id == R.id.favourites) {
 //            if (Profile.getCurrentProfile() != null)
 //                startActivity(new Intent(MainActivity.this, Favorite_Activity.class));

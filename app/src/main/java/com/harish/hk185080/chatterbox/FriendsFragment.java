@@ -99,8 +99,8 @@ public class FriendsFragment extends Fragment {
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("Friends")
-                .child(mCurrent_user_id)
-                .limitToLast(50);
+                .child(mCurrent_user_id);
+
 
         FirebaseRecyclerOptions<Friends> friendOptions =
                 new FirebaseRecyclerOptions.Builder<Friends>()

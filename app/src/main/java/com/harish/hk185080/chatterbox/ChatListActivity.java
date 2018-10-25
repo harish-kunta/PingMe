@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +82,60 @@ public class ChatListActivity extends AppCompatActivity {
 
     }
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.chat_menu,menu);
+        final MenuItem item=menu.findItem(R.id.menu_search_text);
+        SearchView searchView=(SearchView)item.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+//        searchView.setOnSearchClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                setItemsVisibility(menu, item, false);
+//            }
+//        });
+//        // Detect SearchView close
+//        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                setItemsVisibility(menu, item, true);
+//                return false;
+//            }
+//        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(!newText.isEmpty()) {
+
+                    Query searchQuery = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child("Friends")
+                            .child(mCurrent_user_id).orderByChild("date").startAt(newText).endAt(newText + "\uf8ff");
+                    startListening(searchQuery);
+
+                }
+                else
+                {
+                    Query query = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child("Friends")
+                            .child(mCurrent_user_id);
+
+                    startListening(query);
+                }
+                //Log.d("SearchText","onQueryTextChange");
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -94,12 +151,8 @@ public class ChatListActivity extends AppCompatActivity {
         super.finish();
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
-    public void startListening(){
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("Friends")
-                .child(mCurrent_user_id)
-                .limitToLast(50);
+    public void startListening(Query query){
+
 
         FirebaseRecyclerOptions<Friends> friendOptions =
                 new FirebaseRecyclerOptions.Builder<Friends>()
@@ -215,7 +268,12 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        startListening();
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("Friends")
+                .child(mCurrent_user_id);
+
+        startListening(query);
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // updateUI(currentUser);

@@ -18,11 +18,11 @@
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="friends">Friends : %d</string>
+    <string name="all_users">All Users : %d</string>
     <string name="version">Version %s.%d</string>
     <string name="action_search">Search</string>
 
     <string name="copy_right" translatable="false">Copyrights © %1$d</string>
-
 
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
@@ -39,4 +39,23 @@
     <string name="ok">UPDATE</string>
     <string name="cancel">cancel</string>
 
+    <!-- preferences -->
+    <string name="pref_dark_theme">pref_dark_theme</string> <!-- deprecated -->
+    <string name="pref_theme">pref_theme</string>
+    <string name="pref_theme_title">Theme</string>
+
+    <string name="pref_theme_value_red">red</string>
+    <string name="pref_theme_value_blue">blue</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="change_theme">Change Theme</string>
+
+    <!-- Theme -->
+    <string-array name="pref_theme_options">
+        <item>Red</item>
+        <item>Blue</item>
+    </string-array>
+    <string-array name="pref_theme_values">
+        <item>@string/pref_theme_value_red</item>
+        <item>@string/pref_theme_value_blue</item>
+    </string-array>
 </resources>

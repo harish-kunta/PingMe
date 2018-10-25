@@ -4,10 +4,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-feature android:name="android.hardware.camera"
+
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
 
     <application
@@ -23,6 +24,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -30,12 +32,13 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MainActivity" >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="HANDLE_REQUEST" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
@@ -52,7 +55,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".RegisterActivity"
@@ -69,9 +71,7 @@
         <activity
             android:name=".UsersActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".ProfileActivity">
-
-        </activity>
+        <activity android:name=".ProfileActivity"></activity>
         <activity
             android:name=".ChatActivity"
             android:parentActivityName=".MainActivity"
@@ -89,15 +89,13 @@
         <activity
             android:name=".ChatOpenActivity"
             android:parentActivityName=".MainActivity">
-
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.harish.hk185080.chatterbox.MainActivity" />
         </activity>
         <activity
             android:name=".Request_Activity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
 
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
@@ -108,7 +106,8 @@
             android:parentActivityName=".SettingsActivity" />
         <activity android:name=".ProfileImageActivity" />
         <activity android:name=".AboutActivity" />
-        <activity android:name=".ProfileNewActivity"></activity>
+        <activity android:name=".ProfileNewActivity" />
+        <activity android:name=".AppSettingsActivity"></activity>
     </application>
 
 </manifest>

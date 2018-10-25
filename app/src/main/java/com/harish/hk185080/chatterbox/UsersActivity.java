@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -82,8 +83,21 @@ public class UsersActivity extends AppCompatActivity {
         mUserRef.keepSynced(true);
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mCurrentEmail = mCurrentUser.getEmail();
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        myRef.keepSynced(true);
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // textView2.setText(dataSnapshot.getChildrenCount()+"");
+                getSupportActionBar().setTitle(getString(R.string.all_users, dataSnapshot.getChildrenCount()));
+            }
 
-        getSupportActionBar().setTitle("All Users");
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mUsersList = findViewById(R.id.users_list);
@@ -106,13 +120,65 @@ public class UsersActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
 
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.chat_menu,menu);
+        final MenuItem item=menu.findItem(R.id.menu_search_text);
+        SearchView searchView=(SearchView)item.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+//        searchView.setOnSearchClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                setItemsVisibility(menu, item, false);
+//            }
+//        });
+//        // Detect SearchView close
+//        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                setItemsVisibility(menu, item, true);
+//                return false;
+//            }
+//        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-    public void startListening() {
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("Users")
-                .limitToLast(50);
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(!newText.isEmpty()) {
+
+                    Query searchQuery = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child("Users")
+                            .orderByChild("name").startAt(newText).endAt(newText + "\uf8ff");
+                    startListening(searchQuery);
+
+                }
+                else
+                {
+//                    Query query = FirebaseDatabase.getInstance()
+//                            .getReference()
+//                            .child("Friends")
+//                            .child(mCurrent_user_id);
+                    Query query = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child("Users").orderByChild("name");
+//
+                   startListening(query);
+                }
+                //Log.d("SearchText","onQueryTextChange");
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void startListening(Query query) {
 
         FirebaseRecyclerOptions<Users> options =
                 new FirebaseRecyclerOptions.Builder<Users>()
@@ -232,7 +298,10 @@ public class UsersActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        startListening();
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("Users").orderByChild("name");
+        startListening(query);
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // updateUI(currentUser);

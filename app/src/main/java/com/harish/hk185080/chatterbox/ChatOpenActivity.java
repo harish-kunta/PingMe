@@ -19,12 +19,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -124,6 +126,7 @@ public class ChatOpenActivity extends AppCompatActivity {
     private String mLastKey = "";
     private String mPrevKey = "";
     public CoordinatorLayout rootLayout;
+    View action_bar_view;
 
 
 
@@ -167,7 +170,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
         // getSupportActionBar().setTitle(mChatUserName);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View action_bar_view = inflater.inflate(R.layout.chat_custom_bar, null);
+        action_bar_view= inflater.inflate(R.layout.chat_custom_bar, null);
 
         actionBar.setCustomView(action_bar_view);
 
@@ -268,6 +271,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
                         }
                     });
+
                 }
             }
 
@@ -276,8 +280,9 @@ public class ChatOpenActivity extends AppCompatActivity {
 
             }
         });
-
-        loadMessages();
+        DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
+        Query messageQuery = messageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
+        loadMessages(messageQuery);
 
 
         mTitleView.setText(userName);
@@ -343,8 +348,9 @@ public class ChatOpenActivity extends AppCompatActivity {
                 mCurrentPage++;
 
                 itemPos = 0;
-
-                loadMoreMessages();
+                DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
+                Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
+                loadMoreMessages(messageQuery);
 
 
             }
@@ -358,21 +364,60 @@ public class ChatOpenActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.menu_search_text:
-                handleMenuSearch();
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-
+    private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
+//        for (int i=0; i<menu.size(); ++i) {
+//            MenuItem item = menu.getItem(i);
+//            if (item != exception) item.setVisible(visible);
+//        }
+        action_bar_view.setVisibility(visible? View.VISIBLE :View.GONE);
+    }
 
 //    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//        getMenuInflater().inflate(R.menu.chat_menu, menu);
-//        return true;
+//    public boolean onCreateOptionsMenu(final Menu menu) {
+//
+//       MenuInflater inflater=getMenuInflater();
+//       inflater.inflate(R.menu.chat_menu,menu);
+//       final MenuItem item=menu.findItem(R.id.menu_search_text);
+//        SearchView searchView=(SearchView)item.getActionView();
+//        searchView.setMaxWidth(Integer.MAX_VALUE);
+//        searchView.setOnSearchClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                setItemsVisibility(menu, item, false);
+//            }
+//        });
+//        // Detect SearchView close
+//        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                setItemsVisibility(menu, item, true);
+//                return false;
+//            }
+//        });
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                if(!newText.isEmpty()) {
+//                    mAdapter.notifyDataSetChanged();
+//                    Query searchQuery = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser).orderByChild("message").startAt(newText).endAt(newText + "\uf8ff");
+//                    loadMessages(searchQuery);
+//                    mAdapter.notifyDataSetChanged();
+//                }
+//                //Log.d("SearchText","onQueryTextChange");
+//                return false;
+//            }
+//        });
+//        return super.onCreateOptionsMenu(menu);
 //    }
 
     @Override
@@ -543,12 +588,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
     }
 
-    private void loadMoreMessages() {
-
-        DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
-
-        Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
-
+    private void loadMoreMessages(Query messageQuery) {
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -608,12 +648,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
     }
 
-    private void loadMessages() {
-
-        DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
-
-        Query messageQuery = messageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
-
+    private void loadMessages(Query messageQuery) {
 
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
