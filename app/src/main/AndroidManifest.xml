@@ -71,7 +71,7 @@
         <activity
             android:name=".UsersActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
         <activity
             android:name=".ChatActivity"
             android:parentActivityName=".MainActivity"
@@ -106,8 +106,8 @@
             android:parentActivityName=".SettingsActivity" />
         <activity android:name=".ProfileImageActivity" />
         <activity android:name=".AboutActivity" />
-        <activity android:name=".ProfileNewActivity" />
-        <activity android:name=".AppSettingsActivity"></activity>
+        <activity android:name=".AppSettingsActivity" />
+        <activity android:name=".MaterialProfileActivity"></activity>
     </application>
 
 </manifest>

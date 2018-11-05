@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -70,11 +72,11 @@ import retrofit2.Call;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private ImageView mProfileImage;
-    private TextView mProfileName, mProfileStatus, mProfileEmail;
+    private ImageView  mProfileImage;
+    private TextView mProfileName,mProfileStatus, mProfileEmail;
     private TextView mProfileSendReqBtn, mDeclineButton;
     private ImageButton mProfileBack;
-//    private ImageButton mDownloadImageButton;
+    private ImageButton mDownloadImageButton;
 
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mFriendDatabase;
@@ -279,58 +281,58 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
-        likeButton.setOnLikeListener(new OnLikeListener() {
-            @Override
-            public void liked(final LikeButton likeButton) {
-                Map favouriteMap = new HashMap();
-                final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
+//        likeButton.setOnLikeListener(new OnLikeListener() {
+//            @Override
+//            public void liked(final LikeButton likeButton) {
+//                Map favouriteMap = new HashMap();
+//                final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
+//
+//                favouriteMap.put("Favourites/" + mCurrentUser.getUid() + "/" + user_id + "/date", currentDate);
+//
+//                mRootRef.updateChildren(favouriteMap, new DatabaseReference.CompletionListener() {
+//                    @Override
+//                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+//
+//
+//                        if (databaseError == null) {
+//                            likeButton.setLiked(true);
+//                        } else {
+//                            String error = databaseError.getMessage();
+//                            Log.e("Profile Activity", error);
+//
+//                        }
+//
+//                    }
+//                });
+//            }
 
-                favouriteMap.put("Favourites/" + mCurrentUser.getUid() + "/" + user_id + "/date", currentDate);
-
-                mRootRef.updateChildren(favouriteMap, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-
-                        if (databaseError == null) {
-                            likeButton.setLiked(true);
-                        } else {
-                            String error = databaseError.getMessage();
-                            Log.e("Profile Activity", error);
-
-                        }
-
-                    }
-                });
-            }
-
-
-            @Override
-            public void unLiked(final LikeButton likeButton) {
-                if (myData.isInternetConnected(ProfileActivity.this)) {
-                    Map favouriteMap = new HashMap();
-                    final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
-
-                    favouriteMap.put("Favourites/" + mCurrentUser.getUid() + "/" + user_id, null);
-                    mRootRef.updateChildren(favouriteMap, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-
-                            if (databaseError == null) {
-                                likeButton.setLiked(false);
-                            } else {
-                                String error = databaseError.getMessage();
-                                Log.e("Profile Activity", error);
-                            }
-
-                        }
-                    });
-                } else {
-                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                }
-            }
-        });
+//
+//            @Override
+//            public void unLiked(final LikeButton likeButton) {
+//                if (myData.isInternetConnected(ProfileActivity.this)) {
+//                    Map favouriteMap = new HashMap();
+//                    final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
+//
+//                    favouriteMap.put("Favourites/" + mCurrentUser.getUid() + "/" + user_id, null);
+//                    mRootRef.updateChildren(favouriteMap, new DatabaseReference.CompletionListener() {
+//                        @Override
+//                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+//
+//
+//                            if (databaseError == null) {
+//                                likeButton.setLiked(false);
+//                            } else {
+//                                String error = databaseError.getMessage();
+//                                Log.e("Profile Activity", error);
+//                            }
+//
+//                        }
+//                    });
+//                } else {
+//                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                }
+//            }
+//        });
 
         mDeclineButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -553,6 +555,14 @@ public class ProfileActivity extends AppCompatActivity {
 //            @Override
 //            public void onClick(View v) {
 //                requestPermission();
+//            }
+//        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
 //            }
 //        });
     }
