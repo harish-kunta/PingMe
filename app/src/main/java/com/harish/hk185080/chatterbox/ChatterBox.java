@@ -2,7 +2,7 @@ package com.harish.hk185080.chatterbox;
 
 import android.app.Application;
 
-import com.facebook.FacebookSdk;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
