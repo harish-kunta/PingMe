@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -83,7 +85,7 @@ public class ProfileActivity extends AppCompatActivity {
     private DatabaseReference mRootRef;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserRef;
-    LikeButton likeButton;
+    FloatingActionButton likeButton;
     String filepath;
     private MyData myData;
     public String token;
@@ -103,7 +105,7 @@ public class ProfileActivity extends AppCompatActivity {
     String display_name;
     String email;
     private static final int REQUEST_WRITE_PERMISSION = 786;
-    private ScrollView rootLayout;
+    private CoordinatorLayout rootLayout;
     String user_id;
 
 
