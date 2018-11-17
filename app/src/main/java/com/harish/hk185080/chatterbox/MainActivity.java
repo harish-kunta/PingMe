@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             init();
             Header = navigationView.getHeaderView(0);
             final TextView textView = (TextView) Header.findViewById(R.id.name);
-            final TextView textView1 = (TextView) Header.findViewById(R.id.sub);
+
 
             final TextView textView2 = (TextView) Header.findViewById(R.id.score);
             circleImageView = (CircleImageView) Header.findViewById(R.id.CimageView);
@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intentFilter.addAction(CONNECTIVITY_ACTION);
             receiver = new NetworkChangeReceiver();
 
-            textView1.setVisibility(View.VISIBLE);
+            //textView1.setVisibility(View.VISIBLE);
             textView2.setVisibility(View.VISIBLE);
             final String current_uid = mCurrentUser.getUid();
 
@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
 
                         textView.setText(name);
-                        textView1.setText(status);
+                        //textView1.setText(status);
                         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
                         myRef.keepSynced(true);
                         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -507,13 +507,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void sendToProfile(String userId) {
-        Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
+        Intent profileIntent = new Intent(MainActivity.this, MaterialProfileActivity.class);
         profileIntent.putExtra("user_id", userId);
         startActivity(profileIntent);
     }
 
     private void openUserPage() {
-        Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+        Intent settingsIntent = new Intent(MainActivity.this, MaterialSettingsActivity.class);
         startActivity(settingsIntent);
     }
 
@@ -596,65 +596,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        return true;
 //    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.menu_account_settings) {
-            Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(settingsIntent);
 
-        } else if (item.getItemId() == R.id.menu_all_users) {
-            Intent allUsersIntent = new Intent(MainActivity.this, UsersActivity.class);
-            startActivity(allUsersIntent);
-        } else if (item.getItemId() == R.id.share_app_button) {
-            try {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Ping Me");
-                String sAux = "\nLet me recommend you this application\n\n";
-                sAux = sAux + "https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox\n\n";
-                i.putExtra(Intent.EXTRA_TEXT, sAux);
-                startActivity(Intent.createChooser(i, "choose one"));
-            } catch (Exception e) {
-                //e.toString();
-            }
-        } else if (item.getItemId() == R.id.main_feedback_button) {
-            feedback();
-        } else if (item.getItemId() == R.id.main_logout_button) {
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(MainActivity.this);
-            }
-            builder
-                    .setMessage("Are you sure you want to Log out?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // continue with logout
-                            signOut();
-                            FirebaseUser currentUser = mAuth.getCurrentUser();
-                            if (currentUser != null) {
-                                mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-                                FirebaseAuth.getInstance().signOut();
-                                sendToStart();
-
-                            }
-
-
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-
-        }
-        return true;
-    }
 
     private void feedback() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

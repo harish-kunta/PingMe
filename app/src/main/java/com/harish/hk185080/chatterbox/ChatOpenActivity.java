@@ -299,7 +299,7 @@ public class ChatOpenActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String online = dataSnapshot.child("online").getValue().toString();
-                 image= dataSnapshot.child("image").getValue().toString();
+                 image= dataSnapshot.child("thumb_image").getValue().toString();
                 if(dataSnapshot.hasChild("device_token")) {
                     token = dataSnapshot.child("device_token").getValue().toString();
                 }
@@ -782,7 +782,7 @@ public class ChatOpenActivity extends AppCompatActivity {
     }
 
     public void profileActivity() {
-        Intent profileIntent = new Intent(ChatOpenActivity.this, ProfileActivity.class);
+        Intent profileIntent = new Intent(ChatOpenActivity.this, MaterialProfileActivity.class);
         profileIntent.putExtra("user_id", mChatUser);
         startActivity(profileIntent);
     }

@@ -213,7 +213,7 @@ public class Request_Activity extends AppCompatActivity {
                         if (dataSnapshot.hasChild("name")) {
 
                             final String userName = dataSnapshot.child("name").getValue().toString();
-                            String userThumb = dataSnapshot.child("image").getValue().toString();
+                            String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
                             String userStatus=dataSnapshot.child("status").getValue().toString();
 
                             if (dataSnapshot.hasChild("online")) {
@@ -245,7 +245,7 @@ public class Request_Activity extends AppCompatActivity {
 //                                      }
 //                                      if(which==1)
 //                                      {
-                                    Intent profileIntent = new Intent(Request_Activity.this, ProfileActivity.class);
+                                    Intent profileIntent = new Intent(Request_Activity.this, MaterialProfileActivity.class);
                                     profileIntent.putExtra("user_id", list_user_id);
                                     startActivity(profileIntent);
 //                          }

@@ -2,11 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/take_photo"
-        android:title="Take Photo" />
+        android:title="Take Photo"
+        android:icon="@drawable/ic_photo_camera_white_24dp"/>
     <item
         android:id="@+id/choose_image"
-        android:title="Choose Image"/>
+        android:title="Choose Image"
+        android:icon="@drawable/ic_attach_file_white_24dp"/>
     <item
         android:id="@+id/remove_image"
-        android:title="Remove Image" />
+        android:title="Remove Image"
+        android:icon="@drawable/ic_delete_forever_white_24dp"
+        />
+
+
+
 </menu>

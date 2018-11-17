@@ -346,11 +346,11 @@ public class ChatActivity extends AppCompatActivity {
 
         }
     }
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        mSearchAction = menu.findItem(R.id.menu_search_text);
-        return super.onPrepareOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        mSearchAction = menu.findItem(R.id.menu_search_text);
+//        return super.onPrepareOptionsMenu(menu);
+//    }
 
 
 
@@ -600,7 +600,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void profileActivity() {
-        Intent profileIntent = new Intent(ChatActivity.this, ProfileActivity.class);
+        Intent profileIntent = new Intent(ChatActivity.this, MaterialProfileActivity.class);
         profileIntent.putExtra("user_id", mChatUser);
         startActivity(profileIntent);
     }

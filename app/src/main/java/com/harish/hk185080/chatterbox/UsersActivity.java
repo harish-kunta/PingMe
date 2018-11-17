@@ -3,6 +3,7 @@ package com.harish.hk185080.chatterbox;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -31,6 +32,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -106,7 +108,10 @@ public class UsersActivity extends AppCompatActivity {
         mUsersList.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
 
-
+//        SharedPreferences settings = getSharedPreferences("RecyclerView", 0);
+//        int item_position = settings.getInt("item_position", 0);
+//        Toast.makeText(UsersActivity.this,String.valueOf(item_position),Toast.LENGTH_SHORT).show();
+//        mUsersList.scrollTo(item_position,0);
     }
 
     @Override
@@ -196,13 +201,13 @@ public class UsersActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(UserViewHolder holder, int position, Users model) {
+            protected void onBindViewHolder(final UserViewHolder holder, int position, Users model) {
                 // Bind the Chat object to the ChatHolder
 
                 holder.setName(model.name);
                 // ...
                 holder.setStatus(model.status);
-                holder.setUserImage(model.image);
+                holder.setUserImage(model.thumb_image);
 
                 final String user_id = getRef(position).getKey();
 
@@ -213,11 +218,11 @@ public class UsersActivity extends AppCompatActivity {
                         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
-
                                 if (snapshot.child("Users").child(user_id).hasChild("name")) {
                                     // run some code
-                                    Intent profileIntent = new Intent(UsersActivity.this, ProfileActivity.class);
+                                    Intent profileIntent = new Intent(UsersActivity.this, MaterialProfileActivity.class);
                                     profileIntent.putExtra("user_id", user_id);
+                                    profileIntent.putExtra("position", String.valueOf(holder.getMyPosition()));
                                     startActivity(profileIntent);
                                 } else {
                                     Snackbar.make(rootLayout, "User doesnot exist", Snackbar.LENGTH_LONG).show();
@@ -273,6 +278,11 @@ public class UsersActivity extends AppCompatActivity {
         public void setStatus(String status) {
             TextView userStatusView = (TextView) mView.findViewById(R.id.user_single_status);
             userStatusView.setText(status);
+        }
+
+        public int getMyPosition()
+        {
+            return getAdapterPosition();
         }
 
         public void setUserImage(String thumb_image) {

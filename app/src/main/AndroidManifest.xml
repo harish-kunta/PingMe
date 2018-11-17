@@ -107,7 +107,8 @@
         <activity android:name=".ProfileImageActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".AppSettingsActivity" />
-        <activity android:name=".MaterialProfileActivity"></activity>
+        <activity android:name=".MaterialProfileActivity" />
+        <activity android:name=".MaterialSettingsActivity"></activity>
     </application>
 
 </manifest>

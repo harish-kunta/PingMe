@@ -63,7 +63,6 @@ import java.util.Map;
 import id.zelory.compressor.Compressor;
 
 
-
 public class SettingsImageActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     public ImageView profileImage;
@@ -85,7 +84,6 @@ public class SettingsImageActivity extends AppCompatActivity {
     private RelativeLayout rootLayout;
     private MyData myData;
     RelativeLayout loading;
-
 
 
     @Override
@@ -196,10 +194,6 @@ public class SettingsImageActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
     private void chooseImage() {
         Intent galleryIntent = new Intent();
         galleryIntent.setType("image/*");
@@ -259,6 +253,7 @@ public class SettingsImageActivity extends AppCompatActivity {
 
 
     }
+
     private void setPic() {
         // Get the dimensions of the View
 
@@ -274,7 +269,7 @@ public class SettingsImageActivity extends AppCompatActivity {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
@@ -290,8 +285,8 @@ public class SettingsImageActivity extends AppCompatActivity {
 
         //img.setImageURI(imageUri);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-           //setPic();
-            Uri imageUri= Uri.fromFile(new File(mCurrentPhotoPath));
+            //setPic();
+            Uri imageUri = Uri.fromFile(new File(mCurrentPhotoPath));
             CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
         }
 
@@ -431,6 +426,7 @@ public class SettingsImageActivity extends AppCompatActivity {
 
         }
     }
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
