@@ -43,7 +43,7 @@ public class AboutActivity extends AppCompatActivity {
 
         versionLabel=findViewById(R.id.version_number);
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
+            Toolbar toolbar = findViewById(R.id.toolbar1);
             setTitle("Ping Me");
             setSupportActionBar(toolbar);
             if (toolbar != null) {
@@ -68,7 +68,7 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-            FloatingActionButton share = (FloatingActionButton) findViewById(R.id.shareapp);
+            FloatingActionButton share = findViewById(R.id.shareapp);
             if (share != null) {
                 share.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -90,11 +90,11 @@ public class AboutActivity extends AppCompatActivity {
             }
 
             ImageView gmail, fb, whatsapp,instagram,youtube;
-            gmail = (ImageView) findViewById(R.id.gmailpic);
-            fb = (ImageView) findViewById(R.id.fbpic);
-            whatsapp = (ImageView) findViewById(R.id.whatsappic);
-            instagram=(ImageView)findViewById(R.id.instapic);
-            youtube=(ImageView)findViewById(R.id.youtubepic);
+            gmail = findViewById(R.id.gmailpic);
+            fb = findViewById(R.id.fbpic);
+            whatsapp = findViewById(R.id.whatsappic);
+            instagram= findViewById(R.id.instapic);
+            youtube= findViewById(R.id.youtubepic);
             if (gmail != null) {
                 gmail.setOnClickListener(new View.OnClickListener() {
                     @Override

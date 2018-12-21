@@ -420,7 +420,7 @@ public class ChatActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                 if (databaseError != null) {
-                                    Log.d("Chat_Log", databaseError.getMessage().toString());
+                                    Log.d("Chat_Log", databaseError.getMessage());
                                 }
                             }
                         });
@@ -591,7 +591,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     if (databaseError != null) {
-                        Log.d("Chat_Log", databaseError.getMessage().toString());
+                        Log.d("Chat_Log", databaseError.getMessage());
                     }
                 }
             });

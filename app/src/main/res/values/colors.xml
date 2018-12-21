@@ -4,109 +4,30 @@
     <!--<color name="colorPrimaryDark">#512da7</color>-->
     <!--&lt;!&ndash;<color name="colorAccent">#FF5521</color>&ndash;&gt;-->
     <!--<color name="colorAccent">#80FFF2</color>-->
-    <color name="accent">#FFFFFF</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="black">#000000</color>
-    <color name="jet">#222222</color>
-    <color name="oil">#333333</color>
-    <color name="monsoon">#777777</color>
-    <color name="jumbo">#888888</color>
-    <color name="aluminum">#999999</color>
-    <color name="base">#AAAAAA</color>
     <color name="iron">#CCCCCC</color>
     <color name="white">#FFFFFF</color>
-    <color name="color_material_metaphor">#039BE5</color>
-    <color name="color_material_motion">#6A1B9A</color>
-    <color name="color_material_shadow">#E0E0E0</color>
-    <color name="color_dark_material_metaphor">#0277BD</color>
     <color name="color_dark_material_motion">#4A148C</color>
-    <color name="color_dark_material_shadow">#BDBDBD</color>
-    <color name="greenintrolite">#2E7D32</color>
-    <color name="greenintrodark">#1B5E20</color>
-    <color name="tback">#36465d</color>
-    <color name="separator_line">#ECECEC</color>
-    <color name="title">#222222</color>
-    <color name="subtitle">#999999</color>
-    <color name="background_card">#fff</color>
-    <color name="green">#689f38</color>
-    <color name="text_white_87">#deFFFFFF</color>
-    <array name="note_neutral_colors">
-        <item>#9E9E9E</item>
-        <item>#455A64</item>
-        <item>#607D8B</item>
-    </array>
-
-    <array name="note_accent_colors">
-        <item>#039BE5</item>
-        <item>#3D51B3</item>
-        <item>#689f38</item>
-        <item>#FD7044</item>
-    </array>
-    <color name="red">#F44336</color>
-    <color name="yellow">#FFEB3B</color>
 
 
     <color name="transparent">@android:color/transparent</color>
 
 
-    <color name="chat">#559fca</color>
-    <color name="quote">#f0983c</color>
-    <color name="audio">#a67fc0</color>
-    <color name="photo">#d75f45</color>
-    <color name="text">#444444</color>
-
-
-    <color name="link">#5abb8b</color>
-
-    <color name="fab">#529ecc</color>
-
-    <color name="text_color">#949ca8</color>
-
-    <color name="tumblr_primary">#36465D</color>
-
     <color name="material_blue_500">#5677fc</color>
 
-    <color name="md_edittext_error">#DD2C00</color>
-    <color name="md_material_blue_600">#1E88E5</color>
-    <color name="md_material_blue_800">#1565C0</color>
-
     <!-- Theme RED -->
-    <color name="redColorPrimary">#F44336</color>
-    <color name="redColorPrimaryDark">#D32F2F</color>
-    <color name="redColorPrimaryLight">#FFCDD2</color>
-    <color name="redColorAccent">#448AFF</color>
-    <color name="redTextColorPrimary">#212121</color>
-    <color name="redTextColorSecondary">#727272</color>
 
     <!-- Theme RED -->
     <color name="blueColorPrimary">#2196F3</color>
     <color name="blueColorPrimaryDark">#1976D2</color>
-    <color name="blueColorPrimaryLight">#BBDEFB</color>
     <color name="blueColorAccent">#FF4081</color>
-    <color name="blueTextColorPrimary">#212121</color>
-    <color name="blueTextColorSecondary">#727272</color>
+    <color name="colorTransBg">#26000000</color>
 
     <!-- Text -->
-    <color name="textColorPrimary">#FFFFFF</color>
-    <color name="textColorSecondary">#9E9E9E</color>
-    <color name="textColorPrimaryInverse">#DE000000</color>
-    <color name="textColorSecondaryInverse">#9E9E9E</color>
-    <color name="textColorButton">#FFFFFF</color>
-    <color name="colorDisabled">#1A000000</color>
-    <color name="colorDivider">#0C000000</color>
-    <color name="colorBackgroundPanel">#FFE0E0E0</color>
-    <color name="colorBackgroundPanelInverse">#FF424242</color>
-    <color name="colorHighlightInverse">#424242</color>
-    <color name="colorShadow">#E0E0E0</color>
-    <color name="colorShadowInverse">#181818</color>
 
     <!-- Theme 2 -->
-    <color name="colorPrimarySecond">#FF009877</color>
-    <color name="colorPrimaryDarkSecond">#F5007C77</color>
-    <color name="colorPrimaryLightSecond">#FFE0B277</color>
-    <color name="colorAccentSecond">#FF525277</color>
-    <color name="colorAccentLightSecond">#FF8A8077</color>
 </resources>

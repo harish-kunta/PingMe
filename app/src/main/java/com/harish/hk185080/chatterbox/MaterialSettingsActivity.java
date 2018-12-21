@@ -1,5 +1,6 @@
 package com.harish.hk185080.chatterbox;
 
+import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -26,6 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,6 +39,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -84,6 +91,7 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     static final int REQUEST_TAKE_PHOTO = 6;
     private String mCurrentPhotoPath;
+    FabSpeedDial fabSpeedDial;
 
     private Button mChangeStatus;
     private CoordinatorLayout rootLayout;
@@ -105,9 +113,15 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     AppBarLayout appBarLayout;
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_material_settings);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -116,9 +130,11 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         myData = new MyData();
-        ctl = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        //final FloatingActionButton fabSpeedDial = findViewById(R.id.fab);
-        final FloatingActionButton floatingActionButton = findViewById(R.id.fab_speed_dial);
+        ctl = findViewById(R.id.toolbar_layout);
+        fabSpeedDial=findViewById(R.id.fabSpeedDial);
+
+
+
         appBarLayout = findViewById(R.id.app_bar);
 
         rootLayout = findViewById(R.id.rootlayout);
@@ -143,67 +159,70 @@ public class MaterialSettingsActivity extends AppCompatActivity {
                 logout();
             }
         });
-floatingActionButton.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        String current_name = ctl.getTitle().toString();
-        Intent changeNameIntent = new Intent(MaterialSettingsActivity.this, AccountNameActivity.class);
-        changeNameIntent.putExtra("account_name_value", current_name);
-        startActivity(changeNameIntent);
-    }
-});
-statusLayout.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        String current_status = mStatus.getText().toString();
-        Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
-        changeStatusIntent.putExtra("status_value", current_status);
-        startActivity(changeStatusIntent);
-    }
-});
-//        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
-//            @Override
-//            public boolean onMenuItemSelected(MenuItem menuItem) {
-//                //TODO: Start some activity
-//                switch (menuItem.getItemId()) {
-//                    case R.id.change_status:
-//                        String current_status = mStatus.getText().toString();
-//                        Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
-//                        changeStatusIntent.putExtra("status_value", current_status);
-//                        startActivity(changeStatusIntent);
-//                        break;
-//                    case R.id.change_name:
-//                        String current_name = ctl.getTitle().toString();
-//                        Intent changeNameIntent = new Intent(MaterialSettingsActivity.this, AccountNameActivity.class);
-//                        changeNameIntent.putExtra("account_name_value", current_name);
-//                        startActivity(changeNameIntent);
-//                        break;
-//                    case R.id.choose_image:
-//                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
-//                            chooseImage();
-//                        } else {
-//                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-//                        }
-//                        break;
-//                    case R.id.take_photo:
-//                        takeHighQualityPhoto();
-//                        break;
-//                    case R.id.remove_image:
-//                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
-//                            removeImage();
-//                        } else {
-//                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-//                        }
-//
-//                        break;
-//
-//                }
-//                return true;
-//            }
-//        });
+
+        statusLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String current_status = mStatus.getText().toString();
+                Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
+                changeStatusIntent.putExtra("status_value", current_status);
+                startActivity(changeStatusIntent);
+            }
+        });
+
+
+
+
+
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                //TODO: Start some activity
+                switch (menuItem.getItemId()) {
+                    case R.id.change_status:
+                        String current_status = mStatus.getText().toString();
+                        Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
+                        changeStatusIntent.putExtra("status_value", current_status);
+                        startActivity(changeStatusIntent);
+                        break;
+                    case R.id.change_name:
+                        String current_name = ctl.getTitle().toString();
+                        Intent changeNameIntent = new Intent(MaterialSettingsActivity.this, AccountNameActivity.class);
+                        changeNameIntent.putExtra("account_name_value", current_name);
+                        startActivity(changeNameIntent);
+                        break;
+                    case R.id.choose_image:
+                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
+                            chooseImage();
+                        } else {
+                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+                        }
+                        break;
+                    case R.id.take_photo:
+                        takeHighQualityPhoto();
+                        break;
+                    case R.id.remove_image:
+                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
+                            removeImage();
+                        } else {
+                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+                        }
+
+                        break;
+
+                }
+                return true;
+            }
+        });
 
 
     }
+
+
+
+
+
+
 
     private void logout() {
         AlertDialog.Builder builder;
@@ -316,55 +335,70 @@ statusLayout.setOnClickListener(new View.OnClickListener() {
 
         String current_uid = mCurrentUser.getUid();
 
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
-        mUserDatabase.keepSynced(true);
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle("Loading User Data...");
-        mProgressDialog.setMessage("please wait while we load user data.");
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
-        mUserDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.child("name").getValue().toString();
-                final String image = dataSnapshot.child("image").getValue().toString();
-                String status = dataSnapshot.child("status").getValue().toString();
-                String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
-                if (dataSnapshot.hasChild("email")) {
-                    email = dataSnapshot.child("email").getValue().toString();
-                    mEmailLayout.setVisibility(View.VISIBLE);
-                } else {
-                    mEmailLayout.setVisibility(View.GONE);
-                }
-
-                //mName.setText(name);
-                ctl.setTitle(name);
-                mStatus.setText(status);
-                mEmail.setText(email);
-
-                if (!image.equals("default")) {
-                    loading.setVisibility(View.VISIBLE);
-                    Glide
-                            .with(getApplicationContext())
-                            .load(image)
-                            .into(mDisplayImage);
-                    loading.setVisibility(View.GONE);
-                } else {
-                    loading.setVisibility(View.GONE);
-                    mDisplayImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
-
-                }
-                mProgressDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
 
-    }
+    mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
+    mUserDatabase.keepSynced(true);
+    mProgressDialog = new ProgressDialog(this);
+    mProgressDialog.setTitle("Loading User Data...");
+    mProgressDialog.setMessage("please wait while we load user data.");
+    mProgressDialog.setCanceledOnTouchOutside(false);
+    mProgressDialog.show();
+    mUserDatabase.addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    final String image = dataSnapshot.child("image").getValue().toString();
+                    String status = dataSnapshot.child("status").getValue().toString();
+                    String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                    if (dataSnapshot.hasChild("email")) {
+                        email = dataSnapshot.child("email").getValue().toString();
+                        mEmailLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        mEmailLayout.setVisibility(View.GONE);
+                    }
+
+                    //mName.setText(name);
+                    ctl.setTitle(name);
+                    mStatus.setText(status);
+                    mEmail.setText(email);
+
+                    if (!image.equals("default")) {
+                        loading.setVisibility(View.VISIBLE);
+                        RequestOptions options = new RequestOptions()
+                                .centerCrop()
+                                .placeholder(R.drawable.ic_account_circle_white_48dp)
+                                .error(R.drawable.ic_account_circle_white_48dp)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .priority(Priority.HIGH)
+                                .dontAnimate()
+                                .dontTransform();
+                        Glide
+                                .with(getApplicationContext())
+                                .load(image)
+                                .apply(options)
+                                .into(mDisplayImage);
+                        loading.setVisibility(View.GONE);
+                    } else {
+                        loading.setVisibility(View.GONE);
+                        mDisplayImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
+
+                    }
+                    mProgressDialog.dismiss();
+
+
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    });
+
+}
+
 
     @Override
     protected void onPause() {
@@ -430,12 +464,12 @@ statusLayout.setOnClickListener(new View.OnClickListener() {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.change_image_menu, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        getMenuInflater().inflate(R.menu.change_image_menu, menu);
+//        return true;
+//    }
 
 
     @Override

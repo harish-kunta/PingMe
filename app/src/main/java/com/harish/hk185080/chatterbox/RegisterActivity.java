@@ -65,10 +65,6 @@ public class RegisterActivity extends AppCompatActivity {
     Button _signupButton;
     @BindView(R.id.link_login)
     TextView _loginLink;
-    private TextInputLayout mDisplayName;
-    private TextInputLayout mEmail;
-    private TextInputLayout mPassword;
-    private Button mSignup;
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
     private ProgressDialog mRegProgress;
@@ -94,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (myData.isInternetConnected(RegisterActivity.this))
                     if (checkGooglePlayServices()) {
                         signup();
+                        //signupnew();
                     } else
                         Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
 
@@ -108,6 +105,11 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void signupnew() {
+        Intent i=new Intent(RegisterActivity.this,UploadImageActivity.class);
+        startActivity(i);
     }
 
 
@@ -126,7 +128,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                             HashMap<String, String> userMap = new HashMap<>();
                             userMap.put("name", displayName);
-                            userMap.put("status", "Hi there I am using Ping Me");
+                            userMap.put("status", getString(R.string.default_status));
                             userMap.put("image", "default");
                             userMap.put("thumb_image", "default");
                             userMap.put("device_token", deviceToken);
@@ -137,7 +139,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        mRegProgress.dismiss();
+
                                         // sendVerificationEmail();
 //                                        Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
 //                                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -157,9 +159,10 @@ public class RegisterActivity extends AppCompatActivity {
 //                                                })
 //                                                .setIcon(android.R.drawable.ic_dialog_alert)
 //                                                .show();
-                                        FirebaseAuth.getInstance().signOut();
-                                        login();
+                                        //FirebaseAuth.getInstance().signOut();
+                                        //login();
 //                                        finish();
+                                        Snackbar.make(rootLayout, "Account Created successfully", Snackbar.LENGTH_LONG).show();
                                         onSignupSuccess();
                                     }
                                 }
@@ -216,6 +219,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+
     public void signup() {
         Log.d(TAG, "Signup");
 
@@ -246,9 +250,21 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     public void onSignupSuccess() {
-
-        setResult(RESULT_OK, null);
+        //loginUser(_emailText.getText().toString(),_passwordText.getText().toString());
+        //setResult(RESULT_OK, null);
+        //finish();
+        mRegProgress.dismiss();
+        Intent uploadIntent = new Intent(RegisterActivity.this, UploadImageActivity.class);
+        uploadIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(uploadIntent);
         finish();
+    }
+
+
+    private void onLoginFailed() {
+        Intent mainIntent = new Intent(RegisterActivity.this, StartActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
     }
 
     public void onSignupFailed() {

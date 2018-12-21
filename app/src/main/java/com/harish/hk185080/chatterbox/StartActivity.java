@@ -212,7 +212,7 @@ public class StartActivity extends AppCompatActivity {
 // but you can provide here any other instance of ViewGroup from your Fragment / Activity
                             View viewInflated = LayoutInflater.from(StartActivity.this).inflate(R.layout.input_alert_dialog, (ViewGroup) findViewById(android.R.id.content), false);
 // Set up the input
-                            final EditText input = (EditText) viewInflated.findViewById(R.id.input);
+                            final EditText input = viewInflated.findViewById(R.id.input);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                             builder.setView(viewInflated);
 
@@ -559,7 +559,7 @@ public class StartActivity extends AppCompatActivity {
 
                     HashMap<String, String> userMap = new HashMap<>();
                     userMap.put("name", displayName);
-                    userMap.put("status", "Hi there I am using Ping Me");
+                    userMap.put("status", getString(R.string.default_status));
                     userMap.put("image", profilepic);
                     userMap.put("thumb_image", thumb);
                     userMap.put("device_token", deviceToken);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.harish.hk185080.chatterbox">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,11 +15,23 @@
     <application
         android:name=".ChatterBox"
         android:allowBackup="true"
-        android:icon="@drawable/chatter_box_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/chatter_box_logo_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_call_white" />
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
         <service android:name=".FirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -48,8 +61,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
+
         </activity>
-        <activity android:name=".StartActivity">
+        <activity android:name=".StartActivity" />
+        <activity
+            android:name=".welcomeScreen.WelcomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,6 +103,8 @@
             android:parentActivityName=".SettingsActivity" />
         <activity android:name=".ChatMain" />
         <activity android:name=".ChatListActivity" />
+        <activity android:name=".MaterialProfileActivity" />
+        <activity android:name=".MaterialSettingsActivity" />
         <activity
             android:name=".ChatOpenActivity"
             android:parentActivityName=".MainActivity">
@@ -106,9 +125,16 @@
             android:parentActivityName=".SettingsActivity" />
         <activity android:name=".ProfileImageActivity" />
         <activity android:name=".AboutActivity" />
-        <activity android:name=".AppSettingsActivity" />
-        <activity android:name=".MaterialProfileActivity" />
-        <activity android:name=".MaterialSettingsActivity"></activity>
+        <activity android:name=".PrivacyPolicyActivity" />
+        <activity
+            android:name=".NewSettingsActivty"
+            android:label="@string/title_activity_new_settings_activty"
+            android:theme="@style/SettingsTheme" />
+        <activity android:name=".SentRequestActivity" />
+        <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".BlockedListActivity" />
+        <activity android:name=".UploadImageActivity" />
+        <activity android:name=".NotificationsActivity"></activity>
     </application>
 
 </manifest>

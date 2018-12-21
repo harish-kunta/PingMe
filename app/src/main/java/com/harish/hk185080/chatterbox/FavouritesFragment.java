@@ -55,7 +55,7 @@ public class FavouritesFragment extends Fragment {
 
         mMainView = inflater.inflate(R.layout.fragment_favourites, container, false);
 
-        mFavouritesList = (RecyclerView) mMainView.findViewById(R.id.favourites_list);
+        mFavouritesList = mMainView.findViewById(R.id.favourites_list);
         mAuth = FirebaseAuth.getInstance();
 
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
@@ -183,7 +183,7 @@ public class FavouritesFragment extends Fragment {
         }
 
         public void setDate(String date) {
-            TextView userNameView = (TextView) mView.findViewById(R.id.user_single_status);
+            TextView userNameView = mView.findViewById(R.id.user_single_status);
             userNameView.setText(date);
 
         }
@@ -194,7 +194,7 @@ public class FavouritesFragment extends Fragment {
         }
 
         public void setUserImage(String thumb_image, Context ctx) {
-            CircleImageView userImageView = (CircleImageView) mView.findViewById(R.id.user_single_image);
+            CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
             if(!thumb_image.equals("default")) {
                 Picasso.get().load(thumb_image).placeholder(R.drawable.ic_account_circle_white_48dp).into(userImageView);
             }

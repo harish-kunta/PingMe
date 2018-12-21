@@ -66,9 +66,9 @@ public class FriendsFragment extends Fragment {
 
         mMainView = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        mFriendsList = (RecyclerView) mMainView.findViewById(R.id.friends_list);
+        mFriendsList = mMainView.findViewById(R.id.friends_list);
 
-        toolbar = (Toolbar)mMainView.findViewById(R.id.toolbar);
+        toolbar = mMainView.findViewById(R.id.toolbar);
         // toolbar.setTitleTextColor(this.getResources().getColor(R.color.invertcolor));
 
 
@@ -199,7 +199,7 @@ public class FriendsFragment extends Fragment {
         }
 
         public void setDate(String date) {
-            TextView userNameView = (TextView) mView.findViewById(R.id.user_single_status);
+            TextView userNameView = mView.findViewById(R.id.user_single_status);
             userNameView.setText(date);
 
         }
@@ -210,19 +210,23 @@ public class FriendsFragment extends Fragment {
         }
 
         public void setUserImage(String thumb_image, Context ctx) {
-            CircleImageView userImageView = (CircleImageView) mView.findViewById(R.id.user_single_image);
+            CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
             try {
                 if (!thumb_image.equals("default")) {
-                    Picasso.get().load(thumb_image).placeholder(R.drawable.ic_account_circle_white_48dp).into(userImageView);
+                    Glide.with(ctx)
+                            .load(thumb_image)
+                            .into(userImageView);
+                    //Picasso.get().load(thumb_image).placeholder(R.drawable.ic_account_circle_white_48dp).into(userImageView);
                 } else {
-                    userImageView.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_account_circle_white_48dp));
+
+                    userImageView.setImageResource(R.drawable.ic_account_circle_white_48dp);
 
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
-                userImageView.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_account_circle_white_48dp));
+                userImageView.setImageResource(R.drawable.ic_account_circle_white_48dp);
 
             }
         }

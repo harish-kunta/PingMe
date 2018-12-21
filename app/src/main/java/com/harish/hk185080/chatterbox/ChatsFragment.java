@@ -84,9 +84,9 @@ public class ChatsFragment extends Fragment {
 
         mMainView = inflater.inflate(R.layout.fragment_chats, container, false);
 
-        mConvList = (RecyclerView) mMainView.findViewById(R.id.conv_list);
+        mConvList = mMainView.findViewById(R.id.conv_list);
 
-        toolbar = (Toolbar) mMainView.findViewById(R.id.toolbar);
+        toolbar = mMainView.findViewById(R.id.toolbar);
         // toolbar.setTitleTextColor(this.getResources().getColor(R.color.invertcolor));
 
 
@@ -332,7 +332,7 @@ public class ChatsFragment extends Fragment {
 
         public void setMessage(String message, boolean isSeen) {
 
-            TextView userStatusView = (TextView) mView.findViewById(R.id.user_single_status);
+            TextView userStatusView = mView.findViewById(R.id.user_single_status);
             userStatusView.setText(message);
 
             if (!isSeen) {
@@ -345,7 +345,7 @@ public class ChatsFragment extends Fragment {
 
         public void setName(String name) {
 
-            TextView userNameView = (TextView) mView.findViewById(R.id.user_single_name);
+            TextView userNameView = mView.findViewById(R.id.user_single_name);
             userNameView.setText(name);
 
         }
@@ -369,7 +369,7 @@ public class ChatsFragment extends Fragment {
 
         public void setUserOnline(String online_status) {
 
-            ImageView userOnlineView = (ImageView) mView.findViewById(R.id.user_single_online);
+            ImageView userOnlineView = mView.findViewById(R.id.user_single_online);
 
             if (online_status.equals("true")) {
                 //  Toast.makeText(mView.getContext(),"Online",Toast.LENGTH_LONG).show();

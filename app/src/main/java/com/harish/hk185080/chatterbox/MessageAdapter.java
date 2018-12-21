@@ -13,30 +13,22 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.NetworkPolicy;
+import com.harish.hk185080.chatterbox.data.MyData;
 import com.squareup.picasso.Picasso;
-
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,21 +53,24 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean isMultiSelect = false;
     private FirebaseAuth mAuth;
     private String mCurrentUserId;
+    private DatabaseReference mRootRef;
+    private MyData myData;
+    private String mChatUser;
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
 
-    public MessageAdapter(List<Messages> mMessageList, Context context, CoordinatorLayout rootLayout) {
+    public MessageAdapter(List<Messages> mMessageList, Context context, CoordinatorLayout rootLayout,String mChatUser) {
 
         this.mMessageList = mMessageList;
         this.context = context;
         this.rootLayout=rootLayout;
-
-
+        this.mChatUser=mChatUser;
+        myData = new MyData();
     }
     @Override
     public int getItemViewType(int position) {
-        Messages message = (Messages) mMessageList.get(position);
+        Messages message = mMessageList.get(position);
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
         if (message.getFrom().equals(mCurrentUserId)) {
@@ -119,11 +114,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public MessageViewHolder(View view) {
             super(view);
             mView = view;
-            messageText = (TextView) view.findViewById(R.id.content);
-            profileImage = (CircleImageView) view.findViewById(R.id.userdp);
+            messageText = view.findViewById(R.id.content);
+            profileImage = view.findViewById(R.id.userdp);
             //displayName = (TextView) view.findViewById(R.id.name_text_layout);
             //messageImage = (ImageView) view.findViewById(R.id.message_image_layout);
-            timeText = (TextView) view.findViewById(R.id.textview_time);
+            timeText = view.findViewById(R.id.textview_time);
            // calender = (TextView) view.findViewById(R.id.calender_bar_layout);
 
         }
@@ -143,11 +138,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public OwnViewHolder(View view) {
             super(view);
             mView = view;
-            messageText = (TextView) view.findViewById(R.id.content);
-            profileImage = (CircleImageView) view.findViewById(R.id.userdp);
+            messageText = view.findViewById(R.id.content);
+            profileImage = view.findViewById(R.id.userdp);
             //displayName = (TextView) view.findViewById(R.id.name_text_layout);
             //messageImage = (ImageView) view.findViewById(R.id.message_image_layout);
-            timeText = (TextView) view.findViewById(R.id.textview_time);
+            timeText = view.findViewById(R.id.textview_time);
             // calender = (TextView) view.findViewById(R.id.calender_bar_layout);
 
         }
@@ -162,9 +157,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             final Messages c = mMessageList.get(i);
 
-            String from_user = c.getFrom();
+            final String from_user = c.getFrom();
             String message_type = c.getType();
             final Long time = c.getTime();
+            final String message_id = c.getMessageid();
 
 
             mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(from_user);
@@ -217,7 +213,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
                     arrayAdapter.add("Copy");
 
-
                     builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -229,10 +224,67 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 Snackbar.make(rootLayout,"Copied to Clipboard",Snackbar.LENGTH_LONG).show();
 
                             }
+                            else if (which == 1) {
+
+//                                ClipboardManager myClickboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+//                                ClipData myClip = ClipData.newPlainText("text", message);
+//                                myClickboard.setPrimaryClip(myClip);
+                                mRootRef = FirebaseDatabase.getInstance().getReference();
+                                if (myData.isInternetConnected(holder.mView.getContext())) {
+                                    android.app.AlertDialog.Builder builder;
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        builder = new android.app.AlertDialog.Builder(holder.mView.getContext(), android.R.style.Theme_Material_Dialog_Alert);
+                                    } else {
+                                        builder = new android.app.AlertDialog.Builder(holder.mView.getContext());
+                                    }
+                                    builder
+                                            .setMessage("Are you sure you want to Delete this message?")
+                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // continue with delete
+                                                    if (myData.isInternetConnected(holder.mView.getContext())) {
+                                                        Map deleteChatMap = new HashMap();
+                                                        deleteChatMap.put("messages/" + mCurrentUserId + "/" +mChatUser+"/"+message_id , null);
+
+
+                                                        mRootRef.updateChildren(deleteChatMap, new DatabaseReference.CompletionListener() {
+                                                            @Override
+                                                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                                if (databaseError == null) {
+                                                                    Snackbar.make(rootLayout, "Message deleted!!!", Snackbar.LENGTH_LONG).show();
+                                                                    delete(holder.getAdapterPosition());
+                                                                    //notifyItemRemoved(i);
+
+                                                                } else {
+                                                                    String error = databaseError.getMessage();
+                                                                    Log.e("ChatsFragment", error);
+                                                                }
+                                                            }
+                                                        });
+
+                                                    } else {
+                                                        Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+                                                    }
+                                                }
+                                            })
+                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                }
+                                            })
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .show();
+
+                                } else {
+                                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+                                }
+                            }
 //                String strName = arrayAdapter.getItem(which);
 //                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
 //                builderInner.setMessage(strName);
-//                builderInner.setTitle("Your Selected Item is");
+//                builderInner.
+//
+//("Your Selected Item is");
 //                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 //                    @Override
 //                    public void onClick(DialogInterface dialog,int which) {
@@ -247,12 +299,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
 
             });
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                }
-            });
         }
         if(viewHolder instanceof OwnViewHolder) {
             final OwnViewHolder holder = (OwnViewHolder) viewHolder;
@@ -324,8 +371,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
                     arrayAdapter.add("Copy");
-                   // arrayAdapter.add("Delete");
-
 
                     builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                         @Override
@@ -336,22 +381,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 ClipData myClip = ClipData.newPlainText("text", message);
                                 myClickboard.setPrimaryClip(myClip);
                                 Snackbar.make(rootLayout,"Copied to Clipboard",Snackbar.LENGTH_LONG).show();
-                            }
-                            else  if(which==1)
-                            {
 
                             }
-//                String strName = arrayAdapter.getItem(which);
-//                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-//                builderInner.setMessage(strName);
-//                builderInner.setTitle("Your Selected Item is");
-//                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog,int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                builderInner.show();
                         }
                     });
                     builderSingle.show();
@@ -359,12 +390,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
 
             });
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                }
-            });
         }
 
     }
@@ -384,7 +410,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             calendar.setTimeInMillis(unixTime);
             calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            Date currenTimeZone = (Date) calendar.getTime();
+            Date currenTimeZone = calendar.getTime();
             return sdf.format(currenTimeZone);
         } catch (Exception e) {
         }
@@ -398,7 +424,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             TimeZone tz = TimeZone.getTimeZone("IST");
             calendar.setTimeInMillis(unixTime);
             calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-            Date currenTimeZone = (Date) calendar.getTime();
+            Date currenTimeZone = calendar.getTime();
             if (now.get(Calendar.DATE) == calendar.get(Calendar.DATE)) {
                 return "Today";
             } else if (now.get(Calendar.DATE) - calendar.get(Calendar.DATE) == 1) {
@@ -441,5 +467,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public void delete(int position) { //removes the row
+        mMessageList.remove(position);
+        notifyItemRemoved(position);
+    }
 
 }

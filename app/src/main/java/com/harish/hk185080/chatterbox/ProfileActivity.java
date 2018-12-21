@@ -415,7 +415,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                                 mCurrent_state = 2;
                                 mProfileSendReqBtn.setText("Cancel Friend Request");
-                                sendNotification("Friend Request", display_name + " has sent you friend request");
+                                sendNotification(mCurrentUser.getUid(),"Friend Request", display_name + " has sent you friend request");
                             }
                         });
 
@@ -467,7 +467,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                                     mDeclineButton.setVisibility(View.GONE);
                                     mDeclineButton.setEnabled(false);
-
+                                    sendNotification(user_id,"Friend Request Accepted", mCurrentUser.getDisplayName()+ " has accepted your friend request");
                                 } else {
                                     String error = databaseError.getMessage();
                                     Log.e("Profile Activity", error);
@@ -666,9 +666,43 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
-    private void sendNotification(String title, String body) {
+    private void sendNotification(String user_id,String title, String body) {
         NotifyData notifydata = new NotifyData(title, body, "HANDLE_REQUEST");
-        MessageData messageData = new MessageData(mCurrentUser.getUid(), display_name, "request");
+        MessageData messageData = new MessageData(user_id, display_name, "request");
+        FirebaseMessage firebaseMessage = new FirebaseMessage(token, notifydata, messageData);
+        ApiUtils.sendNotificationService()
+                .sendMessage(firebaseMessage)
+                .enqueue(new retrofit2.Callback<FirebaseMessage>() {
+                    @Override
+                    public void onResponse(Call<FirebaseMessage> call, retrofit2.Response<FirebaseMessage> response) {
+                        if (response.code() == 200) {
+
+
+                        } else if (response.code() == 400) {
+
+                        } else if (response.code() == 500) {
+                            Log.d("One_login_call", "Server Error");
+                            // Toast.makeText(controllerActivity, "Server Error", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Log.d("One_login_call", "SOT API call failed");
+                            //Toast.makeText(controllerActivity, "SOT API call failed", Toast.LENGTH_SHORT).show();
+
+                        }
+                        Log.d("One_login_Response", response.toString());
+                        //closeProgressDialog();
+                    }
+
+                    @Override
+                    public void onFailure(Call<FirebaseMessage> call, Throwable throwable) {
+
+                    }
+                });
+
+    }
+    private void sendAcceptedNotification(String user_id,String title, String body) {
+        NotifyData notifydata = new NotifyData(title, body, "HANDLE_ACCEPT");
+        MessageData messageData = new MessageData(user_id, display_name, "accept");
         FirebaseMessage firebaseMessage = new FirebaseMessage(token, notifydata, messageData);
         ApiUtils.sendNotificationService()
                 .sendMessage(firebaseMessage)

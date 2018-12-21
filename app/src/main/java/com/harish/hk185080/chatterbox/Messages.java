@@ -5,7 +5,20 @@ public class Messages {
     public long time;
     public boolean seen;
     public String from;
-    public String messageId;
+
+    public String getMessageid() {
+        return messageid;
+    }
+
+    public void setMessageid(String messageid) {
+        this.messageid = messageid;
+    }
+    public Messages()
+    {
+
+    }
+
+    public String messageid;
 
     public Messages(String message, String type, long time, boolean seen, String from,String messageId) {
         this.message = message;
@@ -13,7 +26,7 @@ public class Messages {
         this.time = time;
         this.seen = seen;
         this.from = from;
-        this.messageId=messageId;
+        this.messageid=messageid;
     }
 
     public String getFrom() {
@@ -56,17 +69,8 @@ public class Messages {
     public void setType(String type) {
         this.type = type;
     }
-    public Messages()
-    {
-
-    }
 
 
-    public String getMessageId() {
-        return messageId;
-    }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
+
 }

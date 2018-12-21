@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.ConnectivityManager;
@@ -162,20 +163,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
             navigationView.setItemIconTintList(null);
 
         }
-        rootLayout = (CoordinatorLayout) findViewById(R.id.rootlayout);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        rootLayout = findViewById(R.id.rootlayout);
+        toolbar = findViewById(R.id.toolbar);
         // toolbar.setTitleTextColor(this.getResources().getColor(R.color.invertcolor));
         setTitle("Chats");
-        tabLayout = (TabLayout) findViewById(R.id.mainTabLayout);
+        tabLayout = findViewById(R.id.mainTabLayout);
 
 
-        mpager = (ViewPager) findViewById(R.id.viewpagermain);
+        mpager = findViewById(R.id.viewpagermain);
 
         if (mpager != null && tabLayout != null) {
 
@@ -283,23 +284,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             switch (numTab) {
                                 case 0:
 
-                                    recyclerView = (RecyclerView) findViewById(R.id.conv_list);
+                                    recyclerView = findViewById(R.id.conv_list);
                                     setTitle("Chats");
                                     if (recyclerView != null) {
                                         recyclerView.smoothScrollToPosition(0);
                                     }
                                     break;
                                 case 1:
-                                    setTitle("friends");
-                                    recyclerView = (RecyclerView) findViewById(R.id.friends_list);
+                                    setTitle("Favourites");
+                                    recyclerView = findViewById(R.id.friends_list);
 
                                     if (recyclerView != null) {
                                         recyclerView.smoothScrollToPosition(0);
                                     }
                                     break;
                                 case 2:
-                                    setTitle("fav");
-                                    recyclerView = (RecyclerView) findViewById(R.id.conv_list);
+                                    setTitle("Friends");
+                                    recyclerView = findViewById(R.id.conv_list);
 
                                     if (recyclerView != null) {
                                         recyclerView.smoothScrollToPosition(0);
@@ -319,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         if (drawer != null) {
@@ -344,16 +345,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (extras != null) {
             userId = extras.getString("user_id");
             notificationType = extras.getString("type");
-            userName=extras.getString("user_name");
-            if(notificationType!=null)
-            {
-                if(notificationType.equals("request"))
-                {
+            userName = extras.getString("user_name");
+            if (notificationType != null) {
+                if (notificationType.equals("request")) {
                     sendToProfile(userId);
-                }
-                else if(notificationType.equals("message"))
-                {
-                    sendToChat(userId,userName);
+                } else if (notificationType.equals("message")) {
+                    sendToChat(userId, userName);
                 }
             }
 
@@ -362,86 +359,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myData = new MyData();
 
 
-
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-        Fabric.with(this, new Crashlytics());
-        appBarLayout = (AppBarLayout) findViewById(R.id.mainappbar);
-        //notfound = (ImageView) findViewById(R.id.notfound);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // startRevealActivity(view);
-                startActivity(new Intent(MainActivity.this, ChatListActivity.class));
+
+            Fabric.with(this, new Crashlytics());
+            appBarLayout = findViewById(R.id.mainappbar);
+            //notfound = (ImageView) findViewById(R.id.notfound);
+            FloatingActionButton fab = findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // startRevealActivity(view);
+                    startActivity(new Intent(MainActivity.this, ChatListActivity.class));
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                // startActivity(new Intent(MainActivity.this, ChatMain.class));
-            }
-        });
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            init();
-            Header = navigationView.getHeaderView(0);
-            final TextView textView = (TextView) Header.findViewById(R.id.name);
-
-
-            final TextView textView2 = (TextView) Header.findViewById(R.id.score);
-            circleImageView = (CircleImageView) Header.findViewById(R.id.CimageView);
-
-
-            if (mAuth.getCurrentUser() != null) {
-                mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-            }
-            Header.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openUserPage();
+                    // startActivity(new Intent(MainActivity.this, ChatMain.class));
                 }
             });
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-            intentFilter = new IntentFilter();
-            intentFilter.addAction(CONNECTIVITY_ACTION);
-            receiver = new NetworkChangeReceiver();
+            mAuth = FirebaseAuth.getInstance();
+            currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
 
-            //textView1.setVisibility(View.VISIBLE);
-            textView2.setVisibility(View.VISIBLE);
-            final String current_uid = mCurrentUser.getUid();
-
-            mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
-            mUserDatabase.keepSynced(true);
-            mUserDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    try {
+                init();
+                Header = navigationView.getHeaderView(0);
+                final TextView textView = Header.findViewById(R.id.name);
 
 
-                        String name = dataSnapshot.child("name").getValue().toString();
-                        final String image = dataSnapshot.child("image").getValue().toString();
-                        String status = dataSnapshot.child("status").getValue().toString();
-                        String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                final TextView textView2 = Header.findViewById(R.id.score);
+                circleImageView = Header.findViewById(R.id.CimageView);
 
-                        textView.setText(name);
-                        //textView1.setText(status);
-                        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
-                        myRef.keepSynced(true);
-                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                // textView2.setText(dataSnapshot.getChildrenCount()+"");
-                                textView2.setText(getString(R.string.friends, dataSnapshot.getChildrenCount()));
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if (mAuth.getCurrentUser() != null) {
+                    mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
+                }
+                Header.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openUserPage();
+                    }
+                });
 
-                            }
-                        });
+                intentFilter = new IntentFilter();
+                intentFilter.addAction(CONNECTIVITY_ACTION);
+                receiver = new NetworkChangeReceiver();
+
+                //textView1.setVisibility(View.VISIBLE);
+                textView2.setVisibility(View.VISIBLE);
+                final String current_uid = mCurrentUser.getUid();
+
+                mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
+                mUserDatabase.keepSynced(true);
+                mUserDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        try {
+
+
+                            String name = dataSnapshot.child("name").getValue().toString();
+                            final String image = dataSnapshot.child("image").getValue().toString();
+                            String status = dataSnapshot.child("status").getValue().toString();
+                            String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+
+                            textView.setText(name);
+                            //textView1.setText(status);
+                            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
+                            myRef.keepSynced(true);
+                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    // textView2.setText(dataSnapshot.getChildrenCount()+"");
+                                    textView2.setText(getString(R.string.friends, dataSnapshot.getChildrenCount()));
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
 //You must remember to remove the listener when you finish using it, also to keep track of changes you can use the ChildChange
 //                        myRef.addChildEventListener(new ChildEventListener() {
 //                            @Override
@@ -472,37 +470,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                            }
 //                        });
 
-                        if (!image.equals("default")) {
-                            Glide
-                                    .with(getApplicationContext())
-                                    .load(image)
-                                    .into(circleImageView);
+                            if (!image.equals("default")) {
+                                Glide
+                                        .with(getApplicationContext())
+                                        .load(image)
+                                        .into(circleImageView);
 
-                        } else {
-                            circleImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_account_circle_white_48dp));
+                            } else {
+                                circleImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_account_circle_white_48dp));
+                            }
+                        } catch (Exception e) {
+                            //sendToStart();
                         }
-                    } catch (Exception e) {
-                        //sendToStart();
                     }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
 
-        } else {
-            Snackbar.make(rootLayout, "There was a problem Logging in,Please Try again!", Snackbar.LENGTH_LONG).show();
-            sendToStart();
-        }
+
+            } else {
+                sendToStart();
+            }
 
     }
 
-    private void sendToChat(String userId,String userName) {
+    private void sendToChat(String userId, String userName) {
         Intent chatIntent = new Intent(MainActivity.this, ChatOpenActivity.class);
         chatIntent.putExtra("user_id", userId);
-        chatIntent.putExtra("user_name",userName);
+        chatIntent.putExtra("user_name", userName);
         startActivity(chatIntent);
     }
 
@@ -524,15 +522,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // updateUI(currentUser);
         if (currentUser == null) {
-
             sendToStart();
-
         } else {
             mUserRef.child("online").setValue("true");
             addToken();
-            //Snackbar.make(rootLayout,token,Snackbar.LENGTH_LONG).show();
-
-
         }
     }
 
@@ -596,10 +589,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        return true;
 //    }
 
-
+    public static void sendFeedback(Context context) {
+        String body = null;
+        int code;
+        try {
+            body = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            code = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+            body = "\n\n-----------------------------\nPlease don't remove this information\n Device OS: Android \n Device OS version: " +
+                    Build.VERSION.RELEASE + "\n App Version: " + body+"."+ code+ "\n Device Brand: " + Build.BRAND +
+                    "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER;
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"harishtanu007@gmail.com"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Query from Ping Me app");
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
+    }
 
     private void feedback() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
@@ -609,8 +619,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         View viewInflated = LayoutInflater.from(MainActivity.this).inflate(R.layout.feedback_dialog, (ViewGroup) findViewById(android.R.id.content), false);
 // Set up the input
-        final EditText input = (EditText) viewInflated.findViewById(R.id.feedback_title);
-        final EditText messageInput = (EditText) viewInflated.findViewById(R.id.feedback_description);
+        final EditText input = viewInflated.findViewById(R.id.feedback_title);
+        final EditText messageInput = viewInflated.findViewById(R.id.feedback_description);
 
         final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                 .setView(viewInflated)
@@ -624,8 +634,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onShow(DialogInterface dialogInterface) {
 
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                Button negative = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
 
                 button.setOnClickListener(new View.OnClickListener() {
 
@@ -747,8 +757,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.aboutus) {
             startActivity(new Intent(MainActivity.this, AboutActivity.class));
             return false;
+        } else if (id == R.id.app_settings) {
+            startActivity(new Intent(MainActivity.this, NewSettingsActivty.class));
+            return false;
         }
-
+        else if (id == R.id.privacy_policy) {
+            startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
+            return false;
+        }
         //else if (id == R.id.favourites) {
 //            if (Profile.getCurrentProfile() != null)
 //                startActivity(new Intent(MainActivity.this, Favorite_Activity.class));
@@ -799,12 +815,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        }
         else if (id == R.id.feedback) {
 
-            feedback();
+            sendFeedback(getApplicationContext());
 
             //startActivity(new Intent(MainActivity.this, Introduction.class));
             return false;
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -868,13 +884,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
-            }
-            else
-            {
+            } else {
                 finish();
             }
         }

@@ -72,7 +72,7 @@ public class Request_Activity extends AppCompatActivity {
         if (!myData.isInternetConnected(Request_Activity.this)) {
             Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
         }
-        mRequestsList = (RecyclerView) findViewById(R.id.requests_list);
+        mRequestsList = findViewById(R.id.requests_list);
         mAuth = FirebaseAuth.getInstance();
 
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
@@ -116,17 +116,17 @@ public class Request_Activity extends AppCompatActivity {
         }
 
         public void setName(String name) {
-            TextView userNameView = (TextView) mView.findViewById(R.id.user_single_name);
+            TextView userNameView = mView.findViewById(R.id.user_single_name);
             userNameView.setText(name);
         }
 
         public void setStatus(String status) {
-            TextView userStatusView = (TextView) mView.findViewById(R.id.user_single_status);
+            TextView userStatusView = mView.findViewById(R.id.user_single_status);
             userStatusView.setText(status);
         }
 
         public void setUserImage(String thumb_image) {
-            CircleImageView userImageView = (CircleImageView) mView.findViewById(R.id.user_single_image);
+            CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
             if(!thumb_image.equals("default")) {
                 Glide
                         .with(Request_Activity.this)
@@ -201,7 +201,6 @@ public class Request_Activity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final FriendsFragment.FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(model.date);
 
                 final String list_user_id = getRef(position).getKey();
 

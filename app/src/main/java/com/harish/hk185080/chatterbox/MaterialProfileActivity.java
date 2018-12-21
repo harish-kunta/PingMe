@@ -11,10 +11,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -26,15 +28,26 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,8 +74,8 @@ import retrofit2.Call;
 
 public class MaterialProfileActivity extends AppCompatActivity {
     private ImageView mProfileImage;
-    private TextView  mProfileEmail,mProfileStatus;
-    private TextView mProfileSendReqBtn, mDeclineButton;
+    private TextView mProfileEmail, mProfileStatus;
+    private Button mProfileSendReqBtn, mDeclineButton, mBlockButton;
 
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mFriendDatabase;
@@ -79,8 +92,9 @@ public class MaterialProfileActivity extends AppCompatActivity {
     private FirebaseUser mCurrentUser;
 
     private ProgressDialog mProgressDialog;
-    private DatabaseReference mFriendRequestDatabase;
+    private DatabaseReference mFriendRequestDatabase, mBlockDatabase;
     private int mCurrent_state = 0;
+    private boolean blockedState = false;
 
     //0 = not Friends
     //1 = request received
@@ -93,6 +107,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
     CoordinatorLayout rootLayout;
     private static final int REQUEST_WRITE_PERMISSION = 786;
     CollapsingToolbarLayout ctl;
+
     String user_id;
     LinearLayout mEmailLayout;
     TextView noOfFriends;
@@ -101,24 +116,32 @@ public class MaterialProfileActivity extends AppCompatActivity {
     private Menu profileImageMenu;
     private boolean downloadState;
     int position;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_material_profile);
+
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ctl = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        ctl = findViewById(R.id.toolbar_layout);
+
 
         myData = new MyData();
-        downloadState=false;
+        downloadState = false;
         Intent intent = this.getIntent();
 
         /* Obtain String from Intent  */
-        if(intent !=null) {
+        if (intent != null) {
             user_id = intent.getStringExtra("user_id");
             //position=intent.getIntExtra("position",0);
         }
@@ -133,24 +156,26 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
 
         mFriendRequestDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_req");
+        mBlockDatabase = FirebaseDatabase.getInstance().getReference().child("Blocking");
         mFavouriteDatabase = FirebaseDatabase.getInstance().getReference().child("Favourites");
         mFriendDatabase = FirebaseDatabase.getInstance().getReference().child("Friends");
         mFriendDatabase.keepSynced(true);
-        mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications");
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications").child(user_id);
         mAuth = FirebaseAuth.getInstance();
         mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         rootLayout = findViewById(R.id.rootlayout);
         mProfileImage = findViewById(R.id.user_profile_image);
         //mProfileName = findViewById(R.id.user_profile_name);
         mProfileEmail = findViewById(R.id.user_profile_email);
         mProfileStatus = findViewById(R.id.user_profile_status);
-        noOfFriends=findViewById(R.id.user_profile_no_of_friends);
+        noOfFriends = findViewById(R.id.user_profile_no_of_friends);
         mProfileSendReqBtn = findViewById(R.id.user_profile_send_request);
         mDeclineButton = findViewById(R.id.user_profile_decline_request);
-        mEmailLayout=findViewById(R.id.profile_email_layout);
+        mEmailLayout = findViewById(R.id.profile_email_layout);
+        mBlockButton = findViewById(R.id.block_user_button);
         //mProfileBack = findViewById(R.id.profile_back_button);
-
 
         final FloatingActionButton fab = findViewById(R.id.fab);
 
@@ -203,9 +228,18 @@ public class MaterialProfileActivity extends AppCompatActivity {
                 mProfileStatus.setText(status);
                 mProfileEmail.setText(email);
                 if (!image.equals("default")) {
+                    RequestOptions options = new RequestOptions()
+                            .centerCrop()
+                            .placeholder(R.drawable.ic_account_circle_white_48dp)
+                            .error(R.drawable.ic_account_circle_white_48dp)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .priority(Priority.HIGH)
+                            .dontAnimate()
+                            .dontTransform();
                     Glide
                             .with(getApplicationContext())
                             .load(image)
+                            .apply(options)
                             .into(mProfileImage);
                 } else {
                     mProfileImage.setImageDrawable(ContextCompat.getDrawable(MaterialProfileActivity.this, R.drawable.ic_account_circle_white_48dp));
@@ -246,7 +280,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                     //profileImageMenu.getMenu().removeItem(R.id.download_image);
                     //invalidateOptionsMenu();
                     //getMenu().removeItem(R.id.item_name);
-                    downloadState=true;
+                    downloadState = true;
                     invalidateOptionsMenu();
                 }
             }
@@ -281,8 +315,29 @@ public class MaterialProfileActivity extends AppCompatActivity {
                 ClipboardManager myClickboard = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData myClip = ClipData.newPlainText("text", mProfileEmail.getText().toString());
                 myClickboard.setPrimaryClip(myClip);
-                Snackbar.make(rootLayout,"Email copied to Clipboard",Snackbar.LENGTH_LONG).show();
+                Snackbar.make(rootLayout, "Email copied to Clipboard", Snackbar.LENGTH_LONG).show();
                 return true;
+            }
+        });
+        mBlockDatabase.child(mCurrentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(user_id)) {
+
+
+                    blockedState = true;
+                    mBlockButton.setText("Unblock User");
+
+
+                } else {
+                    blockedState = false;
+                    mBlockButton.setText("Block User");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
         mFriendRequestDatabase.child(mCurrentUser.getUid()).addValueEventListener(new ValueEventListener() {
@@ -421,7 +476,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                                 mCurrent_state = 2;
                                 mProfileSendReqBtn.setText("Cancel Friend Request");
-                                sendNotification("Friend Request", display_name + " has sent you friend request");
+                                sendNotification("Friend Request", mCurrentUser.getDisplayName() + " has sent you friend request");
                             }
                         });
 
@@ -473,6 +528,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                                     mDeclineButton.setVisibility(View.GONE);
                                     mDeclineButton.setEnabled(false);
+                                    sendNotification("Friend Request Accepted", mCurrentUser.getDisplayName() + " has accepted your friend request");
 
                                 } else {
                                     String error = databaseError.getMessage();
@@ -577,7 +633,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                                 if (databaseError == null) {
                                     fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_yellow_500_24dp));
-                                    mFavouriteState=true;
+                                    mFavouriteState = true;
                                     Snackbar.make(rootLayout, "Added to favourites.", Snackbar.LENGTH_LONG).show();
                                 } else {
                                     String error = databaseError.getMessage();
@@ -587,9 +643,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                             }
                         });
-                    }
-                    else
-                    {
+                    } else {
                         Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
                     }
                 } else {
@@ -606,7 +660,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                 if (databaseError == null) {
                                     //likeButton.setLiked(false);
                                     fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_white_24dp));
-                                    mFavouriteState=false;
+                                    mFavouriteState = false;
                                     Snackbar.make(rootLayout, "Removed from favourites!", Snackbar.LENGTH_LONG).show();
                                 } else {
                                     String error = databaseError.getMessage();
@@ -621,9 +675,15 @@ public class MaterialProfileActivity extends AppCompatActivity {
                 }
             }
         });
-
+        mBlockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                blockUser();
+            }
+        });
 
     }
+
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
@@ -646,6 +706,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -663,6 +724,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
         startActivity(startIntent);
         finish();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -690,12 +752,14 @@ public class MaterialProfileActivity extends AppCompatActivity {
             downloadFile(image);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             downloadFile(image);
         }
     }
+
     public void downloadFile(String image) {
         try {
 
@@ -730,7 +794,8 @@ public class MaterialProfileActivity extends AppCompatActivity {
             Snackbar.make(rootLayout, "Error in downloading Image", Snackbar.LENGTH_LONG).show();
         }
     }
-    private void sendNotification(String title, String body) {
+
+    private void sendNotification(final String title, final String body) {
         NotifyData notifydata = new NotifyData(title, body, "HANDLE_REQUEST");
         MessageData messageData = new MessageData(mCurrentUser.getUid(), display_name, "request");
         FirebaseMessage firebaseMessage = new FirebaseMessage(token, notifydata, messageData);
@@ -740,7 +805,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<FirebaseMessage> call, retrofit2.Response<FirebaseMessage> response) {
                         if (response.code() == 200) {
-
+                            addtoFirebase(title, body, user_id);
 
                         } else if (response.code() == 400) {
 
@@ -764,21 +829,48 @@ public class MaterialProfileActivity extends AppCompatActivity {
                 });
 
     }
+
+    private void addtoFirebase(String title, String body, String user_id) {
+        DatabaseReference user_message_push = mNotificationDatabase.push();
+        String push_id = user_message_push.getKey();
+        HashMap notificationData = new HashMap();
+        notificationData.put("title", title);
+        notificationData.put("body", body);
+        notificationData.put("timestamp",ServerValue.TIMESTAMP);
+        notificationData.put("from_user", mCurrentUser.getUid());
+        notificationData.put("to_user", user_id);
+
+        Map notificationDataMap = new HashMap();
+        notificationDataMap.put( push_id, notificationData);
+
+//        Map requestMap = new HashMap();
+//        requestMap.put("Friend_req/" + mCurrentUser.getUid() + "/" + user_id + "/request_type", "sent");
+//        requestMap.put("Friend_req/" + user_id + "/" + mCurrentUser.getUid() + "/request_type", "received");
+        // requestMap.put("notifications/" + user_id + "/" + newnotificationId, notificationData);
+        mNotificationDatabase.updateChildren(notificationDataMap, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+
+                    Snackbar.make(rootLayout, "There was some error in sending request", Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.profile_image_menu, menu);
         profileImageMenu = menu;
-        if(!downloadState) {
+        if (!downloadState) {
             if (profileImageMenu != null) {
                 profileImageMenu.findItem(R.id.download_image)
                         .setVisible(false);
                 profileImageMenu.findItem(R.id.download_image)
                         .setEnabled(false);
             }
-        }
-        else
-        {
+        } else {
             if (profileImageMenu != null) {
                 profileImageMenu.findItem(R.id.download_image)
                         .setVisible(true);
@@ -788,5 +880,46 @@ public class MaterialProfileActivity extends AppCompatActivity {
         }
         return true;
 
+    }
+
+    public void blockUser() {
+        if (blockedState) {
+            Map unBlockMap = new HashMap();
+            unBlockMap.put("Blocking/" + mCurrentUser.getUid() + "/" + user_id, null);
+            unBlockMap.put("Blocking/" + user_id + "/" + mCurrentUser.getUid(), null);
+
+            mRootRef.updateChildren(unBlockMap, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+
+                    if (databaseError == null) {
+                        blockedState = false;
+                        mBlockButton.setText("Block User");
+                    } else {
+                        String error = databaseError.getMessage();
+                        Log.e("Profile Activity", error);
+
+                    }
+
+                }
+            });
+        } else {
+            Map blockMap = new HashMap();
+            blockMap.put("Blocking/" + mCurrentUser.getUid() + "/" + user_id + "/block_type", "sent");
+            blockMap.put("Blocking/" + user_id + "/" + mCurrentUser.getUid() + "/block_type", "received");
+            // requestMap.put("notifications/" + user_id + "/" + newnotificationId, notificationData);
+            mRootRef.updateChildren(blockMap, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError != null) {
+
+                        Snackbar.make(rootLayout, "There was some error in sending request", Snackbar.LENGTH_LONG).show();
+                    }
+                    blockedState = true;
+                    mBlockButton.setText("UnBlock user");
+                }
+            });
+        }
     }
 }

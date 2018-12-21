@@ -189,6 +189,8 @@ public class UsersActivity extends AppCompatActivity {
                 new FirebaseRecyclerOptions.Builder<Users>()
                         .setQuery(query, Users.class)
                         .build();
+
+
         FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter<Users, UserViewHolder>(options) {
             @Override
             public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -225,7 +227,7 @@ public class UsersActivity extends AppCompatActivity {
                                     profileIntent.putExtra("position", String.valueOf(holder.getMyPosition()));
                                     startActivity(profileIntent);
                                 } else {
-                                    Snackbar.make(rootLayout, "User doesnot exist", Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(rootLayout, "User doesnot exist", Snackbar.LENGTH_SHORT).show();
                                     Map deleteUserMap = new HashMap();
                                     deleteUserMap.put("Users/" + user_id, null);
                                     rootRef.updateChildren(deleteUserMap, new DatabaseReference.CompletionListener() {
@@ -236,7 +238,7 @@ public class UsersActivity extends AppCompatActivity {
 
                                             } else {
 
-                                                Snackbar.make(rootLayout, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
+                                               // Snackbar.make(rootLayout, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
                                             }
                                         }
                                     });
@@ -260,6 +262,7 @@ public class UsersActivity extends AppCompatActivity {
         };
         mUsersList.setAdapter(adapter);
         adapter.startListening();
+
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
@@ -271,12 +274,12 @@ public class UsersActivity extends AppCompatActivity {
         }
 
         public void setName(String name) {
-            TextView userNameView = (TextView) mView.findViewById(R.id.user_single_name);
+            TextView userNameView = mView.findViewById(R.id.user_single_name);
             userNameView.setText(name);
         }
 
         public void setStatus(String status) {
-            TextView userStatusView = (TextView) mView.findViewById(R.id.user_single_status);
+            TextView userStatusView = mView.findViewById(R.id.user_single_status);
             userStatusView.setText(status);
         }
 
@@ -286,7 +289,7 @@ public class UsersActivity extends AppCompatActivity {
         }
 
         public void setUserImage(String thumb_image) {
-            CircleImageView userImageView = (CircleImageView) mView.findViewById(R.id.user_single_image);
+            CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
             try {
                 if (!thumb_image.equals("default")) {
                     Glide
@@ -341,5 +344,7 @@ public class UsersActivity extends AppCompatActivity {
         startActivity(startIntent);
         finish();
     }
+
+
 
 }

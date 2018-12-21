@@ -17,10 +17,12 @@
             android:icon="@drawable/ic_people_blue_500_24dp"
             android:title="Requests" />
 
+
         <item
             android:id="@+id/allUsers"
             android:icon="@drawable/ic_chat_black_24dp"
             android:title="All Users" />
+
 
         <!--<item-->
             <!--android:id="@+id/tagsmain"-->
@@ -50,11 +52,15 @@
             android:id="@+id/myaccount"
             android:icon="@drawable/ic_account_circle_green_500_24dp"
             android:title="My Account" />
-
+        <item
+            android:id="@+id/app_settings"
+            android:icon="@drawable/ic_settings_purple_500_24dp"
+            android:title="Settings" />
         <item
         android:id="@+id/logout_button"
         android:icon="@drawable/ic_exit_to_app_red_500_24dp"
         android:title="Logout" />
+
 
 
     </group>
@@ -83,6 +89,10 @@
             <item
                 android:id="@+id/aboutus"
                 android:title="About Us" />
+
+            <item
+                android:id="@+id/privacy_policy"
+                android:title="Privacy policy" />
 
             <item
                 android:id="@+id/feedback"

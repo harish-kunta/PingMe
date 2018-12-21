@@ -100,9 +100,11 @@
                 android:id="@+id/settings_user_log_out"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent"
+                android:padding="10dp"
+                android:backgroundTint="@color/colorAccent"
                 android:textColor="@color/white"
                 android:layout_gravity="center"
+                android:elevation="5dp"
                 android:text="logout" />
         </LinearLayout>
     </LinearLayout>

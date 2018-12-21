@@ -129,22 +129,20 @@ public class ChatOpenActivity extends AppCompatActivity {
     View action_bar_view;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_open);
-        rootLayout=findViewById(R.id.rootlayout);
+        rootLayout = findViewById(R.id.rootlayout);
         mChatToolbar = findViewById(R.id.users_new_chat_appbar);
 
 
         setSupportActionBar(mChatToolbar);
 
 
-
-       ActionBar actionBar = getSupportActionBar();
-       actionBar.setDisplayHomeAsUpEnabled(true);
-       actionBar.setDisplayShowCustomEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
 
 //        getSupportActionBar().setTitle("Requests");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -152,13 +150,14 @@ public class ChatOpenActivity extends AppCompatActivity {
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
-        mCurrentUser=mAuth.getCurrentUser().getDisplayName();
+        mCurrentUser = mAuth.getCurrentUser().getDisplayName();
 
         mChatUser = getIntent().getStringExtra("user_id");
         userName = getIntent().getStringExtra("user_name");
 
 //        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 //        manager.cancelAll();
+
 
 
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(ChatOpenActivity.this).edit();
@@ -170,7 +169,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
         // getSupportActionBar().setTitle(mChatUserName);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        action_bar_view= inflater.inflate(R.layout.chat_custom_bar, null);
+        action_bar_view = inflater.inflate(R.layout.chat_custom_bar, null);
 
         actionBar.setCustomView(action_bar_view);
 
@@ -200,10 +199,10 @@ public class ChatOpenActivity extends AppCompatActivity {
 //            }
 //        });
 
-        mAdapter = new MessageAdapter(messagesList, this,rootLayout);
+        mAdapter = new MessageAdapter(messagesList, this, rootLayout, mChatUser);
 
 
-        mMessagesList = (RecyclerView) findViewById(R.id.chatopenrv);
+        mMessagesList = findViewById(R.id.chatopenrv);
         mRefreshLayout = findViewById(R.id.message_swipe_layout);
         mLinearLayout = new LinearLayoutManager(this);
 
@@ -237,7 +236,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
         //Image Storage
         mImageStorage = FirebaseStorage.getInstance().getReference();
-        mRootRef.child("messages").child(mCurrentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+        mRootRef.child("messages").child(mCurrentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(mChatUser)) {
@@ -259,7 +258,7 @@ public class ChatOpenActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                         if (databaseError != null) {
-                                            Log.d("Chat_Log", databaseError.getMessage().toString());
+                                            Log.d("Chat_Log", databaseError.getMessage());
                                         }
                                     }
                                 });
@@ -299,18 +298,17 @@ public class ChatOpenActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String online = dataSnapshot.child("online").getValue().toString();
-                 image= dataSnapshot.child("thumb_image").getValue().toString();
-                if(dataSnapshot.hasChild("device_token")) {
+                image = dataSnapshot.child("thumb_image").getValue().toString();
+                if (dataSnapshot.hasChild("device_token")) {
                     token = dataSnapshot.child("device_token").getValue().toString();
                 }
                 //Snackbar.make(rootLayout,token,Snackbar.LENGTH_LONG).show();
-                if(!image.equals("default")) {
+                if (!image.equals("default")) {
                     Glide
                             .with(getApplicationContext())
                             .load(image)
                             .into(mProfileImage);
-                }
-                else {
+                } else {
                     mProfileImage.setImageDrawable(ContextCompat.getDrawable(ChatOpenActivity.this, R.drawable.ic_account_circle_white_48dp));
 
                 }
@@ -321,7 +319,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
                     long lastTime = Long.parseLong(online);
 
-                    String lastSeenTime = getTimeAgo.getTimeAgo(lastTime, getApplicationContext());
+                    String lastSeenTime = GetTimeAgo.getTimeAgo(lastTime, getApplicationContext());
 
 
                     mLastSeenView.setText(lastSeenTime);
@@ -348,9 +346,9 @@ public class ChatOpenActivity extends AppCompatActivity {
                 mCurrentPage++;
 
                 itemPos = 0;
-                DatabaseReference messageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
-                Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
-                loadMoreMessages(messageQuery);
+                DatabaseReference moreMessageRef = mRootRef.child("messages").child(mCurrentUserId).child(mChatUser);
+                Query moreMessageQuery = moreMessageRef.orderByKey().endAt(mLastKey).limitToLast(10);
+                loadMoreMessages(moreMessageQuery);
 
 
             }
@@ -374,7 +372,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 //            MenuItem item = menu.getItem(i);
 //            if (item != exception) item.setVisible(visible);
 //        }
-        action_bar_view.setVisibility(visible? View.VISIBLE :View.GONE);
+        action_bar_view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 //    @Override
@@ -471,7 +469,7 @@ public class ChatOpenActivity extends AppCompatActivity {
             action.setCustomView(R.layout.search_bar);//add the custom view
             action.setDisplayShowTitleEnabled(false); //hide the title
 
-            edtSeach = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            edtSeach = action.getCustomView().findViewById(R.id.edtSearch); //the text editor
 
             //this is a listener to do a search when the user clicks on search button
             edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -575,7 +573,7 @@ public class ChatOpenActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                 if (databaseError != null) {
-                                    Log.d("Chat_Log", databaseError.getMessage().toString());
+                                    Log.d("Chat_Log", databaseError.getMessage());
                                 }
                             }
                         });
@@ -632,7 +630,6 @@ public class ChatOpenActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
             }
 
             @Override
@@ -648,7 +645,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
     }
 
-    private void loadMessages(Query messageQuery) {
+    private void loadMessages(final Query messageQuery) {
 
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
@@ -716,6 +713,7 @@ public class ChatOpenActivity extends AppCompatActivity {
             Map messageMap = new HashMap();
             messageMap.put("message", message);
             messageMap.put("seen", false);
+            messageMap.put("messageid", push_id);
             messageMap.put("type", "text");
             messageMap.put("time", ServerValue.TIMESTAMP);
             messageMap.put("from", mCurrentUserId);
@@ -736,28 +734,27 @@ public class ChatOpenActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     if (databaseError != null) {
-                        Log.d("Chat_Log", databaseError.getMessage().toString());
+                        Log.d("Chat_Log", databaseError.getMessage());
                     }
                 }
             });
 
-            sendNotification(mCurrentUser,message);
+            sendNotification(mCurrentUser, message);
 
         }
     }
 
-    private void sendNotification(String title,String body) {
-        NotifyData notifydata = new NotifyData(title,body,"HANDLE_NOTIFICATION");
-        MessageData messageData=new MessageData(mCurrentUserId,mCurrentUser,"message");
-        FirebaseMessage firebaseMessage=new FirebaseMessage(token,notifydata,messageData);
+    private void sendNotification(final String title, final String body) {
+        NotifyData notifydata = new NotifyData(title, body, "HANDLE_NOTIFICATION");
+        MessageData messageData = new MessageData(mCurrentUserId, mCurrentUser, "message");
+        FirebaseMessage firebaseMessage = new FirebaseMessage(token, notifydata, messageData);
         ApiUtils.sendNotificationService()
                 .sendMessage(firebaseMessage)
                 .enqueue(new retrofit2.Callback<FirebaseMessage>() {
                     @Override
                     public void onResponse(Call<FirebaseMessage> call, retrofit2.Response<FirebaseMessage> response) {
                         if (response.code() == 200) {
-
-
+                            Log.d("One_login_call", "Message sent");
                         } else if (response.code() == 400) {
 
                         } else if (response.code() == 500) {
@@ -781,12 +778,13 @@ public class ChatOpenActivity extends AppCompatActivity {
 
     }
 
+
+
     public void profileActivity() {
         Intent profileIntent = new Intent(ChatOpenActivity.this, MaterialProfileActivity.class);
         profileIntent.putExtra("user_id", mChatUser);
         startActivity(profileIntent);
     }
-
 
 
 }

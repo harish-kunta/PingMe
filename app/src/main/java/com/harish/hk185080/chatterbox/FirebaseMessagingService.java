@@ -9,7 +9,10 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -26,8 +29,21 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     NotificationManager mNotifyManager;
     String MESSAGES = "MESSAGES";
     String REQUESTS = "REQUESTS";
+    String PREFERENCE_SOUND,strRingtonePreference;
+    SharedPreferences sharedPreferences;
+    Uri ringtoneUri;
+    public AudioAttributes myAttributes;
     @Override
     public void onCreate() {
+        PREFERENCE_SOUND= getString(R.string.key_notifications_new_message_ringtone);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+        strRingtonePreference  = sharedPreferences.getString(PREFERENCE_SOUND, "DEFAULT_SOUND");
+        ringtoneUri=Uri.parse(strRingtonePreference);
+
+
         super.onCreate();
     }
 
@@ -41,6 +57,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         try {
 
+
+            int color=getResources().getColor(R.color.colorAccent);
 
 
             String notification_title = remoteMessage.getNotification().getTitle();
@@ -82,11 +100,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, MESSAGES)
-                            .setSmallIcon(R.drawable.chatter_box_logo)
+                            .setSmallIcon(R.drawable.ic_stat_call_white)
                             .setContentTitle(notification_title)
                             .setContentText(notification_message)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                             .setAutoCancel(true)
+                            .setColor(color)
+                            .setSound(ringtoneUri)
                             .setContentIntent(resultPendingIntent);
                     int mNotificationId = (int) System.currentTimeMillis();
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -184,11 +204,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, MESSAGES)
-                        .setSmallIcon(R.drawable.chatter_box_logo)
+                        .setSmallIcon(R.drawable.ic_stat_call_white)
                         .setContentTitle(notification_title)
                         .setContentText(notification_message)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setAutoCancel(true)
+                        .setColor(color)
+                        .setSound(ringtoneUri)
                         .setContentIntent(resultPendingIntent);
                 int mNotificationId = (int) System.currentTimeMillis();
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -204,10 +226,17 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private void createRequestChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = REQUESTS;
+            myAttributes=new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .build();
+
             String description = getString(R.string.requests_channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(REQUESTS, name, importance);
             channel.setDescription(description);
+
+            //channel.setSound(ringtoneUri,myAttributes);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -220,10 +249,16 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = MESSAGES;
+            myAttributes=new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .build();
             String description = getString(R.string.requests_channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(MESSAGES, name, importance);
             channel.setDescription(description);
+
+
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
