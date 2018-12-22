@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 import com.harish.hk185080.chatterbox.data.MyData;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -189,7 +190,7 @@ public class BlockedListActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final FriendsFragment.FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(model.date);
+                holder.setDate(Constants.getFormattedDate(getApplicationContext(),model.date));
 
                 final String list_user_id = getRef(position).getKey();
 

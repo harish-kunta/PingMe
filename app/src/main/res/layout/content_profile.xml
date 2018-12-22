@@ -144,6 +144,17 @@
                 android:textColor="@color/white" />
 
             <Button
+                android:id="@+id/user_profile_send_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:backgroundTint="@color/colorAccent"
+                android:text="send Message"
+                android:textColor="@color/white" />
+
+            <Button
                 android:id="@+id/user_profile_decline_request"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

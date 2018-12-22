@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 import com.harish.hk185080.chatterbox.data.MyData;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -44,12 +45,13 @@ public class SentRequestActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private MyData myData;
     private RelativeLayout rootLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sent_request);
 
-        rootLayout=findViewById(R.id.rootlayout);
+        rootLayout = findViewById(R.id.rootlayout);
 
         mToolbar = findViewById(R.id.sent_requests_appbar);
         setSupportActionBar(mToolbar);
@@ -80,6 +82,7 @@ public class SentRequestActivity extends AppCompatActivity {
             mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -90,8 +93,6 @@ public class SentRequestActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
@@ -114,14 +115,12 @@ public class SentRequestActivity extends AppCompatActivity {
 
         public void setUserImage(String thumb_image) {
             CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
-            if(!thumb_image.equals("default")) {
+            if (!thumb_image.equals("default")) {
                 Glide
                         .with(getApplicationContext())
                         .load(thumb_image)
                         .into(userImageView);
-            }
-            else
-            {
+            } else {
                 userImageView.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
 
             }
@@ -188,7 +187,7 @@ public class SentRequestActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final FriendsFragment.FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(model.date);
+                holder.setDate(Constants.getFormattedDate(getApplicationContext(), model.date));
 
                 final String list_user_id = getRef(position).getKey();
 
@@ -201,7 +200,7 @@ public class SentRequestActivity extends AppCompatActivity {
 
                             final String userName = dataSnapshot.child("name").getValue().toString();
                             String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
-                            String userStatus=dataSnapshot.child("status").getValue().toString();
+                            String userStatus = dataSnapshot.child("status").getValue().toString();
 
                             if (dataSnapshot.hasChild("online")) {
                                 String userOnline = dataSnapshot.child("online").getValue().toString();
@@ -209,7 +208,7 @@ public class SentRequestActivity extends AppCompatActivity {
                             }
 
                             holder.setName(userName);
-                            holder.setUserImage(userThumb,getApplicationContext());
+                            holder.setUserImage(userThumb, getApplicationContext());
                             holder.setDate(userStatus);
                             holder.mView.setOnClickListener(new View.OnClickListener() {
                                 @Override

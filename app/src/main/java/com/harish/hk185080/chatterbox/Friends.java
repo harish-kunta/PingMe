@@ -2,22 +2,22 @@ package com.harish.hk185080.chatterbox;
 
 public class Friends {
 
-    public String date;
+    public Long date;
 
     public Friends()
     {
 
     }
 
-    public Friends(String date) {
+    public Friends(Long date) {
         this.date = date;
     }
 
-    public String getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 }

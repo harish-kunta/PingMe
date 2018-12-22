@@ -62,6 +62,7 @@ import com.harish.hk185080.chatterbox.Network.FirebaseMessage;
 import com.harish.hk185080.chatterbox.Network.MessageData;
 import com.harish.hk185080.chatterbox.Network.NotifyData;
 import com.harish.hk185080.chatterbox.data.MyData;
+import com.harish.hk185080.chatterbox.utils.PhotoFullPopupWindow;
 import com.like.LikeButton;
 
 import java.text.DateFormat;
@@ -75,7 +76,7 @@ import retrofit2.Call;
 public class MaterialProfileActivity extends AppCompatActivity {
     private ImageView mProfileImage;
     private TextView mProfileEmail, mProfileStatus;
-    private Button mProfileSendReqBtn, mDeclineButton, mBlockButton;
+    private Button mProfileSendReqBtn, mDeclineButton, mBlockButton,mProfileSendMsg;
 
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mFriendDatabase;
@@ -171,6 +172,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mProfileEmail = findViewById(R.id.user_profile_email);
         mProfileStatus = findViewById(R.id.user_profile_status);
         noOfFriends = findViewById(R.id.user_profile_no_of_friends);
+        mProfileSendMsg=findViewById(R.id.user_profile_send_message);
         mProfileSendReqBtn = findViewById(R.id.user_profile_send_request);
         mDeclineButton = findViewById(R.id.user_profile_decline_request);
         mEmailLayout = findViewById(R.id.profile_email_layout);
@@ -441,6 +443,14 @@ public class MaterialProfileActivity extends AppCompatActivity {
 //                startActivity(profileImageIntent);
 //            }
 //        });
+        mProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!image.equals("default")) {
+                    new PhotoFullPopupWindow(getApplicationContext(), R.layout.popup_photo_full, v, image, null);
+                }
+            }
+        });
 
         mProfileSendReqBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -507,11 +517,11 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                     // Request Received State
                     if (mCurrent_state == 1) {
-                        final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
+
 
                         Map friendsMap = new HashMap();
-                        friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/date", currentDate);
-                        friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/date", currentDate);
+                        friendsMap.put("Friends/" + mCurrentUser.getUid() + "/" + user_id + "/date", ServerValue.TIMESTAMP);
+                        friendsMap.put("Friends/" + user_id + "/" + mCurrentUser.getUid() + "/date", ServerValue.TIMESTAMP);
 
                         friendsMap.put("Friend_req/" + mCurrentUser.getUid() + "/" + user_id, null);
                         friendsMap.put("Friend_req/" + user_id + "/" + mCurrentUser.getUid(), null);
@@ -612,6 +622,17 @@ public class MaterialProfileActivity extends AppCompatActivity {
                 } else {
                     Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        mProfileSendMsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent chatIntent = new Intent(MaterialProfileActivity.this, ChatOpenActivity.class);
+                chatIntent.putExtra("user_id", user_id);
+                chatIntent.putExtra("user_name", display_name);
+                startActivity(chatIntent);
             }
         });
 

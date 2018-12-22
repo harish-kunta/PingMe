@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -104,7 +105,7 @@ public class FavouritesFragment extends Fragment {
             @Override
             protected void onBindViewHolder(final FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(model.date);
+                holder.setDate(Constants.getFormattedDate(getContext(),model.date));
 
                 final String list_user_id = getRef(position).getKey();
 
@@ -205,7 +206,7 @@ public class FavouritesFragment extends Fragment {
         }
 
         public void setUserOnline(String online_status) {
-            ImageView userOnlineView = mView.findViewById(R.id.user_single_online);
+            View userOnlineView = mView.findViewById(R.id.user_single_online);
             if (online_status.equals("true")) {
                 userOnlineView.setVisibility(View.VISIBLE);
             } else {

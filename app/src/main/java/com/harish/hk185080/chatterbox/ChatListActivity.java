@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -131,7 +132,6 @@ public class ChatListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-
                 finish();
                 return true;
         }
@@ -142,7 +142,6 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
     public void startListening(Query query, final String newText) {
@@ -168,7 +167,7 @@ public class ChatListActivity extends AppCompatActivity {
                 // Bind the Chat object to the ChatHolder
 
 
-                holder.setDate(model.date);
+                holder.setDate(Constants.getFormattedDate(getApplicationContext(),model.date));
                 final String list_user_id = getRef(position).getKey();
 
                 mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {

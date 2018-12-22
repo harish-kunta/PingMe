@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.squareup.picasso.Picasso;
 
@@ -60,14 +61,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
 
-    public MessageAdapter(List<Messages> mMessageList, Context context, CoordinatorLayout rootLayout,String mChatUser) {
+    public MessageAdapter(List<Messages> mMessageList, Context context, CoordinatorLayout rootLayout, String mChatUser) {
 
         this.mMessageList = mMessageList;
         this.context = context;
-        this.rootLayout=rootLayout;
-        this.mChatUser=mChatUser;
+        this.rootLayout = rootLayout;
+        this.mChatUser = mChatUser;
         myData = new MyData();
     }
+
     @Override
     public int getItemViewType(int position) {
         Messages message = mMessageList.get(position);
@@ -81,6 +83,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return VIEW_TYPE_MESSAGE_RECEIVED;
         }
     }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_MESSAGE_SENT) {
@@ -88,9 +91,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     .inflate(R.layout.ownchat_tile, parent, false);
 
             return new MessageViewHolder(v);
-        }
-        else if (viewType == VIEW_TYPE_MESSAGE_RECEIVED)
-        {
+        } else if (viewType == VIEW_TYPE_MESSAGE_RECEIVED) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_tile, parent, false);
 
@@ -98,7 +99,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         return null;
     }
-
 
 
     public class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -119,12 +119,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //displayName = (TextView) view.findViewById(R.id.name_text_layout);
             //messageImage = (ImageView) view.findViewById(R.id.message_image_layout);
             timeText = view.findViewById(R.id.textview_time);
-           // calender = (TextView) view.findViewById(R.id.calender_bar_layout);
+            // calender = (TextView) view.findViewById(R.id.calender_bar_layout);
 
         }
 
 
     }
+
     public class OwnViewHolder extends RecyclerView.ViewHolder {
 
         public TextView messageText;
@@ -152,7 +153,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int i) {
-        if(viewHolder instanceof MessageViewHolder) {
+        if (viewHolder instanceof MessageViewHolder) {
             final MessageViewHolder holder = (MessageViewHolder) viewHolder;
 
             final Messages c = mMessageList.get(i);
@@ -172,7 +173,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     String name = dataSnapshot.child("name").getValue().toString();
                     String image = dataSnapshot.child("thumb_image").getValue().toString();
                     //viewHolder.displayName.setText(name);
-                    String date = getTime(time);
+                    String date = Constants.getFormattedDate(context, time);
 
                     holder.timeText.setText(date);
                     Picasso.get().load(image).placeholder(R.drawable.ic_account_circle_white_48dp).into(holder.profileImage);
@@ -221,10 +222,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 ClipboardManager myClickboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                                 ClipData myClip = ClipData.newPlainText("text", message);
                                 myClickboard.setPrimaryClip(myClip);
-                                Snackbar.make(rootLayout,"Copied to Clipboard",Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(rootLayout, "Copied to Clipboard", Snackbar.LENGTH_LONG).show();
 
-                            }
-                            else if (which == 1) {
+                            } else if (which == 1) {
 
 //                                ClipboardManager myClickboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 //                                ClipData myClip = ClipData.newPlainText("text", message);
@@ -244,7 +244,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                     // continue with delete
                                                     if (myData.isInternetConnected(holder.mView.getContext())) {
                                                         Map deleteChatMap = new HashMap();
-                                                        deleteChatMap.put("messages/" + mCurrentUserId + "/" +mChatUser+"/"+message_id , null);
+                                                        deleteChatMap.put("messages/" + mCurrentUserId + "/" + mChatUser + "/" + message_id, null);
 
 
                                                         mRootRef.updateChildren(deleteChatMap, new DatabaseReference.CompletionListener() {
@@ -301,7 +301,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
 
         }
-        if(viewHolder instanceof OwnViewHolder) {
+        if (viewHolder instanceof OwnViewHolder) {
             final OwnViewHolder holder = (OwnViewHolder) viewHolder;
 
             final Messages c = mMessageList.get(i);
@@ -320,19 +320,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     String name = dataSnapshot.child("name").getValue().toString();
                     String image = dataSnapshot.child("thumb_image").getValue().toString();
                     //viewHolder.displayName.setText(name);
-                    String date = getTime(time);
+                    String date = Constants.getFormattedDate(context, time);
 
                     holder.timeText.setText(date);
-                    if(!image.equals("default")) {
+                    if (!image.equals("default")) {
 //                        Glide
 //                                .with(holder.mView.getContext())
 //                                .load(image)
 //                                .into(holder.profileImage);
                         Picasso.get().load(image).placeholder(R.drawable.ic_account_circle_white_48dp).into(holder.profileImage);
-                    }
-                    else
-                    {
-                       holder.profileImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_account_circle_white_48dp));
+                    } else {
+                        holder.profileImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_account_circle_white_48dp));
 
                     }
                     long previousTs = 0;
@@ -380,7 +378,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 ClipboardManager myClickboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                                 ClipData myClip = ClipData.newPlainText("text", message);
                                 myClickboard.setPrimaryClip(myClip);
-                                Snackbar.make(rootLayout,"Copied to Clipboard",Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(rootLayout, "Copied to Clipboard", Snackbar.LENGTH_LONG).show();
 
                             }
                         }
@@ -396,26 +394,26 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    private String getTime(long unixTime) {
-//        long time = unixTime * (long) 1000;
-//        Date date = new Date(time);
-//        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy a");
-//        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-//        Log.d("date", format.format(date));
-//        return format.format(date);
-
-        try {
-            Calendar calendar = Calendar.getInstance();
-            TimeZone tz = TimeZone.getTimeZone("IST");
-            calendar.setTimeInMillis(unixTime);
-            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            Date currenTimeZone = calendar.getTime();
-            return sdf.format(currenTimeZone);
-        } catch (Exception e) {
-        }
-        return "";
-    }
+//    private String getTime(long unixTime) {
+////        long time = unixTime * (long) 1000;
+////        Date date = new Date(time);
+////        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy a");
+////        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+////        Log.d("date", format.format(date));
+////        return format.format(date);
+//
+//        try {
+//            Calendar calendar = Calendar.getInstance();
+//            TimeZone tz = TimeZone.getTimeZone("IST");
+//            calendar.setTimeInMillis(unixTime);
+//            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+//            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+//            Date currenTimeZone = calendar.getTime();
+//            return sdf.format(currenTimeZone);
+//        } catch (Exception e) {
+//        }
+//        return "";
+//    }
 
     private String getCalenderTime(long unixTime) {
         try {
@@ -471,5 +469,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mMessageList.remove(position);
         notifyItemRemoved(position);
     }
+
+
 
 }

@@ -52,7 +52,7 @@ public class NotificationsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setUserOnline(String online_status) {
-        ImageView userOnlineView = mView.findViewById(R.id.user_single_online);
+        View userOnlineView = mView.findViewById(R.id.user_single_online);
         if (online_status.equals("true")) {
 
             userOnlineView.setVisibility(View.VISIBLE);

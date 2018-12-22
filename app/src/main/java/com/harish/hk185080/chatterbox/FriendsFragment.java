@@ -14,6 +14,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -120,7 +123,8 @@ public class FriendsFragment extends Fragment {
             @Override
             protected void onBindViewHolder(final FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(model.date);
+
+                holder.setDate(getFormattedDate(getContext(),model.date));
 
                 final String list_user_id = getRef(position).getKey();
 
@@ -232,7 +236,7 @@ public class FriendsFragment extends Fragment {
         }
 
         public void setUserOnline(String online_status) {
-            ImageView userOnlineView = mView.findViewById(R.id.user_single_online);
+            View userOnlineView = mView.findViewById(R.id.user_single_online);
             if (online_status.equals("true")) {
 
                 userOnlineView.setVisibility(View.VISIBLE);
@@ -241,5 +245,12 @@ public class FriendsFragment extends Fragment {
                 userOnlineView.setVisibility(View.INVISIBLE);
             }
         }
+    }
+    public String getFormattedDate(Context context, long smsTimeInMilis) {
+        Calendar smsTime = Calendar.getInstance();
+        smsTime.setTimeInMillis(smsTimeInMilis);
+
+            return DateFormat.format("MMMM dd yyyy, h:mm aa", smsTime).toString();
+
     }
 }

@@ -15,6 +15,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,11 +44,11 @@ import com.harish.hk185080.chatterbox.data.MyData;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
 
 
 /**
@@ -157,7 +158,9 @@ public class ChatsFragment extends Fragment {
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                         String data = dataSnapshot.child("message").getValue().toString();
+                        String time=dataSnapshot.child("time").getValue().toString();
                         holder.setMessage(data, model.isSeen());
+                        holder.setTime(getFormattedDate(getContext(),Long.parseLong(time)));
 
                     }
 
@@ -350,26 +353,32 @@ public class ChatsFragment extends Fragment {
 
         }
 
+        public void setTime(String time) {
+
+            TextView timeView = mView.findViewById(R.id.time_view);
+            timeView.setText(time);
+
+        }
+
         public void setUserImage(String thumb_image, Context ctx) {
 
             CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
-            if(!thumb_image.equals("default")) {
+            if (!thumb_image.equals("default")) {
                 Glide
                         .with(ctx)
                         .load(thumb_image)
                         .into(userImageView);
-            }
-            else
-            {
+            } else {
                 userImageView.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_account_circle_white_48dp));
 
             }
 
         }
 
+
         public void setUserOnline(String online_status) {
 
-            ImageView userOnlineView = mView.findViewById(R.id.user_single_online);
+            View userOnlineView = mView.findViewById(R.id.user_single_online);
 
             if (online_status.equals("true")) {
                 //  Toast.makeText(mView.getContext(),"Online",Toast.LENGTH_LONG).show();
@@ -384,6 +393,26 @@ public class ChatsFragment extends Fragment {
         }
 
 
+    }
+
+    public String getFormattedDate(Context context, long smsTimeInMilis) {
+        Calendar smsTime = Calendar.getInstance();
+        smsTime.setTimeInMillis(smsTimeInMilis);
+
+        Calendar now = Calendar.getInstance();
+
+        final String timeFormatString = "h:mm aa";
+        final String dateTimeFormatString = "EEEE";
+        final long HOURS = 60 * 60 * 60;
+        if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
+            return "" + DateFormat.format(timeFormatString, smsTime);
+        } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
+            return "Yesterday";
+        } else if (now.get(Calendar.DAY_OF_WEEK) == smsTime.get(Calendar.DAY_OF_WEEK)) {
+            return DateFormat.format(dateTimeFormatString, smsTime).toString();
+        } else {
+            return DateFormat.format("dd/MM/yy", smsTime).toString();
+        }
     }
 
 

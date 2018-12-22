@@ -61,6 +61,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.harish.hk185080.chatterbox.data.MyData;
+import com.harish.hk185080.chatterbox.utils.PhotoFullPopupWindow;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
@@ -82,9 +83,10 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     private ImageView mDisplayImage;
     private TextView mStatus;
     private TextView mEmail;
+    private TextView mMobileTextView;
     private Button mLogout;
     private LinearLayout statusLayout;
-    LinearLayout mEmailLayout;
+    LinearLayout mEmailLayout, mMobileLayout;
     private MyData myData;
     private int GALLERY_PICK = 1;
     private static final int CAMERA_REQUEST = 1888;
@@ -92,6 +94,7 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     static final int REQUEST_TAKE_PHOTO = 6;
     private String mCurrentPhotoPath;
     FabSpeedDial fabSpeedDial;
+    String image;
 
     private Button mChangeStatus;
     private CoordinatorLayout rootLayout;
@@ -103,7 +106,7 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserRef;
     private DatabaseReference mRootRef;
-    String email;
+    String email, mobile;
 
 
     private StorageReference mImageStorage;
@@ -111,9 +114,6 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
     GoogleSignInClient mGoogleSignInClient;
     AppBarLayout appBarLayout;
-
-
-
 
 
     @Override
@@ -131,19 +131,21 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         myData = new MyData();
         ctl = findViewById(R.id.toolbar_layout);
-        fabSpeedDial=findViewById(R.id.fabSpeedDial);
-
+        fabSpeedDial = findViewById(R.id.fabSpeedDial);
 
 
         appBarLayout = findViewById(R.id.app_bar);
 
         rootLayout = findViewById(R.id.rootlayout);
+        mMobileTextView=findViewById(R.id.settings_user_mobile);
         mDisplayImage = findViewById(R.id.settings_display_image);
         //mName = findViewById(R.id.settings_user_name);
         mStatus = findViewById(R.id.settings_status);
         mEmail = findViewById(R.id.settings_user_email);
         mLogout = findViewById(R.id.settings_user_log_out);
         mEmailLayout = findViewById(R.id.settings_email_layout);
+        mMobileLayout = findViewById(R.id.settings_mobile_layout);
+
         statusLayout = findViewById(R.id.settings_status_layout);
         loading = findViewById(R.id.loadingPanel);
         mAuth = FirebaseAuth.getInstance();
@@ -169,9 +171,6 @@ public class MaterialSettingsActivity extends AppCompatActivity {
                 startActivity(changeStatusIntent);
             }
         });
-
-
-
 
 
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
@@ -217,11 +216,6 @@ public class MaterialSettingsActivity extends AppCompatActivity {
 
 
     }
-
-
-
-
-
 
 
     private void logout() {
@@ -336,68 +330,82 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         String current_uid = mCurrentUser.getUid();
 
 
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
+        mUserDatabase.keepSynced(true);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Loading User Data...");
+        mProgressDialog.setMessage("please wait while we load user data.");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
+        mUserDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-    mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
-    mUserDatabase.keepSynced(true);
-    mProgressDialog = new ProgressDialog(this);
-    mProgressDialog.setTitle("Loading User Data...");
-    mProgressDialog.setMessage("please wait while we load user data.");
-    mProgressDialog.setCanceledOnTouchOutside(false);
-    mProgressDialog.show();
-    mUserDatabase.addValueEventListener(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                image = dataSnapshot.child("image").getValue().toString();
+                String status = dataSnapshot.child("status").getValue().toString();
+                String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                if (dataSnapshot.hasChild("email")) {
+                    email = dataSnapshot.child("email").getValue().toString();
+                    mEmailLayout.setVisibility(View.VISIBLE);
+                } else {
+                    mEmailLayout.setVisibility(View.GONE);
+                }
+                if (dataSnapshot.hasChild("mobile")) {
+                    mMobileLayout.setVisibility(View.VISIBLE);
+                    mobile = dataSnapshot.child("mobile").getValue().toString();
+                    mMobileTextView.setText(mobile);
+                } else {
+                    mMobileLayout.setVisibility(View.GONE);
+                }
 
-                    String name = dataSnapshot.child("name").getValue().toString();
-                    final String image = dataSnapshot.child("image").getValue().toString();
-                    String status = dataSnapshot.child("status").getValue().toString();
-                    String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
-                    if (dataSnapshot.hasChild("email")) {
-                        email = dataSnapshot.child("email").getValue().toString();
-                        mEmailLayout.setVisibility(View.VISIBLE);
-                    } else {
-                        mEmailLayout.setVisibility(View.GONE);
-                    }
+                //mName.setText(name);
+                ctl.setTitle(name);
+                mStatus.setText(status);
+                mEmail.setText(email);
 
-                    //mName.setText(name);
-                    ctl.setTitle(name);
-                    mStatus.setText(status);
-                    mEmail.setText(email);
+                if (!image.equals("default")) {
+                    loading.setVisibility(View.VISIBLE);
+                    RequestOptions options = new RequestOptions()
+                            .centerCrop()
+                            .placeholder(R.drawable.ic_account_circle_white_48dp)
+                            .error(R.drawable.ic_account_circle_white_48dp)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .priority(Priority.HIGH)
+                            .dontAnimate()
+                            .dontTransform();
+                    Glide
+                            .with(getApplicationContext())
+                            .load(image)
+                            .apply(options)
+                            .into(mDisplayImage);
+                    loading.setVisibility(View.GONE);
+                } else {
+                    loading.setVisibility(View.GONE);
+                    mDisplayImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
 
-                    if (!image.equals("default")) {
-                        loading.setVisibility(View.VISIBLE);
-                        RequestOptions options = new RequestOptions()
-                                .centerCrop()
-                                .placeholder(R.drawable.ic_account_circle_white_48dp)
-                                .error(R.drawable.ic_account_circle_white_48dp)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .priority(Priority.HIGH)
-                                .dontAnimate()
-                                .dontTransform();
-                        Glide
-                                .with(getApplicationContext())
-                                .load(image)
-                                .apply(options)
-                                .into(mDisplayImage);
-                        loading.setVisibility(View.GONE);
-                    } else {
-                        loading.setVisibility(View.GONE);
-                        mDisplayImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
-
-                    }
-                    mProgressDialog.dismiss();
+                }
+                mProgressDialog.dismiss();
 
 
+            }
 
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
-        }
-    });
+        mDisplayImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!image.equals("default")) {
+                    new PhotoFullPopupWindow(getApplicationContext(), R.layout.popup_photo_full, v, image, null);
+                }
+            }
+        });
 
-}
+    }
 
 
     @Override

@@ -50,7 +50,43 @@
 
         <include layout="@layout/item_divider" />
     </LinearLayout>
+        <LinearLayout
+            android:id="@+id/settings_mobile_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:visibility="gone"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
 
+                <ImageView
+                    android:id="@+id/ivContactItem4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                    android:src="@drawable/ic_call_light_blue_900_24dp" />
+
+                <TextView
+                    android:id="@+id/settings_user_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/ivContactItem3"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text=""
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="#212121" />
+
+
+            </LinearLayout>
+            <include layout="@layout/item_divider" />
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/settings_email_layout"
             android:layout_width="match_parent"
