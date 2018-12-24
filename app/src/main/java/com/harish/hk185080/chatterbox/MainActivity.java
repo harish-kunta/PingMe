@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onClick(View view) {
                     // startRevealActivity(view);
-                    startActivity(new Intent(MainActivity.this, ChatListActivity.class));
+                    startActivity(new Intent(MainActivity.this, UsersActivity.class));
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
                     // startActivity(new Intent(MainActivity.this, ChatMain.class));

@@ -119,8 +119,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //displayName = (TextView) view.findViewById(R.id.name_text_layout);
             //messageImage = (ImageView) view.findViewById(R.id.message_image_layout);
             timeText = view.findViewById(R.id.textview_time);
-            // calender = (TextView) view.findViewById(R.id.calender_bar_layout);
-
         }
 
 
@@ -173,7 +171,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     String name = dataSnapshot.child("name").getValue().toString();
                     String image = dataSnapshot.child("thumb_image").getValue().toString();
                     //viewHolder.displayName.setText(name);
-                    String date = Constants.getFormattedDate(context, time);
+                    String date = Constants.getFormattedtime(context, time);
 
                     holder.timeText.setText(date);
                     Picasso.get().load(image).placeholder(R.drawable.ic_account_circle_white_48dp).into(holder.profileImage);
@@ -320,7 +318,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     String name = dataSnapshot.child("name").getValue().toString();
                     String image = dataSnapshot.child("thumb_image").getValue().toString();
                     //viewHolder.displayName.setText(name);
-                    String date = Constants.getFormattedDate(context, time);
+                    String date = Constants.getFormattedtime(context, time);
 
                     holder.timeText.setText(date);
                     if (!image.equals("default")) {

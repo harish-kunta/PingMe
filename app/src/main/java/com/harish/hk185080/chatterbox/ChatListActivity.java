@@ -1,6 +1,10 @@
 package com.harish.hk185080.chatterbox;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -14,12 +18,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.common.api.Api;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,8 +47,12 @@ public class ChatListActivity extends AppCompatActivity {
     private DatabaseReference mUsersDatabase;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserRef;
-
+    Parcelable mListState;
+    LinearLayoutManager layoutManager;
+    String LIST_STATE_KEY = "RECYCLER_KEY";
     private String mCurrent_user_id;
+    private Parcelable recyclerViewState;
+
 
 
     @Override
@@ -67,12 +77,18 @@ public class ChatListActivity extends AppCompatActivity {
 
         mUsersList = findViewById(R.id.users_chat_list);
         mUsersList.setHasFixedSize(true);
-        mUsersList.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        layoutManager.onSaveInstanceState();
+        if (mListState != null){
+            layoutManager.onRestoreInstanceState(mListState);
+        }
+        mUsersList.setLayoutManager(layoutManager);
         mUsersList.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
 
     }
+
 
     //    @Override
 //    public boolean onCreateOptionsMenu(final Menu menu) {
@@ -167,7 +183,7 @@ public class ChatListActivity extends AppCompatActivity {
                 // Bind the Chat object to the ChatHolder
 
 
-                holder.setDate(Constants.getFormattedDate(getApplicationContext(),model.date));
+                holder.setDate(Constants.getFormattedDate(getApplicationContext(), model.date));
                 final String list_user_id = getRef(position).getKey();
 
                 mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
@@ -186,7 +202,6 @@ public class ChatListActivity extends AppCompatActivity {
 
                             holder.setName(userName);
                             holder.setUserImage(userThumb, getApplicationContext());
-
                             holder.mView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -198,6 +213,7 @@ public class ChatListActivity extends AppCompatActivity {
 
                                 }
                             });
+
                         }
                     }
 
@@ -263,9 +279,11 @@ public class ChatListActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
@@ -273,6 +291,8 @@ public class ChatListActivity extends AppCompatActivity {
         }
 
     }
+
+
 
     private void sendToStart() {
 
@@ -335,5 +355,6 @@ public class ChatListActivity extends AppCompatActivity {
 //        });
 //        return super.onCreateOptionsMenu(menu);
 //    }
+
 
 }

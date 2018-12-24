@@ -3,6 +3,7 @@ package com.harish.hk185080.chatterbox;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -43,6 +46,7 @@ public class FavouritesFragment extends Fragment {
 
     private View mMainView;
 
+    LinearLayout no_fav_layout;
 
     public FavouritesFragment() {
         // Required empty public constructor
@@ -71,6 +75,8 @@ public class FavouritesFragment extends Fragment {
         mFavouritesList.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        no_fav_layout = mMainView.findViewById(R.id.no_fav_layout);
+
         return mMainView;
     }
 
@@ -91,7 +97,7 @@ public class FavouritesFragment extends Fragment {
                 new FirebaseRecyclerOptions.Builder<Friends>()
                         .setQuery(query, Friends.class)
                         .build();
-        FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(friendOptions) {
+        final FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Friends, FriendsViewHolder>(friendOptions) {
             @Override
             public FriendsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
@@ -105,13 +111,14 @@ public class FavouritesFragment extends Fragment {
             @Override
             protected void onBindViewHolder(final FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(Constants.getFormattedDate(getContext(),model.date));
+                holder.setDate(Constants.getFormattedDate(getContext(), model.date));
 
                 final String list_user_id = getRef(position).getKey();
 
                 mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
                         if (dataSnapshot.hasChild("name")) {
 
                             final String userName = dataSnapshot.child("name").getValue().toString();
@@ -124,7 +131,7 @@ public class FavouritesFragment extends Fragment {
                             }
 
                             holder.setName(userName);
-                            holder.setUserImage(userThumb,getContext());
+                            holder.setUserImage(userThumb, getContext());
 
                             holder.mView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -159,6 +166,7 @@ public class FavouritesFragment extends Fragment {
                                 }
                             });
                         }
+
                     }
 
                     @Override
@@ -173,6 +181,30 @@ public class FavouritesFragment extends Fragment {
         };
         mFavouritesList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+
+        mFavouritesDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                {
+                  no_fav_layout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    no_fav_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
+
+
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
@@ -196,10 +228,9 @@ public class FavouritesFragment extends Fragment {
 
         public void setUserImage(String thumb_image, Context ctx) {
             CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
-            if(!thumb_image.equals("default")) {
+            if (!thumb_image.equals("default")) {
                 Picasso.get().load(thumb_image).placeholder(R.drawable.ic_account_circle_white_48dp).into(userImageView);
-            }
-            else {
+            } else {
                 userImageView.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_account_circle_white_48dp));
 
             }

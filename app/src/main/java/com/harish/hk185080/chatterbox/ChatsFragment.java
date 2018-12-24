@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -72,7 +74,7 @@ public class ChatsFragment extends Fragment {
     private View mMainView;
     private RelativeLayout rootLayout;
     private MyData myData;
-
+    private LinearLayout no_message_layout;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -117,6 +119,7 @@ public class ChatsFragment extends Fragment {
         mConvList.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        no_message_layout=mMainView.findViewById(R.id.no_message_layout);
 
         // Inflate the layout for this fragment
         return mMainView;
@@ -187,48 +190,49 @@ public class ChatsFragment extends Fragment {
                 });
 
 
-                mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
+                mUsersDatabase.child(list_user_id).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        try {
-                            final String userName = dataSnapshot.child("name").getValue().toString();
-                            final String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
+                        if(dataSnapshot.exists()) {
+                            try {
+                                final String userName = dataSnapshot.child("name").getValue().toString();
+                                final String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
 
-                            if (dataSnapshot.hasChild("online")) {
+                                if (dataSnapshot.hasChild("online")) {
 
-                                String userOnline = dataSnapshot.child("online").getValue().toString();
-                                holder.setUserOnline(userOnline);
+                                    String userOnline = dataSnapshot.child("online").getValue().toString();
+                                    holder.setUserOnline(userOnline);
 
+                                }
+
+                                holder.setName(userName);
+                                holder.setUserImage(userThumb, getContext());
+
+                                holder.mView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+
+                                        Intent chatIntent = new Intent(getContext(), ChatOpenActivity.class);
+                                        chatIntent.putExtra("user_id", list_user_id);
+                                        chatIntent.putExtra("user_name", userName);
+                                        startActivity(chatIntent);
+
+                                    }
+                                });
+
+                                holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(View v) {
+
+                                        showDialog(userName, list_user_id);
+                                        return true;
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
-                            holder.setName(userName);
-                            holder.setUserImage(userThumb, getContext());
-
-                            holder.mView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-
-                                    Intent chatIntent = new Intent(getContext(), ChatOpenActivity.class);
-                                    chatIntent.putExtra("user_id", list_user_id);
-                                    chatIntent.putExtra("user_name", userName);
-                                    startActivity(chatIntent);
-
-                                }
-                            });
-
-                            holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View v) {
-
-                                    showDialog(userName, list_user_id);
-                                    return true;
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
-
                     }
 
                     @Override
@@ -242,6 +246,26 @@ public class ChatsFragment extends Fragment {
 
         mConvList.setAdapter(adapter);
         adapter.startListening();
+
+        mConvDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    no_message_layout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    no_message_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
 
     }
 
@@ -280,7 +304,7 @@ public class ChatsFragment extends Fragment {
                                                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                                     if (databaseError == null) {
                                                         Snackbar.make(rootLayout, "Chat deleted successfully", Snackbar.LENGTH_LONG).show();
-                                                        adapter.notifyDataSetChanged();
+                                                        //adapter.notifyDataSetChanged();
 
                                                     } else {
                                                         String error = databaseError.getMessage();

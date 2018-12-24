@@ -2,9 +2,12 @@ package com.harish.hk185080.chatterbox;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -18,7 +21,9 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.harish.hk185080.chatterbox.data.Constants;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -54,7 +60,10 @@ public class FriendsFragment extends Fragment {
     private String mCurrent_user_id;
 
     private View mMainView;
+    Dialog myDialog;
     Toolbar toolbar;
+
+    private LinearLayout no_friends_layout;
 
 
     public FriendsFragment() {
@@ -77,6 +86,7 @@ public class FriendsFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
 
+
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
 
         mFriendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mCurrent_user_id);
@@ -89,6 +99,8 @@ public class FriendsFragment extends Fragment {
         mFriendsList.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        no_friends_layout = mMainView.findViewById(R.id.no_friends_layout);
+
         return mMainView;
     }
 
@@ -97,7 +109,67 @@ public class FriendsFragment extends Fragment {
         super.onStart();
         startListening();
     }
+    private void showPopup(final String userName, String userThumb, String status, final String user_id, View v) {
+        TextView userNameText;
+        CircleImageView userImageView;
+        TextView userStatusText;
+        LinearLayout addFriend,sendMessage,addFavourite,userLayout;
 
+
+        myDialog = new Dialog(v.getContext());
+
+        myDialog.setContentView(R.layout.custompopup);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+        userNameText=myDialog.findViewById(R.id.user_profile_name);
+        userImageView=myDialog.findViewById(R.id.user_profile_image);
+        userStatusText=myDialog.findViewById(R.id.user_profile_status);
+        addFavourite=myDialog.findViewById(R.id.add_favourite);
+        addFriend=myDialog.findViewById(R.id.add_friend);
+        sendMessage=myDialog.findViewById(R.id.send_message);
+        userLayout=myDialog.findViewById(R.id.user_layout);
+
+        userNameText.setText(userName);
+        userStatusText.setText(status);
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chatIntent = new Intent(getContext(), ChatOpenActivity.class);
+                chatIntent.putExtra("user_id", user_id);
+                chatIntent.putExtra("user_name", userName);
+                startActivity(chatIntent);
+                myDialog.dismiss();
+            }
+        });
+        userLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent profileIntent = new Intent(getContext(), MaterialProfileActivity.class);
+                profileIntent.putExtra("user_id",user_id);
+                startActivity(profileIntent);
+            }
+        });
+
+        try {
+            if (!userThumb.equals("default")) {
+                Glide.with(getContext())
+                        .load(userThumb)
+                        .into(userImageView);
+                //Picasso.get().load(thumb_image).placeholder(R.drawable.ic_account_circle_white_48dp).into(userImageView);
+            } else {
+
+                userImageView.setImageResource(R.drawable.ic_account_circle_white_48dp);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            userImageView.setImageResource(R.drawable.ic_account_circle_white_48dp);
+
+        }
+
+
+
+    }
     public void startListening() {
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
@@ -124,17 +196,19 @@ public class FriendsFragment extends Fragment {
             protected void onBindViewHolder(final FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
 
-                holder.setDate(getFormattedDate(getContext(),model.date));
+                holder.setDate(Constants.getFormattedDate(getContext(), model.date));
 
                 final String list_user_id = getRef(position).getKey();
 
                 mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
                         if (dataSnapshot.hasChild("name")) {
 
                             final String userName = dataSnapshot.child("name").getValue().toString();
-                            String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
+                            final String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
+                            final String status=dataSnapshot.child("status").getValue().toString();
 
 
                             if (dataSnapshot.hasChild("online")) {
@@ -143,7 +217,13 @@ public class FriendsFragment extends Fragment {
                             }
 
                             holder.setName(userName);
-                            holder.setUserImage(userThumb,getContext());
+                            CircleImageView userImageView=holder.setUserImage(userThumb, getContext());
+                            userImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    showPopup(userName,userThumb,status,list_user_id,v);
+                                }
+                            });
 
                             holder.mView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -178,6 +258,7 @@ public class FriendsFragment extends Fragment {
                                 }
                             });
                         }
+
                     }
 
                     @Override
@@ -192,10 +273,33 @@ public class FriendsFragment extends Fragment {
         };
         mFriendsList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+
+        mFriendsDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    no_friends_layout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    no_friends_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
         View mView;
+
+        CircleImageView userImageView;
 
         public FriendsViewHolder(View itemView) {
             super(itemView);
@@ -213,8 +317,8 @@ public class FriendsFragment extends Fragment {
             userNameView.setText(name);
         }
 
-        public void setUserImage(String thumb_image, Context ctx) {
-            CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
+        public CircleImageView setUserImage(String thumb_image, Context ctx) {
+            userImageView = mView.findViewById(R.id.user_single_image);
             try {
                 if (!thumb_image.equals("default")) {
                     Glide.with(ctx)
@@ -226,14 +330,17 @@ public class FriendsFragment extends Fragment {
                     userImageView.setImageResource(R.drawable.ic_account_circle_white_48dp);
 
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 userImageView.setImageResource(R.drawable.ic_account_circle_white_48dp);
 
             }
+
+
+            return userImageView;
         }
+
+
 
         public void setUserOnline(String online_status) {
             View userOnlineView = mView.findViewById(R.id.user_single_online);
@@ -245,12 +352,8 @@ public class FriendsFragment extends Fragment {
                 userOnlineView.setVisibility(View.INVISIBLE);
             }
         }
-    }
-    public String getFormattedDate(Context context, long smsTimeInMilis) {
-        Calendar smsTime = Calendar.getInstance();
-        smsTime.setTimeInMillis(smsTimeInMilis);
-
-            return DateFormat.format("MMMM dd yyyy, h:mm aa", smsTime).toString();
 
     }
+
+
 }

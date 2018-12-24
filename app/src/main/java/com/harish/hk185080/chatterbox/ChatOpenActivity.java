@@ -246,22 +246,22 @@ public class ChatOpenActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (!dataSnapshot.hasChild(mChatUser)) {
-                                Map chatAddMap = new HashMap();
-                                chatAddMap.put("seen", false);
-                                chatAddMap.put("timestamp", ServerValue.TIMESTAMP);
-
-                                Map chatUserMap = new HashMap();
-                                chatUserMap.put("Chat/" + mCurrentUserId + "/" + mChatUser, chatAddMap);
-                                chatUserMap.put("Chat/" + mChatUser + "/" + mCurrentUserId, chatAddMap);
-
-                                mRootRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                        if (databaseError != null) {
-                                            Log.d("Chat_Log", databaseError.getMessage());
-                                        }
-                                    }
-                                });
+//                                Map chatAddMap = new HashMap();
+//                                chatAddMap.put("seen", false);
+//                                chatAddMap.put("timestamp", ServerValue.TIMESTAMP);
+//
+//                                Map chatUserMap = new HashMap();
+//                                chatUserMap.put("Chat/" + mCurrentUserId + "/" + mChatUser, chatAddMap);
+//                                chatUserMap.put("Chat/" + mChatUser + "/" + mCurrentUserId, chatAddMap);
+//
+//                                mRootRef.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
+//                                    @Override
+//                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+//                                        if (databaseError != null) {
+//                                            Log.d("Chat_Log", databaseError.getMessage());
+//                                        }
+//                                    }
+//                                });
                             }
                         }
 

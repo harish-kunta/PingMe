@@ -412,7 +412,6 @@ public class MaterialProfileActivity extends AppCompatActivity {
                             if (databaseError == null) {
                                 Snackbar.make(rootLayout, "Request Declined Succesfully", Snackbar.LENGTH_LONG).show();
                                 finish();
-
                             } else {
                                 String error = databaseError.getMessage();
                                 Log.e("Profile Activity", error);
@@ -482,6 +481,10 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                                     Snackbar.make(rootLayout, "There was some error in sending request", Snackbar.LENGTH_LONG).show();
                                 }
+                                else
+                                {
+                                    Snackbar.make(rootLayout, "Friend Request Sent!", Snackbar.LENGTH_LONG).show();
+                                }
                                 mProfileSendReqBtn.setEnabled(true);
 
                                 mCurrent_state = 2;
@@ -507,6 +510,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                         mProfileSendReqBtn.setText("Send Friend Request");
                                         mDeclineButton.setVisibility(View.GONE);
                                         mDeclineButton.setEnabled(false);
+                                        Snackbar.make(rootLayout, "Friend Request Cancelled!", Snackbar.LENGTH_LONG).show();
 
 
                                     }
@@ -539,7 +543,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                     mDeclineButton.setVisibility(View.GONE);
                                     mDeclineButton.setEnabled(false);
                                     sendNotification("Friend Request Accepted", mCurrentUser.getDisplayName() + " has accepted your friend request");
-
+                                    Snackbar.make(rootLayout, "Friend Request Accepted!", Snackbar.LENGTH_LONG).show();
                                 } else {
                                     String error = databaseError.getMessage();
                                     Log.e("Profile Activity", error);
@@ -598,6 +602,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                                             }
                                                         }
                                                     });
+                                                    Snackbar.make(rootLayout, "Removed from Friends!", Snackbar.LENGTH_LONG).show();
                                                 } else {
                                                     String error = databaseError.getMessage();
                                                     Log.e("Profile Activity", error);
@@ -645,7 +650,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                         Map favouriteMap = new HashMap();
                         final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
 
-                        favouriteMap.put("Favourites/" + mCurrentUser.getUid() + "/" + user_id + "/date", currentDate);
+                        favouriteMap.put("Favourites/" + mCurrentUser.getUid() + "/" + user_id + "/date", ServerValue.TIMESTAMP);
 
                         mRootRef.updateChildren(favouriteMap, new DatabaseReference.CompletionListener() {
                             @Override

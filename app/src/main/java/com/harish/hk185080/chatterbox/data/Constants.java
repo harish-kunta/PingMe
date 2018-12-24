@@ -3,6 +3,7 @@ package com.harish.hk185080.chatterbox.data;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -225,12 +226,17 @@ public class Constants {
         return (bitmap);
 
     }
+    public static String getFormattedtime(Context context, long smsTimeInMilis) {
+        Calendar smsTime = Calendar.getInstance();
+        smsTime.setTimeInMillis(smsTimeInMilis);
+        final String timeFormatString = "h:mm aa";
+        return "" + android.text.format.DateFormat.format(timeFormatString, smsTime);
+
+    }
     public static String getFormattedDate(Context context, long smsTimeInMilis) {
         Calendar smsTime = Calendar.getInstance();
         smsTime.setTimeInMillis(smsTimeInMilis);
-
-        final String timeFormatString = "h:mm aa";
-        return "" + android.text.format.DateFormat.format(timeFormatString, smsTime);
+        return DateFormat.format("MMMM dd yyyy, h:mm aa", smsTime).toString();
 
     }
 }
