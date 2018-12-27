@@ -93,7 +93,9 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     static final int REQUEST_TAKE_PHOTO = 6;
     private String mCurrentPhotoPath;
-    FabSpeedDial fabSpeedDial;
+   // FabSpeedDial fabSpeedDial;
+
+    FloatingActionButton fab;
     String image;
 
     private Button mChangeStatus;
@@ -131,8 +133,8 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         myData = new MyData();
         ctl = findViewById(R.id.toolbar_layout);
-        fabSpeedDial = findViewById(R.id.fabSpeedDial);
-
+        //fabSpeedDial = findViewById(R.id.fabSpeedDial);
+        fab=findViewById(R.id.fab_edit);
 
         appBarLayout = findViewById(R.id.app_bar);
 
@@ -145,6 +147,10 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         mLogout = findViewById(R.id.settings_user_log_out);
         mEmailLayout = findViewById(R.id.settings_email_layout);
         mMobileLayout = findViewById(R.id.settings_mobile_layout);
+
+        if (!myData.isInternetConnected(MaterialSettingsActivity.this)) {
+            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+        }
 
         statusLayout = findViewById(R.id.settings_status_layout);
         loading = findViewById(R.id.loadingPanel);
@@ -162,57 +168,65 @@ public class MaterialSettingsActivity extends AppCompatActivity {
             }
         });
 
-        statusLayout.setOnClickListener(new View.OnClickListener() {
+//        statusLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String current_status = mStatus.getText().toString();
+//                Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
+//                changeStatusIntent.putExtra("status_value", current_status);
+//                startActivity(changeStatusIntent);
+//            }
+//        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String current_status = mStatus.getText().toString();
-                Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
-                changeStatusIntent.putExtra("status_value", current_status);
-                startActivity(changeStatusIntent);
+                Intent editIntent = new Intent(getApplicationContext(), EditProfileActivity.class);
+                startActivity(editIntent);
             }
         });
 
 
-        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
-            @Override
-            public boolean onMenuItemSelected(MenuItem menuItem) {
-                //TODO: Start some activity
-                switch (menuItem.getItemId()) {
-                    case R.id.change_status:
-                        String current_status = mStatus.getText().toString();
-                        Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
-                        changeStatusIntent.putExtra("status_value", current_status);
-                        startActivity(changeStatusIntent);
-                        break;
-                    case R.id.change_name:
-                        String current_name = ctl.getTitle().toString();
-                        Intent changeNameIntent = new Intent(MaterialSettingsActivity.this, AccountNameActivity.class);
-                        changeNameIntent.putExtra("account_name_value", current_name);
-                        startActivity(changeNameIntent);
-                        break;
-                    case R.id.choose_image:
-                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
-                            chooseImage();
-                        } else {
-                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                        }
-                        break;
-                    case R.id.take_photo:
-                        takeHighQualityPhoto();
-                        break;
-                    case R.id.remove_image:
-                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
-                            removeImage();
-                        } else {
-                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                        }
-
-                        break;
-
-                }
-                return true;
-            }
-        });
+//        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+//            @Override
+//            public boolean onMenuItemSelected(MenuItem menuItem) {
+//                //TODO: Start some activity
+//                switch (menuItem.getItemId()) {
+//                    case R.id.change_status:
+//                        String current_status = mStatus.getText().toString();
+//                        Intent changeStatusIntent = new Intent(getApplicationContext(), StatusActivity.class);
+//                        changeStatusIntent.putExtra("status_value", current_status);
+//                        startActivity(changeStatusIntent);
+//                        break;
+//                    case R.id.change_name:
+//                        String current_name = ctl.getTitle().toString();
+//                        Intent changeNameIntent = new Intent(MaterialSettingsActivity.this, AccountNameActivity.class);
+//                        changeNameIntent.putExtra("account_name_value", current_name);
+//                        startActivity(changeNameIntent);
+//                        break;
+//                    case R.id.choose_image:
+//                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
+//                            chooseImage();
+//                        } else {
+//                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                        }
+//                        break;
+//                    case R.id.take_photo:
+//                        takeHighQualityPhoto();
+//                        break;
+//                    case R.id.remove_image:
+//                        if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
+//                            removeImage();
+//                        } else {
+//                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                        }
+//
+//                        break;
+//
+//                }
+//                return true;
+//            }
+//        });
 
 
     }

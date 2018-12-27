@@ -218,12 +218,12 @@ public class FriendsFragment extends Fragment {
 
                             holder.setName(userName);
                             CircleImageView userImageView=holder.setUserImage(userThumb, getContext());
-                            userImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    showPopup(userName,userThumb,status,list_user_id,v);
-                                }
-                            });
+//                            userImageView.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    showPopup(userName,userThumb,status,list_user_id,v);
+//                                }
+//                            });
 
                             holder.mView.setOnClickListener(new View.OnClickListener() {
                                 @Override

@@ -61,7 +61,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
-
         </activity>
         <activity android:name=".StartActivity" />
         <activity
@@ -134,7 +133,8 @@
         <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".BlockedListActivity" />
         <activity android:name=".UploadImageActivity" />
-        <activity android:name=".NotificationsActivity"></activity>
+        <activity android:name=".NotificationsActivity" />
+        <activity android:name=".EditProfileActivity"></activity>
     </application>
 
 </manifest>

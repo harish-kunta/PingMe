@@ -76,8 +76,8 @@ import retrofit2.Call;
 public class MaterialProfileActivity extends AppCompatActivity {
     private ImageView mProfileImage;
     private TextView mProfileEmail, mProfileStatus;
-    private Button mProfileSendReqBtn, mDeclineButton, mBlockButton,mProfileSendMsg;
-
+    private Button mProfileSendReqBtn, mDeclineButton, mBlockButton;
+    private FloatingActionButton mProfileSendMsg;
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mFriendDatabase;
     private DatabaseReference mFavouriteDatabase;
@@ -86,11 +86,14 @@ public class MaterialProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserRef;
 
+
     String filepath;
     private MyData myData;
     public String token;
 
     private FirebaseUser mCurrentUser;
+
+    private String currentUserName;
 
     private ProgressDialog mProgressDialog;
     private DatabaseReference mFriendRequestDatabase, mBlockDatabase;
@@ -162,17 +165,22 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mFriendDatabase = FirebaseDatabase.getInstance().getReference().child("Friends");
         mFriendDatabase.keepSynced(true);
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications").child(user_id);
         mAuth = FirebaseAuth.getInstance();
+
         mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
 
+        if (!myData.isInternetConnected(MaterialProfileActivity.this)) {
+            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+        }
         rootLayout = findViewById(R.id.rootlayout);
         mProfileImage = findViewById(R.id.user_profile_image);
         //mProfileName = findViewById(R.id.user_profile_name);
         mProfileEmail = findViewById(R.id.user_profile_email);
         mProfileStatus = findViewById(R.id.user_profile_status);
         noOfFriends = findViewById(R.id.user_profile_no_of_friends);
-        mProfileSendMsg=findViewById(R.id.user_profile_send_message);
+        mProfileSendMsg=findViewById(R.id.fab_message);
         mProfileSendReqBtn = findViewById(R.id.user_profile_send_request);
         mDeclineButton = findViewById(R.id.user_profile_decline_request);
         mEmailLayout = findViewById(R.id.profile_email_layout);
@@ -196,6 +204,20 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mProgressDialog.setMessage("please wait while we load user data.");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
+        mUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              if(dataSnapshot.exists())
+              {
+                  currentUserName=dataSnapshot.child("name").getValue().toString();
+              }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         mUsersDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -489,7 +511,9 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                                 mCurrent_state = 2;
                                 mProfileSendReqBtn.setText("Cancel Friend Request");
-                                sendNotification("Friend Request", mCurrentUser.getDisplayName() + " has sent you friend request");
+
+                                    sendNotification("Friend Request", currentUserName+ " has sent you friend request");
+
                             }
                         });
 
@@ -542,7 +566,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                                     mDeclineButton.setVisibility(View.GONE);
                                     mDeclineButton.setEnabled(false);
-                                    sendNotification("Friend Request Accepted", mCurrentUser.getDisplayName() + " has accepted your friend request");
+                                    sendNotification("Friend Request Accepted", currentUserName + " has accepted your friend request");
                                     Snackbar.make(rootLayout, "Friend Request Accepted!", Snackbar.LENGTH_LONG).show();
                                 } else {
                                     String error = databaseError.getMessage();

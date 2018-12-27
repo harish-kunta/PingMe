@@ -187,7 +187,7 @@ public class SentRequestActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final FriendsFragment.FriendsViewHolder holder, int position, Friends model) {
                 // Bind the Chat object to the ChatHolder
-                holder.setDate(Constants.getFormattedDate(getApplicationContext(), model.date));
+                //holder.setDate(Constants.getFormattedDate(getApplicationContext(), model.date));
 
                 final String list_user_id = getRef(position).getKey();
 
