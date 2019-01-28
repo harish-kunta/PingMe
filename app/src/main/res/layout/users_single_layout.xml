@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clickable="true"
+    android:id="@+id/user_layout"
     android:minHeight="46dp">
 
 

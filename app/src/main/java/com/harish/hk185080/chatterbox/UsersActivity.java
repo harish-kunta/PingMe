@@ -63,6 +63,7 @@ public class UsersActivity extends AppCompatActivity {
     private RecyclerView mUsersList;
 
     private DatabaseReference mUsersDatabase;
+    private RelativeLayout createGroup;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserRef;
     FirebaseUser mCurrentUser;
@@ -77,7 +78,7 @@ public class UsersActivity extends AppCompatActivity {
         mToolbar = findViewById(R.id.users_appbar);
         setSupportActionBar(mToolbar);
         rootLayout = findViewById(R.id.rootlayout);
-
+        createGroup=findViewById(R.id.create_group_layout);
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mUsersDatabase.keepSynced(true);
         mAuth = FirebaseAuth.getInstance();
@@ -112,6 +113,18 @@ public class UsersActivity extends AppCompatActivity {
 //        int item_position = settings.getInt("item_position", 0);
 //        Toast.makeText(UsersActivity.this,String.valueOf(item_position),Toast.LENGTH_SHORT).show();
 //        mUsersList.scrollTo(item_position,0);
+
+        createGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCreateGroupActivity();
+            }
+        });
+    }
+
+    private void openCreateGroupActivity() {
+        Intent createGroupIntent = new Intent(UsersActivity.this, CreateGroupActivity.class);
+        startActivity(createGroupIntent);
     }
 
     @Override

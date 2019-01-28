@@ -9,6 +9,7 @@
 
     <string name="friends">Friends : %d</string>
     <string name="all_users">All Users : %d</string>
+    <string name="create_group">Create Group</string>
     <string name="version">Version %s.%d</string>
 
     <string name="app_version">%s.%d</string>

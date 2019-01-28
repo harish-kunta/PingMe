@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -116,12 +117,12 @@ public class EditProfileActivity extends AppCompatActivity {
                 addImage();
             }
         });
-        saveChanges.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveChanges();
-            }
-        });
+//        saveChanges.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                saveChanges();
+//            }
+//        });
 
         mRegProgress = new ProgressDialog(EditProfileActivity.this,
                 R.style.AppThemeDialog);
@@ -179,6 +180,12 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mymenu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
 
     private void saveChanges() {
@@ -252,6 +259,9 @@ public class EditProfileActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.save_button:
+                saveChanges();
                 return true;
         }
 
