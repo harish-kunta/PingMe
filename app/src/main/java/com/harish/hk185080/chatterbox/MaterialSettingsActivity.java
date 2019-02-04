@@ -23,6 +23,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -84,7 +85,7 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     private TextView mStatus;
     private TextView mEmail;
     private TextView mMobileTextView;
-    private Button mLogout;
+    private Button mLogout,generatePopular;
     private LinearLayout statusLayout;
     LinearLayout mEmailLayout, mMobileLayout;
     private MyData myData;
@@ -145,6 +146,8 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         mStatus = findViewById(R.id.settings_status);
         mEmail = findViewById(R.id.settings_user_email);
         mLogout = findViewById(R.id.settings_user_log_out);
+        generatePopular=findViewById(R.id.generate_popular_users);
+        generatePopular.setVisibility(View.GONE);
         mEmailLayout = findViewById(R.id.settings_email_layout);
         mMobileLayout = findViewById(R.id.settings_mobile_layout);
 
@@ -165,6 +168,12 @@ public class MaterialSettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logout();
+            }
+        });
+        generatePopular.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                generatePopularUsers();
             }
         });
 
@@ -229,6 +238,46 @@ public class MaterialSettingsActivity extends AppCompatActivity {
 //        });
 
 
+    }
+    void removeDataFromDatabase(){
+        mRootRef.child("Popular").setValue(null);
+    }
+    private void generatePopularUsers() {
+        removeDataFromDatabase();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("Friends");
+        final Map popularMap = new HashMap();
+//You can use the single or the value.. depending if you want to keep track
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snap: dataSnapshot.getChildren()) {
+                    Log.e(snap.getKey(),snap.getChildrenCount() + "");
+                    if(snap.getChildrenCount()>0)
+                    {
+
+                        popularMap.put(snap.getKey()+"/count", snap.getChildrenCount());
+                        // requestMap.put("notifications/" + user_id + "/" + newnotificationId, notificationData);
+
+                    }
+                    mRootRef.child("Popular").updateChildren(popularMap, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            if (databaseError != null) {
+
+                                Snackbar.make(rootLayout, "There was some error in sending request", Snackbar.LENGTH_LONG).show();
+                            }
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -362,6 +411,9 @@ public class MaterialSettingsActivity extends AppCompatActivity {
                 if (dataSnapshot.hasChild("email")) {
                     email = dataSnapshot.child("email").getValue().toString();
                     mEmailLayout.setVisibility(View.VISIBLE);
+                    if(email.equals("harishtanu007@gmail.com")) {
+                        generatePopular.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     mEmailLayout.setVisibility(View.GONE);
                 }

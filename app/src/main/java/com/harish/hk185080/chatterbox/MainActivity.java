@@ -786,7 +786,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             logout();
             return false;
         } else if (id == R.id.allUsers) {
-            openAllUsers();
+            //openAllUsers();
+            openPopularUsers();
             return false;
 //            if (Profile.getCurrentProfile() != null) {
 //                startActivity(new Intent(MainActivity.this, ChatMain.class));
@@ -881,6 +882,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent allUsersIntent = new Intent(MainActivity.this, UsersActivity.class);
         startActivity(allUsersIntent);
     }
+
+    private void openPopularUsers() {
+        Intent popularUsersIntent = new Intent(MainActivity.this, PopularUsersActivity.class);
+        startActivity(popularUsersIntent);
+    }
+
 
     @Override
     public void onBackPressed() {

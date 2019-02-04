@@ -180,7 +180,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mProfileEmail = findViewById(R.id.user_profile_email);
         mProfileStatus = findViewById(R.id.user_profile_status);
         noOfFriends = findViewById(R.id.user_profile_no_of_friends);
-        mProfileSendMsg=findViewById(R.id.fab_message);
+        mProfileSendMsg = findViewById(R.id.fab_message);
         mProfileSendReqBtn = findViewById(R.id.user_profile_send_request);
         mDeclineButton = findViewById(R.id.user_profile_decline_request);
         mEmailLayout = findViewById(R.id.profile_email_layout);
@@ -207,10 +207,9 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              if(dataSnapshot.exists())
-              {
-                  currentUserName=dataSnapshot.child("name").getValue().toString();
-              }
+                if (dataSnapshot.exists()) {
+                    currentUserName = dataSnapshot.child("name").getValue().toString();
+                }
             }
 
             @Override
@@ -229,6 +228,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                 if (dataSnapshot.hasChild("email")) {
                     email = dataSnapshot.child("email").getValue().toString();
                     mEmailLayout.setVisibility(View.VISIBLE);
+
                 } else {
                     mEmailLayout.setVisibility(View.GONE);
                 }
@@ -276,6 +276,8 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
                     mProfileSendReqBtn.setVisibility(View.GONE);
                     fab.setVisibility(View.GONE);
+                    mProfileSendMsg.setVisibility(View.GONE);
+
 
                 } else {
                     mProfileSendReqBtn.setVisibility(View.VISIBLE);
@@ -467,7 +469,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
         mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!image.equals("default")) {
+                if (!image.equals("default")) {
                     new PhotoFullPopupWindow(getApplicationContext(), R.layout.popup_photo_full, v, image, null);
                 }
             }
@@ -502,9 +504,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                 if (databaseError != null) {
 
                                     Snackbar.make(rootLayout, "There was some error in sending request", Snackbar.LENGTH_LONG).show();
-                                }
-                                else
-                                {
+                                } else {
                                     Snackbar.make(rootLayout, "Friend Request Sent!", Snackbar.LENGTH_LONG).show();
                                 }
                                 mProfileSendReqBtn.setEnabled(true);
@@ -512,7 +512,8 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                 mCurrent_state = 2;
                                 mProfileSendReqBtn.setText("Cancel Friend Request");
 
-                                    sendNotification("Friend Request", currentUserName+ " has sent you friend request");
+                                sendNotification("Friend Request", currentUserName + " has sent you friend request");
+                                generatePopularUsers();
 
                             }
                         });
@@ -535,7 +536,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                         mDeclineButton.setVisibility(View.GONE);
                                         mDeclineButton.setEnabled(false);
                                         Snackbar.make(rootLayout, "Friend Request Cancelled!", Snackbar.LENGTH_LONG).show();
-
+                                        generatePopularUsers();
 
                                     }
                                 });
@@ -568,6 +569,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                     mDeclineButton.setEnabled(false);
                                     sendNotification("Friend Request Accepted", currentUserName + " has accepted your friend request");
                                     Snackbar.make(rootLayout, "Friend Request Accepted!", Snackbar.LENGTH_LONG).show();
+                                    generatePopularUsers();
                                 } else {
                                     String error = databaseError.getMessage();
                                     Log.e("Profile Activity", error);
@@ -627,6 +629,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
                                                         }
                                                     });
                                                     Snackbar.make(rootLayout, "Removed from Friends!", Snackbar.LENGTH_LONG).show();
+                                                    generatePopularUsers();
                                                 } else {
                                                     String error = databaseError.getMessage();
                                                     Log.e("Profile Activity", error);
@@ -845,6 +848,47 @@ public class MaterialProfileActivity extends AppCompatActivity {
         }
     }
 
+    void removeDataFromDatabase() {
+        mRootRef.child("Popular").setValue(null);
+    }
+
+    private void generatePopularUsers() {
+        removeDataFromDatabase();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("Friends");
+        final Map popularMap = new HashMap();
+//You can use the single or the value.. depending if you want to keep track
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                    Log.e(snap.getKey(), snap.getChildrenCount() + "");
+                    if (snap.getChildrenCount() > 0) {
+
+                        popularMap.put(snap.getKey() + "/count", snap.getChildrenCount());
+                        // requestMap.put("notifications/" + user_id + "/" + newnotificationId, notificationData);
+
+                    }
+                    mRootRef.child("Popular").updateChildren(popularMap, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            if (databaseError != null) {
+
+                                Snackbar.make(rootLayout, "There was some error in sending request", Snackbar.LENGTH_LONG).show();
+                            }
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void sendNotification(final String title, final String body) {
         NotifyData notifydata = new NotifyData(title, body, "HANDLE_REQUEST");
         MessageData messageData = new MessageData(mCurrentUser.getUid(), display_name, "request");
@@ -886,12 +930,12 @@ public class MaterialProfileActivity extends AppCompatActivity {
         HashMap notificationData = new HashMap();
         notificationData.put("title", title);
         notificationData.put("body", body);
-        notificationData.put("timestamp",ServerValue.TIMESTAMP);
+        notificationData.put("timestamp", ServerValue.TIMESTAMP);
         notificationData.put("from_user", mCurrentUser.getUid());
         notificationData.put("to_user", user_id);
 
         Map notificationDataMap = new HashMap();
-        notificationDataMap.put( push_id, notificationData);
+        notificationDataMap.put(push_id, notificationData);
 
 //        Map requestMap = new HashMap();
 //        requestMap.put("Friend_req/" + mCurrentUser.getUid() + "/" + user_id + "/request_type", "sent");

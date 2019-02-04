@@ -78,7 +78,7 @@ public class UsersActivity extends AppCompatActivity {
         mToolbar = findViewById(R.id.users_appbar);
         setSupportActionBar(mToolbar);
         rootLayout = findViewById(R.id.rootlayout);
-        createGroup=findViewById(R.id.create_group_layout);
+        createGroup = findViewById(R.id.create_group_layout);
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mUsersDatabase.keepSynced(true);
         mAuth = FirebaseAuth.getInstance();
@@ -138,13 +138,14 @@ public class UsersActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
 
-        MenuInflater inflater=getMenuInflater();
-        inflater.inflate(R.menu.chat_menu,menu);
-        final MenuItem item=menu.findItem(R.id.menu_search_text);
-        SearchView searchView=(SearchView)item.getActionView();
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.chat_menu, menu);
+        final MenuItem item = menu.findItem(R.id.menu_search_text);
+        SearchView searchView = (SearchView) item.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);
 //        searchView.setOnSearchClickListener(new View.OnClickListener() {
 //            @Override
@@ -168,7 +169,7 @@ public class UsersActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(!newText.isEmpty()) {
+                if (!newText.isEmpty()) {
 
                     Query searchQuery = FirebaseDatabase.getInstance()
                             .getReference()
@@ -176,9 +177,7 @@ public class UsersActivity extends AppCompatActivity {
                             .orderByChild("name").startAt(newText).endAt(newText + "\uf8ff");
                     startListening(searchQuery);
 
-                }
-                else
-                {
+                } else {
 //                    Query query = FirebaseDatabase.getInstance()
 //                            .getReference()
 //                            .child("Friends")
@@ -187,7 +186,7 @@ public class UsersActivity extends AppCompatActivity {
                             .getReference()
                             .child("Users").orderByChild("name");
 //
-                   startListening(query);
+                    startListening(query);
                 }
                 //Log.d("SearchText","onQueryTextChange");
                 return false;
@@ -251,7 +250,7 @@ public class UsersActivity extends AppCompatActivity {
 
                                             } else {
 
-                                               // Snackbar.make(rootLayout, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
+                                                // Snackbar.make(rootLayout, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
                                             }
                                         }
                                     });
@@ -296,8 +295,7 @@ public class UsersActivity extends AppCompatActivity {
             userStatusView.setText(status);
         }
 
-        public int getMyPosition()
-        {
+        public int getMyPosition() {
             return getAdapterPosition();
         }
 
@@ -313,8 +311,7 @@ public class UsersActivity extends AppCompatActivity {
                     userImageView.setImageDrawable(ContextCompat.getDrawable(UsersActivity.this, R.drawable.ic_account_circle_white_48dp));
 
                 }
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 userImageView.setImageDrawable(ContextCompat.getDrawable(UsersActivity.this, R.drawable.ic_account_circle_white_48dp));
             }
@@ -357,7 +354,6 @@ public class UsersActivity extends AppCompatActivity {
         startActivity(startIntent);
         finish();
     }
-
 
 
 }

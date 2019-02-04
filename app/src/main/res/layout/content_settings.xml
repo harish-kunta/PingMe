@@ -142,6 +142,16 @@
                 android:layout_gravity="center"
                 android:elevation="5dp"
                 android:text="logout" />
+            <Button
+                android:id="@+id/generate_popular_users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:backgroundTint="@color/colorAccent"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:elevation="5dp"
+                android:text="Generate Popular Users" />
         </LinearLayout>
     </LinearLayout>
 
