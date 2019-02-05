@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/no_messages"
+            android:src="@drawable/mailbox"
             android:layout_gravity="center_vertical|center_horizontal"/>
         <TextView
             android:layout_width="wrap_content"

@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ public class Request_Activity extends AppCompatActivity {
     private Toolbar mToolbar;
     private MyData myData;
     private RelativeLayout rootLayout;
+    LinearLayout noRequestLayout;
 
 
     @Override
@@ -66,6 +68,7 @@ public class Request_Activity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Requests");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        noRequestLayout=findViewById(R.id.no_requests_layout);
 
         myData = new MyData();
 
@@ -269,6 +272,26 @@ public class Request_Activity extends AppCompatActivity {
         };
         mRequestsList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+
+        mRequestDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    noRequestLayout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    noRequestLayout.setVisibility(View.GONE);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
     }
 
 }

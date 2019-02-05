@@ -3,6 +3,7 @@ package com.harish.hk185080.chatterbox;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -185,9 +186,9 @@ public class PopularUsersActivity extends AppCompatActivity {
 //                                      }
 //                                      if(which==1)
 //                                      {
-                                    Intent chatIntent = new Intent(getApplicationContext(), ChatOpenActivity.class);
+                                    Intent chatIntent = new Intent(getApplicationContext(), MaterialProfileActivity.class);
+                                    //ActivityOptionsCompat optionsCompat=ActivityOptionsCompat.makeSceneTransitionAnimation(PopularUsersActivity.this,findViewById(R.id.user_single_image),"profileImage");
                                     chatIntent.putExtra("user_id", list_user_id);
-                                    chatIntent.putExtra("user_name", userName);
                                     startActivity(chatIntent);
 //                          }
 

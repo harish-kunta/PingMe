@@ -513,7 +513,7 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
             case R.id.choose_image:
                 if (myData.isInternetConnected(MaterialSettingsActivity.this)) {

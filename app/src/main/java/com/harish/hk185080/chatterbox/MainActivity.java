@@ -25,6 +25,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
@@ -289,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     if (recyclerView != null) {
                                         recyclerView.smoothScrollToPosition(0);
                                     }
+
                                     break;
                                 case 1:
                                     setTitle("Favourites");
@@ -512,7 +514,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void openUserPage() {
         Intent settingsIntent = new Intent(MainActivity.this, MaterialSettingsActivity.class);
-        startActivity(settingsIntent);
+        ActivityOptionsCompat optionsCompat=ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,Header.findViewById(R.id.CimageView),"profileImage");
+        startActivity(settingsIntent,optionsCompat.toBundle());
     }
 
     @Override

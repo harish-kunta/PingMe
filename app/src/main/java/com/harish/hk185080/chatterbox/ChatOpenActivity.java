@@ -11,6 +11,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -782,8 +783,9 @@ public class ChatOpenActivity extends AppCompatActivity {
 
     public void profileActivity() {
         Intent profileIntent = new Intent(ChatOpenActivity.this, MaterialProfileActivity.class);
+        ActivityOptionsCompat optionsCompat=ActivityOptionsCompat.makeSceneTransitionAnimation(ChatOpenActivity.this,findViewById(R.id.custom_bar_image),"profileImage");
         profileIntent.putExtra("user_id", mChatUser);
-        startActivity(profileIntent);
+        startActivity(profileIntent,optionsCompat.toBundle());
     }
 
 

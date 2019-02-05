@@ -783,7 +783,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
             case R.id.download_image:
                 if (myData.isInternetConnected(MaterialProfileActivity.this)) {
