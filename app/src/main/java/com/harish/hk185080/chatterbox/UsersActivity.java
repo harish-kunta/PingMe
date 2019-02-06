@@ -71,18 +71,23 @@ public class UsersActivity extends AppCompatActivity {
         mCurrentEmail = mCurrentUser.getEmail();
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Users");
         myRef.keepSynced(true);
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // textView2.setText(dataSnapshot.getChildrenCount()+"");
-                getSupportActionBar().setTitle(getString(R.string.all_users, dataSnapshot.getChildrenCount()));
-            }
+        if(mCurrentEmail.equals("harishtanu007@gmail.com")) {
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    // textView2.setText(dataSnapshot.getChildrenCount()+"");
+                    getSupportActionBar().setTitle(getString(R.string.all_users, dataSnapshot.getChildrenCount()));
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
+        else {
+            getSupportActionBar().setTitle("Send Message");
+        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -233,10 +238,14 @@ public class UsersActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot snapshot) {
                                 if (snapshot.child("Users").child(user_id).hasChild("name")) {
                                     // run some code
-                                    Intent profileIntent = new Intent(UsersActivity.this, MaterialProfileActivity.class);
-                                    profileIntent.putExtra("user_id", user_id);
-                                    profileIntent.putExtra("position", String.valueOf(holder.getMyPosition()));
-                                    startActivity(profileIntent);
+//                                    Intent profileIntent = new Intent(UsersActivity.this, MaterialProfileActivity.class);
+//                                    profileIntent.putExtra("user_id", user_id);
+//                                    startActivity(profileIntent);
+                                    Intent chatIntent = new Intent(UsersActivity.this, ChatOpenActivity.class);
+                                   chatIntent.putExtra("user_id", user_id);
+                                    chatIntent.putExtra("user_name", model.name);
+                                    startActivity(chatIntent);
+
                                 } else {
                                     Snackbar.make(rootLayout, "User doesnot exist", Snackbar.LENGTH_SHORT).show();
                                     Map deleteUserMap = new HashMap();

@@ -2,18 +2,23 @@ package com.harish.hk185080.chatterbox;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +51,7 @@ public class NotificationsActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private MyData myData;
     private RelativeLayout rootLayout;
+    private LinearLayout noNotificationsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +59,7 @@ public class NotificationsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notifications);
 
         rootLayout = findViewById(R.id.rootlayout);
-
+        noNotificationsLayout = findViewById(R.id.no_notifications_layout);
         mToolbar = findViewById(R.id.notifications_appbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Notifications");
@@ -82,6 +88,7 @@ public class NotificationsActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
             mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
         }
+        startListening();
     }
 
     @Override
@@ -126,12 +133,13 @@ public class NotificationsActivity extends AppCompatActivity {
 
             }
         }
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        startListening();
+
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // updateUI(currentUser);
@@ -174,18 +182,14 @@ public class NotificationsActivity extends AppCompatActivity {
                 final String user_id = model.from_user;
 
 
-
                 mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
-                        if(holder!=null)
-                        {
-                            holder.setUserImage(userThumb,getApplication());
-                        }
-                        else
-                        {
+                        if (holder != null) {
+                            holder.setUserImage(userThumb, getApplication());
+                        } else {
                             Toast.makeText(NotificationsActivity.this, "null", Toast.LENGTH_SHORT).show();
                         }
                         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -208,13 +212,29 @@ public class NotificationsActivity extends AppCompatActivity {
                 });
 
 
-
-
             }
         };
 
         mNotificationsList.setAdapter(adapter);
         adapter.startListening();
+        mNotificationDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    noNotificationsLayout.setVisibility(View.VISIBLE);
+                } else {
+                    noNotificationsLayout.setVisibility(View.GONE);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
     }
 
 
