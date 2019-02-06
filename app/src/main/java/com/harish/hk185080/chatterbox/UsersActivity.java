@@ -120,6 +120,23 @@ public class UsersActivity extends AppCompatActivity {
                 openCreateGroupActivity();
             }
         });
+
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("Users").orderByChild("name");
+        startListening(query);
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        // updateUI(currentUser);
+        if (currentUser == null) {
+            sendToStart();
+
+        } else {
+            mUserRef.child("online").setValue("true");
+
+        }
+
     }
 
     private void openCreateGroupActivity() {
@@ -185,7 +202,6 @@ public class UsersActivity extends AppCompatActivity {
                     Query query = FirebaseDatabase.getInstance()
                             .getReference()
                             .child("Users").orderByChild("name");
-//
                     startListening(query);
                 }
                 //Log.d("SearchText","onQueryTextChange");
@@ -273,6 +289,7 @@ public class UsersActivity extends AppCompatActivity {
 
         };
         mUsersList.setAdapter(adapter);
+
         adapter.startListening();
 
     }
@@ -318,24 +335,6 @@ public class UsersActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("Users").orderByChild("name");
-        startListening(query);
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        // updateUI(currentUser);
-        if (currentUser == null) {
-            sendToStart();
-
-        } else {
-            mUserRef.child("online").setValue("true");
-
-        }
-    }
 
     @Override
     protected void onPause() {
