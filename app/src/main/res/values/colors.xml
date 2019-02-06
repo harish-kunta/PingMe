@@ -22,9 +22,7 @@
     <!-- Theme RED -->
 
     <!-- Theme RED -->
-    <color name="blueColorPrimary">#2196F3</color>
     <color name="blueColorPrimaryDark">#1976D2</color>
-    <color name="blueColorAccent">#FF4081</color>
     <color name="colorTransBg">#26000000</color>
 
     <!-- Text -->

@@ -1,24 +1,26 @@
 package com.harish.hk185080.chatterbox;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -33,11 +35,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.harish.hk185080.chatterbox.data.MyData;
-import com.squareup.picasso.NetworkPolicy;
-
-
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -62,13 +59,13 @@ public class Request_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
 
-        rootLayout=findViewById(R.id.rootlayout);
+        rootLayout = findViewById(R.id.rootlayout);
 
         mToolbar = findViewById(R.id.requests_appbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Requests");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        noRequestLayout=findViewById(R.id.no_requests_layout);
+        noRequestLayout = findViewById(R.id.no_requests_layout);
 
         myData = new MyData();
 
@@ -80,7 +77,7 @@ public class Request_Activity extends AppCompatActivity {
 
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
 
-        mRequestDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mCurrent_user_id);
+        mRequestDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_req");
         mRequestDatabase.keepSynced(true);
 
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -108,8 +105,6 @@ public class Request_Activity extends AppCompatActivity {
     }
 
 
-
-
     public class UserViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
@@ -130,14 +125,12 @@ public class Request_Activity extends AppCompatActivity {
 
         public void setUserImage(String thumb_image) {
             CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
-            if(!thumb_image.equals("default")) {
+            if (!thumb_image.equals("default")) {
                 Glide
                         .with(Request_Activity.this)
                         .load(thumb_image)
                         .into(userImageView);
-            }
-            else
-            {
+            } else {
                 userImageView.setImageDrawable(ContextCompat.getDrawable(Request_Activity.this, R.drawable.ic_account_circle_white_48dp));
 
             }
@@ -216,7 +209,7 @@ public class Request_Activity extends AppCompatActivity {
 
                             final String userName = dataSnapshot.child("name").getValue().toString();
                             String userThumb = dataSnapshot.child("thumb_image").getValue().toString();
-                            String userStatus=dataSnapshot.child("status").getValue().toString();
+                            String userStatus = dataSnapshot.child("status").getValue().toString();
 
                             if (dataSnapshot.hasChild("online")) {
                                 String userOnline = dataSnapshot.child("online").getValue().toString();
@@ -224,7 +217,7 @@ public class Request_Activity extends AppCompatActivity {
                             }
 
                             holder.setName(userName);
-                            holder.setUserImage(userThumb,getApplicationContext());
+                            holder.setUserImage(userThumb, getApplicationContext());
                             holder.setDate(userStatus);
                             holder.mView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -273,25 +266,53 @@ public class Request_Activity extends AppCompatActivity {
         mRequestsList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
 
-        mRequestDatabase.addValueEventListener(new ValueEventListener() {
+        mRequestDatabase.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    noRequestLayout.setVisibility(View.VISIBLE);
+                if(dataSnapshot.exists()) {
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        if (data.child("request_type").getValue().toString().equals("received")) {
+                            //do ur stuff
+                            noRequestLayout.setVisibility(View.GONE);
+                            Log.e("testing", "if");
+                        } else {
+                            Log.e("testing", "else");
+                            noRequestLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
                 else {
-                    noRequestLayout.setVisibility(View.GONE);
+                    Log.e("testing", "main else");
+                    noRequestLayout.setVisibility(View.VISIBLE);
                 }
-
-
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
 
         });
+//
+//        mRequestDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (!dataSnapshot.exists()) {
+//                    noRequestLayout.setVisibility(View.VISIBLE);
+//                }
+//                else {
+//                    noRequestLayout.setVisibility(View.GONE);
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//
+//        });
     }
 
 }

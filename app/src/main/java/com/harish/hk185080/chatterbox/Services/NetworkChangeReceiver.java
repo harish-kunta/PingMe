@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.harish.hk185080.chatterbox.MainActivity;
-import com.harish.hk185080.chatterbox.data.Constants;
 import com.harish.hk185080.chatterbox.utils.NetworkUtil;
 
 

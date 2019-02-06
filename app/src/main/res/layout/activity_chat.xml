@@ -7,11 +7,10 @@
     <!--android:layout_height="match_parent"-->
     <!--android:src="@drawable/chat_wallpaper" />-->
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:id="@+id/rootlayout"
     android:background="@drawable/chatback"
 
@@ -23,19 +22,19 @@
             layout="@layout/app_bar_layout" />
 
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/message_swipe_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/bottomlayout"
             android:layout_below="@id/users_chat_appbar">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/messages_list"
                 android:layout_width="match_parent"
                 android:layout_height="464dp"
                 android:layout_alignParentTop="true"/>
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <View
             android:layout_width="0dp"

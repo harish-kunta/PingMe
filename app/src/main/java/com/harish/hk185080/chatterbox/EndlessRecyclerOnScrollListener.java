@@ -1,7 +1,7 @@
 package com.harish.hk185080.chatterbox;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by AkshayeJH on 18/07/17.

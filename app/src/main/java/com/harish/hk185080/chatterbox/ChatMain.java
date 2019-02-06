@@ -1,7 +1,7 @@
 package com.harish.hk185080.chatterbox;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ChatMain extends AppCompatActivity {
 

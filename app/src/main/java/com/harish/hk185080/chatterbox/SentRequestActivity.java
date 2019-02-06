@@ -1,18 +1,23 @@
 package com.harish.hk185080.chatterbox;
 
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -28,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.harish.hk185080.chatterbox.data.Constants;
 import com.harish.hk185080.chatterbox.data.MyData;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -45,6 +49,7 @@ public class SentRequestActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private MyData myData;
     private RelativeLayout rootLayout;
+    private LinearLayout noRequestLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class SentRequestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sent_request);
 
         rootLayout = findViewById(R.id.rootlayout);
+        noRequestLayout=findViewById(R.id.no_requests_layout);
 
         mToolbar = findViewById(R.id.sent_requests_appbar);
         setSupportActionBar(mToolbar);
@@ -68,7 +74,7 @@ public class SentRequestActivity extends AppCompatActivity {
 
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
 
-        mRequestDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mCurrent_user_id);
+        mRequestDatabase = FirebaseDatabase.getInstance().getReference().child("Friend_req").child(mCurrent_user_id);
         mRequestDatabase.keepSynced(true);
 
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -256,5 +262,33 @@ public class SentRequestActivity extends AppCompatActivity {
         };
         mRequestsList.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+
+        mRequestDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        if (data.child("request_type").getValue().toString().equals("sent")) {
+                            //do ur stuff
+                            noRequestLayout.setVisibility(View.GONE);
+                            Log.e("testing", "if");
+                        } else {
+                            Log.e("testing", "else");
+                            noRequestLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+                else {
+                    Log.e("testing", "main else");
+                    noRequestLayout.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
     }
 }

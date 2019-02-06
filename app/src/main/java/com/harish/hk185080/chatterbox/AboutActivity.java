@@ -1,35 +1,21 @@
 package com.harish.hk185080.chatterbox;
 
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.net.Uri;
-import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import android.provider.ContactsContract;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.cocosw.bottomsheet.BottomSheet;
-import com.cocosw.bottomsheet.BottomSheetHelper;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.Calendar;
 
 
 public class AboutActivity extends AppCompatActivity {
@@ -74,12 +60,21 @@ public class AboutActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         try {
-                            String text = "Check out new app  Questo : \n " + "https://play.google.com/store/apps/details?id=com.tdevelopers.questo";
-                            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                            shareIntent.setType("text/plain");
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, text);
-                            BottomSheet sheet = BottomSheetHelper.shareAction(AboutActivity.this, shareIntent).title("Share App").build();
-                            sheet.show();
+
+                                try {
+                                    Intent i = new Intent(Intent.ACTION_SEND);
+                                    i.setType("text/plain");
+                                    i.putExtra(Intent.EXTRA_SUBJECT, "Ping Me");
+                                    String sAux = "\nCheck out new app  PingMe :\n\n";
+                                    sAux = sAux + "https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox\n\n";
+                                    i.putExtra(Intent.EXTRA_TEXT, sAux);
+                                    startActivity(Intent.createChooser(i, "choose one"));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+
+                            }
+//                            BottomSheet sheet = BottomSheetHelper.shareAction(AboutActivity.this, shareIntent).title("Share App").build();
+//                            sheet.show();
                         } catch (Exception e) {
 
                         } catch (Error error) {

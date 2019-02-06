@@ -35,17 +35,7 @@
         <item name="android:textColor">#a6abad</item>
 
     </style>
-    <style name="AppTheme.Blue" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/blueColorPrimary</item>
-        <item name="colorPrimaryDark">@color/blueColorPrimaryDark</item>
-        <item name="colorAccent">@color/blueColorAccent</item>
-    </style>
-    <style name="AppToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="searchViewStyle">@style/AppToolbarSearchView</item>
-    </style>
-    <style name="AppToolbarSearchView" parent="Widget.AppCompat.SearchView.ActionBar">
-        <item name="queryHint">Search</item>
-    </style>
+
     <style name="chat_text_message_style">
 
         <item name="android:layout_width">wrap_content</item>
