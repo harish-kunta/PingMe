@@ -93,7 +93,10 @@ public class UsersActivity extends AppCompatActivity {
 
         mUsersList = findViewById(R.id.users_list);
         mUsersList.setHasFixedSize(true);
-        mUsersList.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        mUsersList.setLayoutManager(layoutManager);
         mUsersList.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
 
@@ -112,7 +115,7 @@ public class UsersActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("Users").orderByChild("name");
+                .child("Users").orderByChild("online");
         startListening(query);
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -189,7 +192,7 @@ public class UsersActivity extends AppCompatActivity {
 //                            .child(mCurrent_user_id);
                     Query query = FirebaseDatabase.getInstance()
                             .getReference()
-                            .child("Users").orderByChild("name");
+                            .child("Users").orderByChild("online");
                     startListening(query);
                 }
                 //Log.d("SearchText","onQueryTextChange");
@@ -232,46 +235,52 @@ public class UsersActivity extends AppCompatActivity {
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                if (snapshot.child("Users").child(user_id).hasChild("name")) {
-                                    // run some code
+                        if (!user_id.equals(mCurrentUser.getUid())) {
+                            final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if (snapshot.child("Users").child(user_id).hasChild("name")) {
+                                        // run some code
 //                                    Intent profileIntent = new Intent(UsersActivity.this, MaterialProfileActivity.class);
 //                                    profileIntent.putExtra("user_id", user_id);
 //                                    startActivity(profileIntent);
-                                    Intent chatIntent = new Intent(UsersActivity.this, ChatOpenActivity.class);
-                                   chatIntent.putExtra("user_id", user_id);
-                                    chatIntent.putExtra("user_name", model.name);
-                                    startActivity(chatIntent);
+                                        Intent chatIntent = new Intent(UsersActivity.this, ChatOpenActivity.class);
+                                        chatIntent.putExtra("user_id", user_id);
+                                        chatIntent.putExtra("user_name", model.name);
+                                        startActivity(chatIntent);
 
-                                } else {
-                                    Snackbar.make(rootLayout, "User doesnot exist", Snackbar.LENGTH_SHORT).show();
-                                    Map deleteUserMap = new HashMap();
-                                    deleteUserMap.put("Users/" + user_id, null);
-                                    rootRef.updateChildren(deleteUserMap, new DatabaseReference.CompletionListener() {
-                                        @Override
-                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                            if (databaseError == null) {
-                                                //Chat deleted successfully
+                                    } else {
+                                        Snackbar.make(rootLayout, "User doesnot exist", Snackbar.LENGTH_SHORT).show();
+                                        Map deleteUserMap = new HashMap();
+                                        deleteUserMap.put("Users/" + user_id, null);
+                                        rootRef.updateChildren(deleteUserMap, new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                if (databaseError == null) {
+                                                    //Chat deleted successfully
 
-                                            } else {
+                                                } else {
 
-                                                // Snackbar.make(rootLayout, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
+                                                    // Snackbar.make(rootLayout, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
+                                }
+                            });
 
 
+                        }
+                        else
+                        {
+                            Snackbar.make(rootLayout, "You cannot send message to yourself!", Snackbar.LENGTH_SHORT).show();
+                        }
                     }
 
                 });
@@ -334,7 +343,6 @@ public class UsersActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-
         }
 
     }
@@ -344,6 +352,17 @@ public class UsersActivity extends AppCompatActivity {
         Intent startIntent = new Intent(UsersActivity.this, StartActivity.class);
         startActivity(startIntent);
         finish();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        // updateUI(currentUser);
+        if (currentUser == null) {
+            sendToStart();
+        } else {
+            mUserRef.child("online").setValue("true");
+        }
     }
 
 

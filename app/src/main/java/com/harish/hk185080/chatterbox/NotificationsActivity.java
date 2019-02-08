@@ -59,7 +59,7 @@ public class NotificationsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notifications);
 
         rootLayout = findViewById(R.id.rootlayout);
-        noNotificationsLayout = findViewById(R.id.no_notifications_layout);
+        noNotificationsLayout = findViewById(R.id.no_notifications);
         mToolbar = findViewById(R.id.notifications_appbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Notifications");
@@ -81,7 +81,10 @@ public class NotificationsActivity extends AppCompatActivity {
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         mUsersDatabase.keepSynced(true);
         mNotificationsList.setHasFixedSize(true);
-        mNotificationsList.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        mNotificationsList.setLayoutManager(layoutManager);
         mNotificationsList.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
 

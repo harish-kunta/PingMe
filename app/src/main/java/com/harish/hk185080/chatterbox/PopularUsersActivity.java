@@ -63,12 +63,13 @@ public class PopularUsersActivity extends AppCompatActivity {
         mPopularList.setLayoutManager(new LinearLayoutManager(this));
         mPopularList.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
+        startListening();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        startListening();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // updateUI(currentUser);
         if (currentUser == null) {

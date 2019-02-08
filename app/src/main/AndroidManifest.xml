@@ -100,7 +100,6 @@
         <activity
             android:name=".AccountNameActivity"
             android:parentActivityName=".SettingsActivity" />
-        <activity android:name=".ChatMain" />
         <activity android:name=".ChatListActivity" />
         <activity android:name=".MaterialProfileActivity" />
         <activity android:name=".MaterialSettingsActivity" />

@@ -27,6 +27,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -278,8 +279,14 @@ public class ChatOpenActivity extends AppCompatActivity {
         mRootRef.child("Users").child(mChatUser).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String online = dataSnapshot.child("online").getValue().toString();
+                String online;
+                try {
+                    online = dataSnapshot.child("online").getValue().toString();
+                }
+                catch (Exception e)
+                {
+                    online="unknown";
+                }
                 image = dataSnapshot.child("thumb_image").getValue().toString();
                 if (dataSnapshot.hasChild("device_token")) {
                     token = dataSnapshot.child("device_token").getValue().toString();
@@ -296,7 +303,12 @@ public class ChatOpenActivity extends AppCompatActivity {
                 }
                 if (online.equals("true")) {
                     mLastSeenView.setText("Online");
-                } else {
+                }
+                else if(online.equals("unknown"))
+                {
+                    mLastSeenView.setText("");
+                }
+                else {
                     GetTimeAgo getTimeAgo = new GetTimeAgo();
 
                     long lastTime = Long.parseLong(online);
