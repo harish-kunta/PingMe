@@ -136,7 +136,7 @@ public class ChatOpenActivity extends AppCompatActivity {
         mCurrentUser = mAuth.getCurrentUser().getDisplayName();
 
         mChatUser = getIntent().getStringExtra("user_id");
-        userName = getIntent().getStringExtra("user_name");
+        //userName = getIntent().getStringExtra("user_name");
 
 //        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 //        manager.cancelAll();
@@ -267,7 +267,7 @@ public class ChatOpenActivity extends AppCompatActivity {
         loadMessages(messageQuery);
 
 
-        mTitleView.setText(userName);
+
         mTopBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,6 +291,8 @@ public class ChatOpenActivity extends AppCompatActivity {
                 if (dataSnapshot.hasChild("device_token")) {
                     token = dataSnapshot.child("device_token").getValue().toString();
                 }
+                userName = dataSnapshot.child("name").getValue().toString();
+                mTitleView.setText(userName);
                 //Snackbar.make(rootLayout,token,Snackbar.LENGTH_LONG).show();
                 if (!image.equals("default")) {
                     Glide

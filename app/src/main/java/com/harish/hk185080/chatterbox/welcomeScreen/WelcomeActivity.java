@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.harish.hk185080.chatterbox.MainActivity;
+import com.harish.hk185080.chatterbox.NewMainActivtiy.BottomNavigationShifting;
 import com.harish.hk185080.chatterbox.R;
 import com.harish.hk185080.chatterbox.StartActivity;
 
@@ -63,7 +64,7 @@ TextView customText;
     }
 
     private void onAuthSuccess(FirebaseUser user) {
-        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+        startActivity(new Intent(WelcomeActivity.this, BottomNavigationShifting.class));
         finish();
     }
     private void customTextView(TextView view) {

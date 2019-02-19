@@ -88,6 +88,7 @@
             android:name=".UsersActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".ProfileActivity" />
+        <activity android:name=".NewMainActivtiy.BottomNavigationShifting"/>
         <activity
             android:name=".ChatActivity"
             android:parentActivityName=".MainActivity"

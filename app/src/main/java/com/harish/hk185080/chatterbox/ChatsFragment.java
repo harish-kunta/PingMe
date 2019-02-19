@@ -353,7 +353,7 @@ public class ChatsFragment extends Fragment {
 
         public void setMessage(String message, boolean isSeen) {
 
-            TextView userStatusView = mView.findViewById(R.id.user_single_status);
+            TextView userStatusView = mView.findViewById(R.id.message);
             userStatusView.setText(message);
 
             if (!isSeen) {
@@ -364,23 +364,25 @@ public class ChatsFragment extends Fragment {
 
         }
 
+
+
         public void setName(String name) {
 
-            TextView userNameView = mView.findViewById(R.id.user_single_name);
+            TextView userNameView = mView.findViewById(R.id.from);
             userNameView.setText(name);
 
         }
 
         public void setTime(String time) {
 
-            TextView timeView = mView.findViewById(R.id.time_view);
+            TextView timeView = mView.findViewById(R.id.date);
             timeView.setText(time);
 
         }
 
         public void setUserImage(String thumb_image, Context ctx) {
 
-            CircleImageView userImageView = mView.findViewById(R.id.user_single_image);
+            CircleImageView userImageView = mView.findViewById(R.id.image);
             if (!thumb_image.equals("default")) {
                 Glide
                         .with(ctx)
@@ -411,6 +413,15 @@ public class ChatsFragment extends Fragment {
         }
 
 
+        public void setLytImageVisibility(int visibility) {
+            RelativeLayout lyt_image = (RelativeLayout) mView.findViewById(R.id.lyt_image);
+            lyt_image.setVisibility(visibility);
+        }
+
+        public void setLytCheckedVisibility(int visibility) {
+            RelativeLayout lyt_checked = (RelativeLayout) mView.findViewById(R.id.lyt_checked);
+            lyt_checked.setVisibility(visibility);
+        }
     }
 
     public String getFormattedDate(Context context, long smsTimeInMilis) {

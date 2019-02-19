@@ -54,6 +54,11 @@
     <string name="sent_requests">sent_requests</string>
     <string name="notifications">notifications</string>
     <string name="default_status">Hi there I am using Ping Me</string>
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
+        \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
+    </string>
+
 
 
 </resources>
