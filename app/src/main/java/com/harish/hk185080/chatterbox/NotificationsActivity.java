@@ -1,5 +1,6 @@
 package com.harish.hk185080.chatterbox;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +38,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.harish.hk185080.chatterbox.data.MyData;
+
+import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -179,8 +183,10 @@ public class NotificationsActivity extends AppCompatActivity {
             protected void onBindViewHolder(final NotificationsViewHolder holder, int position, final Notifications model) {
                 // Bind the Chat object to the ChatHolder
                 holder.setName(model.title);
+                holder.setDate(getFormattedDate(getApplicationContext(),model.timestamp));
                 // ...
-                holder.setDate(model.body);
+                holder.setBody(model.body);
+
 
                 final String user_id = model.from_user;
 
@@ -247,9 +253,27 @@ public class NotificationsActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-
         }
 
+    }
+    public String getFormattedDate(Context context, long smsTimeInMilis) {
+        Calendar smsTime = Calendar.getInstance();
+        smsTime.setTimeInMillis(smsTimeInMilis);
+
+        Calendar now = Calendar.getInstance();
+
+        final String timeFormatString = "h:mm aa";
+        final String dateTimeFormatString = "EEEE";
+        final long HOURS = 60 * 60 * 60;
+        if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
+            return "" + DateFormat.format(timeFormatString, smsTime);
+        } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
+            return "Yesterday";
+        } else if (now.get(Calendar.DAY_OF_WEEK) == smsTime.get(Calendar.DAY_OF_WEEK)) {
+            return DateFormat.format(dateTimeFormatString, smsTime).toString();
+        } else {
+            return DateFormat.format("dd/MM/yy", smsTime).toString();
+        }
     }
 
     private void sendToStart() {

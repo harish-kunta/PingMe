@@ -12,8 +12,8 @@
         android:background="@drawable/bg_multi_selection"
         android:clickable="true"
         android:orientation="horizontal"
-        android:paddingBottom="@dimen/spacing_large"
-        android:paddingTop="@dimen/spacing_large">
+        android:paddingBottom="@dimen/spacing_middle"
+        android:paddingTop="@dimen/spacing_middle">
 
         <View
             android:layout_width="@dimen/spacing_large"

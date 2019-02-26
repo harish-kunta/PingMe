@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -95,17 +97,19 @@ import io.fabric.sdk.android.Fabric;
 import static com.harish.hk185080.chatterbox.data.Constants.CONNECTIVITY_ACTION;
 
 
-public class BottomNavigationShifting extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class BottomNavigationShifting extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,MaterialSearchBar.OnSearchActionListener {
 
     private TextView mTextMessage;
     private BottomNavigationView navigation;
     private int current_selected_idx = -1;
     FirebaseRecyclerAdapter adapter;
     private FirebaseAuth mAuth;
+    private LinearLayout no_message_layout;
     IntentFilter intentFilter;
     NetworkChangeReceiver receiver;
     GoogleSignInClient mGoogleSignInClient;
     CircleImageView circleImageView;
+    MaterialSearchBar searchBar;
     private DatabaseReference mUsersDatabase;
     private View search_bar;
     private RecyclerView recyclerView;
@@ -116,6 +120,7 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
     DrawerLayout drawer;
     private NavigationView navigationView;
     FloatingActionButton fab;
+    TextView text;
     private ImageButton buttonNavigation;
     private static View Header;
     private FirebaseUser mCurrentUser;
@@ -182,6 +187,7 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
 
         Fabric.with(this, new Crashlytics());
         fab = findViewById(R.id.fab);
+        text = findViewById(R.id.header);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -302,6 +308,7 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
 
     private void initRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        no_message_layout=findViewById(R.id.no_message_layout);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
@@ -430,7 +437,25 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
 
                     }
                 });
+                mConvDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            no_message_layout.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            no_message_layout.setVisibility(View.GONE);
+                        }
 
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+
+                });
             }
         };
 
@@ -563,6 +588,28 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
     }
 
     private void initComponent() {
+        searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
+        searchBar.setOnSearchActionListener(this);
+        //searchBar.inflateMenu(R.menu.main);
+        //searchBar.setText("Hello World!");
+        searchBar.setCardViewElevation(10);
+        searchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d("LOG_TAG", getClass().getSimpleName() + " text changed " + searchBar.getText());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+        });
+
         search_bar = (View) findViewById(R.id.search_bar);
         mTextMessage = (TextView) findViewById(R.id.search_text);
 
@@ -575,10 +622,12 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
                 if (scrollY < oldScrollY) { // up
                     //animateNavigation(false);
                     animateSearchBar(false);
+                    animateText(false);
                 }
                 if (scrollY > oldScrollY) { // down
                     //animateNavigation(true);
                     animateSearchBar(true);
+                    animateText(true);
                 }
             }
         });
@@ -606,7 +655,7 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
 
     boolean isSearchBarHide = false;
     boolean isfabHide = false;
-
+    boolean isTextHide = false;
     private void animateSearchBar(final boolean hide) {
         if (isSearchBarHide && hide || !isSearchBarHide && !hide) return;
         isSearchBarHide = hide;
@@ -619,6 +668,12 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
         isfabHide = hide;
         int moveY = hide ? (2 * fab.getHeight()) : 0;
         fab.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
+    }
+    private void animateText(final boolean hide) {
+        if (isTextHide && hide || !isTextHide && !hide) return;
+        isTextHide = hide;
+        int moveY = hide ? -(2 * text.getHeight()) : 0;
+        text.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
     }
 
     @Override
@@ -683,6 +738,30 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from Ping Me app");
         intent.putExtra(Intent.EXTRA_TEXT, body);
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
+    }
+
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+
+    }
+
+    @Override
+    public void onSearchConfirmed(CharSequence text) {
+
+    }
+
+    @Override
+    public void onButtonClicked(int buttonCode) {
+        switch (buttonCode) {
+            case MaterialSearchBar.BUTTON_NAVIGATION:
+                drawer.openDrawer(Gravity.LEFT);
+                break;
+            case MaterialSearchBar.BUTTON_SPEECH:
+                break;
+            case MaterialSearchBar.BUTTON_BACK:
+                searchBar.disableSearch();
+                break;
+        }
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
@@ -846,6 +925,22 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
         } else {
             return DateFormat.format("dd/MM/yy", smsTime).toString();
         }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
+
+        }
+
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, intentFilter);
     }
 
 }

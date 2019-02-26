@@ -17,15 +17,19 @@ public class NotificationsViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
     }
 
-    public void setDate(String date) {
+    public void setBody(String body) {
         TextView userNameView = mView.findViewById(R.id.user_single_status);
-        userNameView.setText(date);
+        userNameView.setText(body);
 
     }
 
     public void setName(String name) {
         TextView userNameView = mView.findViewById(R.id.user_single_name);
         userNameView.setText(name);
+    }
+    public void setDate(String date) {
+        TextView userNameView = mView.findViewById(R.id.time_view);
+        userNameView.setText(date);
     }
 
     public void setUserImage(String thumb_image, Context ctx) {

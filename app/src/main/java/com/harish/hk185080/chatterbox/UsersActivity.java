@@ -94,8 +94,6 @@ public class UsersActivity extends AppCompatActivity {
         mUsersList = findViewById(R.id.users_list);
         mUsersList.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
         mUsersList.setLayoutManager(layoutManager);
         mUsersList.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
@@ -115,7 +113,7 @@ public class UsersActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("Users").orderByChild("online");
+                .child("Users").orderByChild("name");
         startListening(query);
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -192,7 +190,7 @@ public class UsersActivity extends AppCompatActivity {
 //                            .child(mCurrent_user_id);
                     Query query = FirebaseDatabase.getInstance()
                             .getReference()
-                            .child("Users").orderByChild("online");
+                            .child("Users").orderByChild("name");
                     startListening(query);
                 }
                 //Log.d("SearchText","onQueryTextChange");

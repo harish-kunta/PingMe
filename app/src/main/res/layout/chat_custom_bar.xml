@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/chat_display_name"
-        android:layout_width="335dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
