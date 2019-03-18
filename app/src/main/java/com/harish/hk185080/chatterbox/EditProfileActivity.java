@@ -70,7 +70,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private DatabaseReference mUserDatabase;
     private ProgressDialog mRegProgress;
     private Toolbar mToolbar;
-
+    String image;
+    String name,status;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +102,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mToolbar = findViewById(R.id.edit_profile_appbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Edit Profile");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,50 +132,72 @@ public class EditProfileActivity extends AppCompatActivity {
         mUserDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Object nameobj,statusobj,imageobj,mobileobj;
 
-                String name = dataSnapshot.child("name").getValue().toString();
-                String image = dataSnapshot.child("image").getValue().toString();
-                String status = dataSnapshot.child("status").getValue().toString();
-                if(dataSnapshot.hasChild("mobile")) {
-                    mobile= dataSnapshot.child("mobile").getValue().toString();
+                nameobj=dataSnapshot.child("name").getValue();
+                mobileobj= dataSnapshot.child("mobile").getValue();
+                statusobj=dataSnapshot.child("status").getValue();
+                if(nameobj!=null)
+                {
+                    name = nameobj.toString();
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 }
-                //String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                if(statusobj!=null)
+                {
+                    status = statusobj.toString();
+                }
 
-                //mName.setText(name);
-                _nameText.setText(name);
-                _statusText.setText(status);
-                _mobileNumber.setText(mobile);
+                if (dataSnapshot.hasChild("image")) {
+                    image = dataSnapshot.child("image").getValue().toString();
+                }
+                else
+                {
+                    image="default";
+                }
 
-                if (!image.equals("default")) {
-                    loading.setVisibility(View.VISIBLE);
-                    RequestOptions options = new RequestOptions()
-                            .centerCrop()
-                            .placeholder(R.drawable.ic_account_circle_white_48dp)
-                            .error(R.drawable.ic_account_circle_white_48dp)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .priority(Priority.HIGH)
-                            .dontAnimate()
-                            .dontTransform();
-                    Glide
-                            .with(getApplicationContext())
-                            .load(image)
-                            .apply(options)
-                            .into(profileImageView);
-                    loading.setVisibility(View.GONE);
-                } else {
-                    loading.setVisibility(View.GONE);
-                    profileImageView.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
+
+
+
+
+                    if (dataSnapshot.hasChild("mobile")) {
+                        mobile = dataSnapshot.child("mobile").getValue().toString();
+                    }
+                    //String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+
+                    //mName.setText(name);
+                    _nameText.setText(name);
+                    _statusText.setText(status);
+                    _mobileNumber.setText(mobile);
+
+                    if (!image.equals("default")) {
+                        loading.setVisibility(View.VISIBLE);
+                        RequestOptions options = new RequestOptions()
+                                .centerCrop()
+                                .placeholder(R.drawable.ic_account_circle_white_48dp)
+                                .error(R.drawable.ic_account_circle_white_48dp)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .priority(Priority.HIGH)
+                                .dontAnimate()
+                                .dontTransform();
+                        Glide
+                                .with(getApplicationContext())
+                                .load(image)
+                                .apply(options)
+                                .into(profileImageView);
+                        loading.setVisibility(View.GONE);
+                    } else {
+                        loading.setVisibility(View.GONE);
+                        profileImageView.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
+
+                    }
+                    mRegProgress.dismiss();
+                }
+
+                @Override
+                public void onCancelled (DatabaseError databaseError){
 
                 }
-                mRegProgress.dismiss();
 
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
         });
     }
 
@@ -193,18 +216,30 @@ public class EditProfileActivity extends AppCompatActivity {
         String status = _statusText.getText().toString();
         String name = _nameText.getText().toString();
         String mobile=_mobileNumber.getText().toString();
-        uploadName(name,status,mobile);
+        if(name.isEmpty())
+        {
+            Snackbar.make(rootLayout,"Name field cannot be empty!",Snackbar.LENGTH_SHORT).show();
+            mRegProgress.dismiss();
+        }
+        else if(status.isEmpty())
+        {
+            Snackbar.make(rootLayout,"Status field cannot be empty!",Snackbar.LENGTH_SHORT).show();
+            mRegProgress.dismiss();
+        }
+        else {
+            uploadName(name, status, mobile,image);
+        }
 
 
-        mRegProgress.dismiss();
+
     }
 
-    private void uploadStatus(String status, final String mobile) {
+    private void uploadStatus(String status, final String mobile,String image) {
         mUserDatabase.child("status").setValue(status).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    uploadMobile(mobile);
+                    uploadMobile(mobile,image);
                 } else {
                     Snackbar.make(rootLayout, "Something Went Wrong!", Toast.LENGTH_SHORT).show();
                 }
@@ -212,25 +247,50 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void uploadMobile(String mobile) {
+    private void uploadMobile(String mobile,String image) {
         mUserDatabase.child("mobile").setValue(mobile).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    finish();
+                    uploadImage(image);
+
                 } else {
                     Snackbar.make(rootLayout, "Something Went Wrong!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
+    private void uploadImage(String image) {
+        mUserDatabase.child("image").setValue(image).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    mUserDatabase.child("thumb_image").setValue(image).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                mRegProgress.dismiss();
+                                finish();
+                            } else {
+                                Snackbar.make(rootLayout, "Something Went Wrong!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+                    Snackbar.make(rootLayout, "Something Went Wrong!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
-    private void uploadName(String name, final String status, final String mobile) {
+
+    }
+
+    private void uploadName(String name, final String status, final String mobile,String image) {
         mUserDatabase.child("name").setValue(name).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    uploadStatus(status,mobile);
+                    uploadStatus(status,mobile,image);
                 } else {
                     Snackbar.make(rootLayout, "Something Went Wrong!", Toast.LENGTH_SHORT).show();
                 }
@@ -238,9 +298,9 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void sendToStart() {
+    private void sendToProfile() {
         //FirebaseAuth.getInstance().signOut();
-        Intent startIntent = new Intent(EditProfileActivity.this, MainActivity.class);
+        Intent startIntent = new Intent(EditProfileActivity.this, MaterialSettingsActivity.class);
         startActivity(startIntent);
         finish();
     }
@@ -395,5 +455,10 @@ public class EditProfileActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

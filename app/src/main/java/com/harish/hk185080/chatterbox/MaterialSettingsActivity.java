@@ -394,62 +394,73 @@ public class MaterialSettingsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String name = dataSnapshot.child("name").getValue().toString();
-                image = dataSnapshot.child("image").getValue().toString();
-                String status = dataSnapshot.child("status").getValue().toString();
-                String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
-                if (dataSnapshot.hasChild("email")) {
-                    email = dataSnapshot.child("email").getValue().toString();
-                    mEmailLayout.setVisibility(View.VISIBLE);
-                    if(email.equals("harishtanu007@gmail.com")) {
-                        generatePopular.setVisibility(View.VISIBLE);
+
+                try {
+
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    image = dataSnapshot.child("image").getValue().toString();
+                    String status = dataSnapshot.child("status").getValue().toString();
+                    String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                    if (dataSnapshot.hasChild("email")) {
+                        email = dataSnapshot.child("email").getValue().toString();
+                        mEmailLayout.setVisibility(View.VISIBLE);
+                        if (email.equals("harishtanu007@gmail.com")) {
+                            generatePopular.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        mEmailLayout.setVisibility(View.GONE);
                     }
-                } else {
-                    mEmailLayout.setVisibility(View.GONE);
+                    if (dataSnapshot.hasChild("mobile")) {
+
+                        mobile = dataSnapshot.child("mobile").getValue().toString();
+                        mMobileTextView.setText(mobile);
+                        if (!mobile.isEmpty()) {
+                            mMobileLayout.setVisibility(View.VISIBLE);
+                        }
+
+                    } else {
+                        mMobileLayout.setVisibility(View.GONE);
+                    }
+
+                    //mName.setText(name);
+                    ctl.setTitle(name);
+                    mStatus.setText(status);
+                    mEmail.setText(email);
+
+                    if (!image.equals("default")) {
+                        loading.setVisibility(View.VISIBLE);
+                        RequestOptions options = new RequestOptions()
+                                .centerCrop()
+                                .placeholder(R.drawable.ic_account_circle_white_48dp)
+                                .error(R.drawable.ic_account_circle_white_48dp)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .priority(Priority.HIGH)
+                                .dontAnimate()
+                                .dontTransform();
+                        Glide
+                                .with(getApplicationContext())
+                                .load(image)
+                                .apply(options)
+                                .into(mDisplayImage);
+                        loading.setVisibility(View.GONE);
+                    } else {
+                        loading.setVisibility(View.GONE);
+                        mDisplayImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
+
+                    }
+                    mProgressDialog.dismiss();
                 }
-                if (dataSnapshot.hasChild("mobile")) {
-                    mMobileLayout.setVisibility(View.VISIBLE);
-                    mobile = dataSnapshot.child("mobile").getValue().toString();
-                    mMobileTextView.setText(mobile);
-                } else {
-                    mMobileLayout.setVisibility(View.GONE);
+                catch (Exception e)
+                {
+                    e.printStackTrace();
                 }
-
-                //mName.setText(name);
-                ctl.setTitle(name);
-                mStatus.setText(status);
-                mEmail.setText(email);
-
-                if (!image.equals("default")) {
-                    loading.setVisibility(View.VISIBLE);
-                    RequestOptions options = new RequestOptions()
-                            .centerCrop()
-                            .placeholder(R.drawable.ic_account_circle_white_48dp)
-                            .error(R.drawable.ic_account_circle_white_48dp)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .priority(Priority.HIGH)
-                            .dontAnimate()
-                            .dontTransform();
-                    Glide
-                            .with(getApplicationContext())
-                            .load(image)
-                            .apply(options)
-                            .into(mDisplayImage);
-                    loading.setVisibility(View.GONE);
-                } else {
-                    loading.setVisibility(View.GONE);
-                    mDisplayImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_account_circle_white_48dp));
-
-                }
-                mProgressDialog.dismiss();
-
-
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled (DatabaseError databaseError){
 
-            }
+                }
+
         });
 
         mDisplayImage.setOnClickListener(new View.OnClickListener() {

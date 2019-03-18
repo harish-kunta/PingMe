@@ -133,7 +133,8 @@
         <activity android:name=".BlockedListActivity" />
         <activity android:name=".UploadImageActivity" />
         <activity android:name=".NotificationsActivity" />
-        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".EditProfileActivity"
+            android:launchMode = "singleTop"/>
         <activity android:name=".CreateGroupActivity" />
         <activity android:name=".PopularUsersActivity"></activity>
     </application>

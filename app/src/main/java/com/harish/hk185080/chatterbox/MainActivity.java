@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MyData myData;
     private static final String TAG = "MainActivity";
     String CHANNEL_ID = "MESSAGES";
+    boolean nullvalue=false;
 
 
     TabLayout tabLayout;
@@ -374,30 +375,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mUserDatabase.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        Object nameobj, imageobj, statusobj, thumb_imageobj;
+
+
                         try {
+                            nameobj = dataSnapshot.child("name").getValue();
+                            imageobj = dataSnapshot.child("image").getValue();
+                            statusobj = dataSnapshot.child("status").getValue();
+                            thumb_imageobj = dataSnapshot.child("thumb_image").getValue();
+                            if (nameobj == null) {
+                                   Log.e("Harishtest","call");
+                                    openEditPage();
+                            }
+                            else if(imageobj == null)
+                            {
+
+                                openEditPage();
+
+                            }
+                            else if(statusobj == null)
+                            {
+
+                                openEditPage();
+                            }
+                            else if(thumb_imageobj == null)
+                            {
+
+                                openEditPage();
+
+                            }
+                            else {
+
+                                String name = nameobj.toString();
 
 
-                            String name = dataSnapshot.child("name").getValue().toString();
-                            final String image = dataSnapshot.child("image").getValue().toString();
-                            String status = dataSnapshot.child("status").getValue().toString();
-                            String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                                final String image = imageobj.toString();
+                                String status = statusobj.toString();
+                                String thumb_image = thumb_imageobj.toString();
 
-                            textView.setText(name);
-                            //textView1.setText(status);
-                            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
-                            myRef.keepSynced(true);
-                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    // textView2.setText(dataSnapshot.getChildrenCount()+"");
-                                    textView2.setText(getString(R.string.friends, dataSnapshot.getChildrenCount()));
-                                }
+                                textView.setText(name);
+                                //textView1.setText(status);
+                                DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
+                                myRef.keepSynced(true);
+                                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        // textView2.setText(dataSnapshot.getChildrenCount()+"");
+                                        textView2.setText(getString(R.string.friends, dataSnapshot.getChildrenCount()));
+                                    }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
+                                    }
+                                });
 //You must remember to remove the listener when you finish using it, also to keep track of changes you can use the ChildChange
 //                        myRef.addChildEventListener(new ChildEventListener() {
 //                            @Override
@@ -428,17 +459,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                            }
 //                        });
 
-                            if (!image.equals("default")) {
-                                Glide
-                                        .with(getApplicationContext())
-                                        .load(image)
-                                        .into(circleImageView);
+                                if (!image.equals("default")) {
+                                    Glide
+                                            .with(getApplicationContext())
+                                            .load(image)
+                                            .into(circleImageView);
 
-                            } else {
-                                circleImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_account_circle_white_48dp));
+                                } else {
+                                    circleImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_account_circle_white_48dp));
+                                }
                             }
-                        } catch (Exception e) {
-                            //sendToStart();
+
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
                         }
                     }
 
@@ -453,6 +488,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 sendToStart();
             }
 
+
+    }
+
+    private void openEditPage() {
+        Intent uploadIntent = new Intent(MainActivity.this, EditProfileActivity.class);
+        uploadIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(uploadIntent);
     }
 
     private void sendToChat(String userId, String userName) {
