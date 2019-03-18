@@ -138,7 +138,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public ConvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.users_single_layout, parent, false);
+                        .inflate(R.layout.item_inbox, parent, false);
 
                 return new ChatsFragment.ConvViewHolder(view);
             }

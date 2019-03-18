@@ -64,7 +64,7 @@ TextView customText;
     }
 
     private void onAuthSuccess(FirebaseUser user) {
-        startActivity(new Intent(WelcomeActivity.this, BottomNavigationShifting.class));
+        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
         finish();
     }
     private void customTextView(TextView view) {
