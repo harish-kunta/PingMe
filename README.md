@@ -1,7 +1,9 @@
 # Ping Me App for Android
 ### Open Source Messaging for Android
 
-![Main Image](https://raw.githubusercontent.com/chat-sdk/chat-sdk-android/master/graphics/android-phone-images.png)
+![Main Image](https://github.com/harishtanu007/PingMe/blob/master/content/images/ChatPage.png)
+![Main Image](https://github.com/harishtanu007/PingMe/blob/master/content/images/LoginPage.png)
+![Main Image](https://github.com/harishtanu007/PingMe/blob/master/content/images/ProfilePage.png)
 
 This is a fully featured open source instant messaging app for Android. Chat SDK is fully featured, scalable and flexible and follows the following key principles:
 
@@ -14,7 +16,7 @@ This is a fully featured open source instant messaging app for Android. Chat SDK
 - **Scalable.** Supports millons of daily users [[1](https://firebase.google.com/docs/database/usage/limits), [2](https://blog.process-one.net/ejabberd-massive-scalability-1node-2-million-concurrent-users/)]
 - **Backend agnostic.** Chat SDK can be customized to [support any backend](https://github.com/chat-sdk/chat-sdk-android#backend-agnostic-architecture) 
 
-[![](https://raw.githubusercontent.com/chat-sdk/chat-sdk-android/master/graphics/chat-sdk-play.png)](https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox)
+[![](https://github.com/harishtanu007/PingMe/blob/master/content/images/PingMeLogo.png)](https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox)
 
 ## Technical details
 
