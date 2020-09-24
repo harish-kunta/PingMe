@@ -9,8 +9,8 @@
 Ping Me is a FREE messaging app available for Android. It uses your phone's Internet connection (4G/3G/2G/EDGE or Wi-Fi, as available) to let you message friends and family.
 
 ## PlayStore Link
-![logo](https://github.com/harishtanu007/PingMe/blob/master/content/images/PingMeLogo.png)
-(https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox)
+
+https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox
 
 ## Technical details
 
