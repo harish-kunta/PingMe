@@ -121,7 +121,8 @@
         <activity
             android:name=".ChatOpenActivity"
             android:parentActivityName=".MainActivity"
-            android:launchMode = "singleTop">
+            android:launchMode="singleInstance"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.harish.hk185080.chatterbox.MainActivity" />
