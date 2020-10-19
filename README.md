@@ -27,3 +27,12 @@ https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox
 - User search
 - Powered by Firebase
 - Firebase UI
+
+## Built With
+
+* [Firebase](https://firebase.google.com/) - A comprehensive app development platform
+* [Android Studio](https://developer.android.com/studio) - Android Development tool
+
+## Authors
+
+* **Harish Kunta** - *Initial work* - [Harish Kunta](https://github.com/harishtanu007)
