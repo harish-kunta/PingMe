@@ -27,7 +27,7 @@
         android:id="@+id/agreeNContinueTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/agreeNContinueTVBtn"
+        android:layout_above="@+id/agree_and_continue_button"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
@@ -54,7 +54,7 @@
             -->
 
     <TextView
-        android:id="@+id/agreeNContinueTVBtn"
+        android:id="@+id/agree_and_continue_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

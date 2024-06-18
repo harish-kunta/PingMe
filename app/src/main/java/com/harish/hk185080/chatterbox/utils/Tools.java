@@ -28,7 +28,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.gms.maps.GoogleMap;
 import com.harish.hk185080.chatterbox.R;
 
 import java.text.SimpleDateFormat;
@@ -164,25 +163,6 @@ public class Tools {
     public static int dpToPx(Context c, int dp) {
         Resources r = c.getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
-    }
-
-    public static GoogleMap configActivityMaps(GoogleMap googleMap) {
-        // set map type
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        // Enable / Disable zooming controls
-        googleMap.getUiSettings().setZoomControlsEnabled(false);
-
-        // Enable / Disable Compass icon
-        googleMap.getUiSettings().setCompassEnabled(true);
-        // Enable / Disable Rotate gesture
-        googleMap.getUiSettings().setRotateGesturesEnabled(true);
-        // Enable / Disable zooming functionality
-        googleMap.getUiSettings().setZoomGesturesEnabled(true);
-
-        googleMap.getUiSettings().setScrollGesturesEnabled(true);
-        googleMap.getUiSettings().setMapToolbarEnabled(true);
-
-        return googleMap;
     }
 
     public static void copyToClipboard(Context context, String data) {

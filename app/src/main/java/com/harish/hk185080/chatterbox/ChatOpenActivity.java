@@ -27,7 +27,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +51,7 @@ import com.harish.hk185080.chatterbox.Network.ApiUtils;
 import com.harish.hk185080.chatterbox.Network.FirebaseMessage;
 import com.harish.hk185080.chatterbox.Network.MessageData;
 import com.harish.hk185080.chatterbox.Network.NotifyData;
+import com.harish.hk185080.chatterbox.activities.login.StartActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

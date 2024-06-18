@@ -50,6 +50,7 @@ import com.harish.hk185080.chatterbox.Network.ApiUtils;
 import com.harish.hk185080.chatterbox.Network.FirebaseMessage;
 import com.harish.hk185080.chatterbox.Network.MessageData;
 import com.harish.hk185080.chatterbox.Network.NotifyData;
+import com.harish.hk185080.chatterbox.activities.login.StartActivity;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.harish.hk185080.chatterbox.utils.PhotoFullPopupWindow;
 
@@ -773,13 +774,13 @@ public class MaterialProfileActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.download_image:
-                if (myData.isInternetConnected(MaterialProfileActivity.this)) {
-                    requestPermission();
-                } else {
-                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                }
-                return true;
+//            case R.id.download_image:
+//                if (myData.isInternetConnected(MaterialProfileActivity.this)) {
+//                    requestPermission();
+//                } else {
+//                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                }
+//                return true;
         }
 
         return super.onOptionsItemSelected(item);

@@ -29,6 +29,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.harish.hk185080.chatterbox.activities.login.StartActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -295,9 +296,9 @@ public class ChatActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.menu_search_text:
-
-                return true;
+//            case R.id.menu_search_text:
+//
+//                return true;
         }
 
         return super.onOptionsItemSelected(item);

@@ -2,10 +2,9 @@ package com.harish.hk185080.chatterbox;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
@@ -16,9 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,17 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.harish.hk185080.chatterbox.data.MyData;
-import com.theartofdev.edmodo.cropper.CropImage;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.zelory.compressor.Compressor;
 
 public class UploadImageActivity extends AppCompatActivity {
     private CircleImageView profileImageView;
@@ -57,6 +45,7 @@ public class UploadImageActivity extends AppCompatActivity {
     private int GALLERY_PICK = 1;
     private DatabaseReference mUserDatabase;
     private ProgressDialog mRegProgress;
+    private static int CROP_IMAGE_ACTIVITY_REQUEST_CODE = 123;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,118 +158,119 @@ public class UploadImageActivity extends AppCompatActivity {
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
-        if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
-            Uri imageUri = data.getData();
-            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
-
-        }
-        try {
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                if (resultCode == RESULT_OK) {
-
-                    mProgressDialog = new ProgressDialog(UploadImageActivity.this);
-                    mProgressDialog.setTitle("Uploading Image....");
-                    mProgressDialog.setMessage("Please wait while we upload and process the image");
-                    mProgressDialog.setCanceledOnTouchOutside(false);
-                    mProgressDialog.show();
-                    Uri resultUri = result.getUri();
-                    File thumb_filepath = new File(resultUri.getPath());
-
-                    String current_user_id = mCurrentUser.getUid();
-
-
-                    Bitmap thumb_bitmap = new Compressor(this)
-                            .setMaxWidth(200)
-                            .setMaxHeight(200)
-                            .setQuality(75)
-                            .compressToBitmap(thumb_filepath);
-
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    thumb_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                    final byte[] thumb_byte = byteArrayOutputStream.toByteArray();
-
-
-                    final StorageReference filepath = mImageStorage.child("profile_images").child(current_user_id + ".jpg");
-                    final StorageReference thumb_filepath_image = mImageStorage.child("profile_images").child("thumbs").child(current_user_id + ".jpg");
-
-                    filepath.putFile(resultUri)
-                            .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                @Override
-                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                    if (!task.isSuccessful()) {
-                                        throw task.getException();
-                                    }
-
-                                    // Continue with the task to get the download URL
-                                    return filepath.getDownloadUrl();
-                                }
-                            })
-                            .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                @Override
-                                public void onComplete(@NonNull final Task<Uri> task) {
-                                    if (task.isSuccessful()) {
-                                        final Uri downloadUri = task.getResult();
-                                        //final String download_url = task.getResult().getDownloadUrl().toString();
-                                        final String download_url = downloadUri.toString();
-                                        UploadTask uploadTask = thumb_filepath_image.putBytes(thumb_byte);
-                                        uploadTask
-                                                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                                    @Override
-                                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                                        if (!task.isSuccessful()) {
-                                                            throw task.getException();
-                                                        }
-
-                                                        // Continue with the task to get the download URL
-                                                        return thumb_filepath_image.getDownloadUrl();
-                                                    }
-                                                })
-                                                .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Uri> innertask) {
-                                                        Uri thumbdownloadUri = innertask.getResult();
-                                                        String thumb_downloadUrl = thumbdownloadUri.toString();
-                                                        //String thumb_downloadUrl=thumb_task.getResult().getUploadSessionUri().toString();
-                                                        if (task.isSuccessful()) {
-                                                            Map update_hashmap = new HashMap();
-                                                            update_hashmap.put("image", download_url);
-                                                            update_hashmap.put("thumb_image", thumb_downloadUrl);
-
-                                                            mUserDatabase.updateChildren(update_hashmap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    if (task.isSuccessful()) {
-                                                                        mProgressDialog.dismiss();
-                                                                        loading.setVisibility(View.VISIBLE);
-                                                                        Glide
-                                                                                .with(getApplicationContext())
-                                                                                .load(download_url)
-                                                                                .into(profileImageView);
-                                                                        loading.setVisibility(View.GONE);
-                                                                    }
-                                                                }
-                                                            });
-                                                        } else {
-                                                            mProgressDialog.hide();
-                                                            Snackbar.make(rootLayout, "error in uploading thumbnail..", Snackbar.LENGTH_LONG).show();
-                                                        }
-                                                    }
-                                                });
-
-                                    } else {
-                                        Snackbar.make(rootLayout, "error in uploading....", Snackbar.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Exception error = result.getError();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//
+//
+//        if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
+//            Uri imageUri = data.getData();
+//            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
+//
+//        }
+//        try {
+//            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+//                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//                if (resultCode == RESULT_OK) {
+//
+//                    mProgressDialog = new ProgressDialog(UploadImageActivity.this);
+//                    mProgressDialog.setTitle("Uploading Image....");
+//                    mProgressDialog.setMessage("Please wait while we upload and process the image");
+//                    mProgressDialog.setCanceledOnTouchOutside(false);
+//                    mProgressDialog.show();
+//                    Uri resultUri = result.getUri();
+//                    File thumb_filepath = new File(resultUri.getPath());
+//
+//                    String current_user_id = mCurrentUser.getUid();
+//
+//
+//                    Bitmap thumb_bitmap = new Compressor(this)
+//                            .setMaxWidth(200)
+//                            .setMaxHeight(200)
+//                            .setQuality(75)
+//                            .compressToBitmap(thumb_filepath);
+//
+//                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                    thumb_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+//                    final byte[] thumb_byte = byteArrayOutputStream.toByteArray();
+//
+//
+//                    final StorageReference filepath = mImageStorage.child("profile_images").child(current_user_id + ".jpg");
+//                    final StorageReference thumb_filepath_image = mImageStorage.child("profile_images").child("thumbs").child(current_user_id + ".jpg");
+//
+//                    filepath.putFile(resultUri)
+//                            .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+//                                @Override
+//                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+//                                    if (!task.isSuccessful()) {
+//                                        throw task.getException();
+//                                    }
+//
+//                                    // Continue with the task to get the download URL
+//                                    return filepath.getDownloadUrl();
+//                                }
+//                            })
+//                            .addOnCompleteListener(new OnCompleteListener<Uri>() {
+//                                @Override
+//                                public void onComplete(@NonNull final Task<Uri> task) {
+//                                    if (task.isSuccessful()) {
+//                                        final Uri downloadUri = task.getResult();
+//                                        //final String download_url = task.getResult().getDownloadUrl().toString();
+//                                        final String download_url = downloadUri.toString();
+//                                        UploadTask uploadTask = thumb_filepath_image.putBytes(thumb_byte);
+//                                        uploadTask
+//                                                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+//                                                    @Override
+//                                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+//                                                        if (!task.isSuccessful()) {
+//                                                            throw task.getException();
+//                                                        }
+//
+//                                                        // Continue with the task to get the download URL
+//                                                        return thumb_filepath_image.getDownloadUrl();
+//                                                    }
+//                                                })
+//                                                .addOnCompleteListener(new OnCompleteListener<Uri>() {
+//                                                    @Override
+//                                                    public void onComplete(@NonNull Task<Uri> innertask) {
+//                                                        Uri thumbdownloadUri = innertask.getResult();
+//                                                        String thumb_downloadUrl = thumbdownloadUri.toString();
+//                                                        //String thumb_downloadUrl=thumb_task.getResult().getUploadSessionUri().toString();
+//                                                        if (task.isSuccessful()) {
+//                                                            Map update_hashmap = new HashMap();
+//                                                            update_hashmap.put("image", download_url);
+//                                                            update_hashmap.put("thumb_image", thumb_downloadUrl);
+//
+//                                                            mUserDatabase.updateChildren(update_hashmap).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                                @Override
+//                                                                public void onComplete(@NonNull Task<Void> task) {
+//                                                                    if (task.isSuccessful()) {
+//                                                                        mProgressDialog.dismiss();
+//                                                                        loading.setVisibility(View.VISIBLE);
+//                                                                        Glide
+//                                                                                .with(getApplicationContext())
+//                                                                                .load(download_url)
+//                                                                                .into(profileImageView);
+//                                                                        loading.setVisibility(View.GONE);
+//                                                                    }
+//                                                                }
+//                                                            });
+//                                                        } else {
+//                                                            mProgressDialog.hide();
+//                                                            Snackbar.make(rootLayout, "error in uploading thumbnail..", Snackbar.LENGTH_LONG).show();
+//                                                        }
+//                                                    }
+//                                                });
+//
+//                                    } else {
+//                                        Snackbar.make(rootLayout, "error in uploading....", Snackbar.LENGTH_LONG).show();
+//                                    }
+//                                }
+//                            });
+//                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+//                    String resultString = result.toString();
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

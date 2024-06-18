@@ -5,22 +5,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +22,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -40,9 +36,12 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,12 +52,10 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.harish.hk185080.chatterbox.activities.login.StartActivity;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.harish.hk185080.chatterbox.utils.PhotoFullPopupWindow;
-import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -66,48 +63,40 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import id.zelory.compressor.Compressor;
-
 public class MaterialSettingsActivity extends AppCompatActivity {
-    private DatabaseReference mUserDatabase;
-    private FirebaseUser mCurrentUser;
-    private ImageView mDisplayImage;
-    private TextView mStatus;
-    private TextView mEmail;
-    private TextView mMobileTextView;
-    private Button mLogout,generatePopular;
-    private LinearLayout statusLayout;
-    LinearLayout mEmailLayout, mMobileLayout;
-    private MyData myData;
-    private int GALLERY_PICK = 1;
+    static final int REQUEST_TAKE_PHOTO = 6;
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    static final int REQUEST_TAKE_PHOTO = 6;
-    private String mCurrentPhotoPath;
-   // FabSpeedDial fabSpeedDial;
-
+    LinearLayout mEmailLayout, mMobileLayout;
     FloatingActionButton fab;
     String image;
-
-    private Button mChangeStatus;
-    private CoordinatorLayout rootLayout;
     RelativeLayout loading;
     // private Button mImageButton;
     // private Button mChangeName;
     // private Toolbar mToolBar;
     CollapsingToolbarLayout ctl;
+    String email, mobile;
+    GoogleSignInClient mGoogleSignInClient;
+    AppBarLayout appBarLayout;
+    private DatabaseReference mUserDatabase;
+    private FirebaseUser mCurrentUser;
+    private ImageView mDisplayImage;
+    private TextView mStatus;
+    // FabSpeedDial fabSpeedDial;
+    private TextView mEmail;
+    private TextView mMobileTextView;
+    private Button mLogout, generatePopular;
+    private LinearLayout statusLayout;
+    private MyData myData;
+    private int GALLERY_PICK = 1;
+    private String mCurrentPhotoPath;
+    private Button mChangeStatus;
+    private CoordinatorLayout rootLayout;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserRef;
     private DatabaseReference mRootRef;
-    String email, mobile;
-
-
     private StorageReference mImageStorage;
-
     private ProgressDialog mProgressDialog;
-    GoogleSignInClient mGoogleSignInClient;
-    AppBarLayout appBarLayout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,18 +114,18 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         myData = new MyData();
         ctl = findViewById(R.id.toolbar_layout);
         //fabSpeedDial = findViewById(R.id.fabSpeedDial);
-        fab=findViewById(R.id.fab_edit);
+        fab = findViewById(R.id.fab_edit);
 
         appBarLayout = findViewById(R.id.app_bar);
 
         rootLayout = findViewById(R.id.rootlayout);
-        mMobileTextView=findViewById(R.id.settings_user_mobile);
+        mMobileTextView = findViewById(R.id.settings_user_mobile);
         mDisplayImage = findViewById(R.id.settings_display_image);
         //mName = findViewById(R.id.settings_user_name);
         mStatus = findViewById(R.id.settings_status);
         mEmail = findViewById(R.id.settings_user_email);
         mLogout = findViewById(R.id.settings_user_log_out);
-        generatePopular=findViewById(R.id.generate_popular_users);
+        generatePopular = findViewById(R.id.generate_popular_users);
         generatePopular.setVisibility(View.GONE);
         mEmailLayout = findViewById(R.id.settings_email_layout);
         mMobileLayout = findViewById(R.id.settings_mobile_layout);
@@ -229,9 +218,11 @@ public class MaterialSettingsActivity extends AppCompatActivity {
 
 
     }
-    void removeDataFromDatabase(){
+
+    void removeDataFromDatabase() {
         mRootRef.child("Popular").setValue(null);
     }
+
     private void generatePopularUsers() {
         removeDataFromDatabase();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -241,12 +232,11 @@ public class MaterialSettingsActivity extends AppCompatActivity {
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snap: dataSnapshot.getChildren()) {
-                    Log.e(snap.getKey(),snap.getChildrenCount() + "");
-                    if(snap.getChildrenCount()>0)
-                    {
+                for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                    Log.e(snap.getKey(), snap.getChildrenCount() + "");
+                    if (snap.getChildrenCount() > 0) {
 
-                        popularMap.put(snap.getKey()+"/count", snap.getChildrenCount());
+                        popularMap.put(snap.getKey() + "/count", snap.getChildrenCount());
                         // requestMap.put("notifications/" + user_id + "/" + newnotificationId, notificationData);
 
                     }
@@ -449,17 +439,15 @@ public class MaterialSettingsActivity extends AppCompatActivity {
 
                     }
                     mProgressDialog.dismiss();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-                @Override
-                public void onCancelled (DatabaseError databaseError){
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                }
+            }
 
         });
 
@@ -516,24 +504,24 @@ public class MaterialSettingsActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.choose_image:
-                if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
-                    chooseImage();
-                } else {
-                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                }
-                return true;
-            case R.id.take_photo:
-                takeHighQualityPhoto();
-                return true;
-            case R.id.remove_image:
-                if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
-                    removeImage();
-                } else {
-                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                }
-
-                return true;
+//            case R.id.choose_image:
+//                if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
+//                    chooseImage();
+//                } else {
+//                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                }
+//                return true;
+//            case R.id.take_photo:
+//                takeHighQualityPhoto();
+//                return true;
+//            case R.id.remove_image:
+//                if (myData.isInternetConnected(MaterialSettingsActivity.this)) {
+//                    removeImage();
+//                } else {
+//                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                }
+//
+//                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -582,124 +570,126 @@ public class MaterialSettingsActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        //img.setImageURI(imageUri);
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            //setPic();
-            Uri imageUri = Uri.fromFile(new File(mCurrentPhotoPath));
-            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
-        }
 
-        if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
-            Uri imageUri = data.getData();
-            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
-
-        }
-        try {
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                if (resultCode == RESULT_OK) {
-
-                    mProgressDialog = new ProgressDialog(MaterialSettingsActivity.this);
-                    mProgressDialog.setTitle("Uploading Image....");
-                    mProgressDialog.setMessage("Please wait while we upload and process the image");
-                    mProgressDialog.setCanceledOnTouchOutside(false);
-                    mProgressDialog.show();
-                    Uri resultUri = result.getUri();
-                    File thumb_filepath = new File(resultUri.getPath());
-
-                    String current_user_id = mCurrentUser.getUid();
-
-
-                    Bitmap thumb_bitmap = new Compressor(this)
-                            .setMaxWidth(200)
-                            .setMaxHeight(200)
-                            .setQuality(75)
-                            .compressToBitmap(thumb_filepath);
-
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    thumb_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                    final byte[] thumb_byte = byteArrayOutputStream.toByteArray();
-
-
-                    final StorageReference filepath = mImageStorage.child("profile_images").child(current_user_id + ".jpg");
-                    final StorageReference thumb_filepath_image = mImageStorage.child("profile_images").child("thumbs").child(current_user_id + ".jpg");
-
-                    filepath.putFile(resultUri)
-                            .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                @Override
-                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                    if (!task.isSuccessful()) {
-                                        throw task.getException();
-                                    }
-
-                                    // Continue with the task to get the download URL
-                                    return filepath.getDownloadUrl();
-                                }
-                            })
-                            .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                @Override
-                                public void onComplete(@NonNull final Task<Uri> task) {
-                                    if (task.isSuccessful()) {
-                                        final Uri downloadUri = task.getResult();
-                                        //final String download_url = task.getResult().getDownloadUrl().toString();
-                                        final String download_url = downloadUri.toString();
-                                        UploadTask uploadTask = thumb_filepath_image.putBytes(thumb_byte);
-                                        uploadTask
-                                                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                                    @Override
-                                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                                        if (!task.isSuccessful()) {
-                                                            throw task.getException();
-                                                        }
-
-                                                        // Continue with the task to get the download URL
-                                                        return thumb_filepath_image.getDownloadUrl();
-                                                    }
-                                                })
-                                                .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Uri> innertask) {
-                                                        Uri thumbdownloadUri = innertask.getResult();
-                                                        String thumb_downloadUrl = thumbdownloadUri.toString();
-                                                        //String thumb_downloadUrl=thumb_task.getResult().getUploadSessionUri().toString();
-                                                        if (task.isSuccessful()) {
-                                                            Map update_hashmap = new HashMap();
-                                                            update_hashmap.put("image", download_url);
-                                                            update_hashmap.put("thumb_image", thumb_downloadUrl);
-
-                                                            mUserDatabase.updateChildren(update_hashmap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    if (task.isSuccessful()) {
-                                                                        mProgressDialog.dismiss();
-                                                                        loading.setVisibility(View.VISIBLE);
-                                                                        Glide
-                                                                                .with(getApplicationContext())
-                                                                                .load(download_url)
-                                                                                .into(mDisplayImage);
-                                                                        loading.setVisibility(View.GONE);
-                                                                    }
-                                                                }
-                                                            });
-                                                        } else {
-                                                            mProgressDialog.hide();
-                                                            Snackbar.make(rootLayout, "error in uploading thumbnail..", Snackbar.LENGTH_LONG).show();
-                                                        }
-                                                    }
-                                                });
-
-                                    } else {
-                                        Snackbar.make(rootLayout, "error in uploading....", Snackbar.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Exception error = result.getError();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        //img.setImageURI(imageUri);
+//        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+//            //setPic();
+//            Uri imageUri = Uri.fromFile(new File(mCurrentPhotoPath));
+//            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
+//        }
+//
+//        if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
+//            Uri imageUri = data.getData();
+//            CropImage.activity(imageUri).setAspectRatio(1, 1).start(this);
+//
+//        }
+//        try {
+//            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+//                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//                if (resultCode == RESULT_OK) {
+//
+//                    mProgressDialog = new ProgressDialog(MaterialSettingsActivity.this);
+//                    mProgressDialog.setTitle("Uploading Image....");
+//                    mProgressDialog.setMessage("Please wait while we upload and process the image");
+//                    mProgressDialog.setCanceledOnTouchOutside(false);
+//                    mProgressDialog.show();
+//                    Uri resultUri = result.getUri();
+//                    File thumb_filepath = new File(resultUri.getPath());
+//
+//                    String current_user_id = mCurrentUser.getUid();
+//
+//
+//                    Bitmap thumb_bitmap = new Compressor(this)
+//                            .setMaxWidth(200)
+//                            .setMaxHeight(200)
+//                            .setQuality(75)
+//                            .compressToBitmap(thumb_filepath);
+//
+//                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                    thumb_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+//                    final byte[] thumb_byte = byteArrayOutputStream.toByteArray();
+//
+//
+//                    final StorageReference filepath = mImageStorage.child("profile_images").child(current_user_id + ".jpg");
+//                    final StorageReference thumb_filepath_image = mImageStorage.child("profile_images").child("thumbs").child(current_user_id + ".jpg");
+//
+//                    filepath.putFile(resultUri)
+//                            .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+//                                @Override
+//                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+//                                    if (!task.isSuccessful()) {
+//                                        throw task.getException();
+//                                    }
+//
+//                                    // Continue with the task to get the download URL
+//                                    return filepath.getDownloadUrl();
+//                                }
+//                            })
+//                            .addOnCompleteListener(new OnCompleteListener<Uri>() {
+//                                @Override
+//                                public void onComplete(@NonNull final Task<Uri> task) {
+//                                    if (task.isSuccessful()) {
+//                                        final Uri downloadUri = task.getResult();
+//                                        //final String download_url = task.getResult().getDownloadUrl().toString();
+//                                        final String download_url = downloadUri.toString();
+//                                        UploadTask uploadTask = thumb_filepath_image.putBytes(thumb_byte);
+//                                        uploadTask
+//                                                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+//                                                    @Override
+//                                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+//                                                        if (!task.isSuccessful()) {
+//                                                            throw task.getException();
+//                                                        }
+//
+//                                                        // Continue with the task to get the download URL
+//                                                        return thumb_filepath_image.getDownloadUrl();
+//                                                    }
+//                                                })
+//                                                .addOnCompleteListener(new OnCompleteListener<Uri>() {
+//                                                    @Override
+//                                                    public void onComplete(@NonNull Task<Uri> innertask) {
+//                                                        Uri thumbdownloadUri = innertask.getResult();
+//                                                        String thumb_downloadUrl = thumbdownloadUri.toString();
+//                                                        //String thumb_downloadUrl=thumb_task.getResult().getUploadSessionUri().toString();
+//                                                        if (task.isSuccessful()) {
+//                                                            Map update_hashmap = new HashMap();
+//                                                            update_hashmap.put("image", download_url);
+//                                                            update_hashmap.put("thumb_image", thumb_downloadUrl);
+//
+//                                                            mUserDatabase.updateChildren(update_hashmap).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                                @Override
+//                                                                public void onComplete(@NonNull Task<Void> task) {
+//                                                                    if (task.isSuccessful()) {
+//                                                                        mProgressDialog.dismiss();
+//                                                                        loading.setVisibility(View.VISIBLE);
+//                                                                        Glide
+//                                                                                .with(getApplicationContext())
+//                                                                                .load(download_url)
+//                                                                                .into(mDisplayImage);
+//                                                                        loading.setVisibility(View.GONE);
+//                                                                    }
+//                                                                }
+//                                                            });
+//                                                        } else {
+//                                                            mProgressDialog.hide();
+//                                                            Snackbar.make(rootLayout, "error in uploading thumbnail..", Snackbar.LENGTH_LONG).show();
+//                                                        }
+//                                                    }
+//                                                });
+//
+//                                    } else {
+//                                        Snackbar.make(rootLayout, "error in uploading....", Snackbar.LENGTH_LONG).show();
+//                                    }
+//                                }
+//                            });
+//                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+//                    Exception error = result.getError();
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void takeHighQualityPhoto() {

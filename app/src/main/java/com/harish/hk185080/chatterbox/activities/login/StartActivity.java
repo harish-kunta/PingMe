@@ -1,4 +1,4 @@
-package com.harish.hk185080.chatterbox;
+package com.harish.hk185080.chatterbox.activities.login;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,9 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +23,9 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,6 +38,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,39 +50,30 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.harish.hk185080.chatterbox.MainActivity;
+import com.harish.hk185080.chatterbox.R;
+import com.harish.hk185080.chatterbox.activities.register.RegisterActivity;
 import com.harish.hk185080.chatterbox.data.MyData;
 
 import java.util.HashMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class StartActivity extends AppCompatActivity {
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "StartActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private ScrollView rootLayout;
-
-    private DatabaseReference mUserDatabase;
+    public String token;
     ProgressDialog progressDialog;
     int RC_SIGN_IN = 999;
     MyData myData;
-    public String token;
-
-    @BindView(R.id.input_email)
     EditText _emailText;
-    @BindView(R.id.input_password)
     EditText _passwordText;
-    @BindView(R.id.btn_login)
     Button _loginButton;
-    @BindView(R.id.link_signup)
     TextView _signupLink;
-    @BindView(R.id.forgot_password)
     TextView _forgotPassword;
     GoogleSignInClient mGoogleSignInClient;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private ScrollView rootLayout;
+    private DatabaseReference mUserDatabase;
     private DatabaseReference mDatabase;
     private ProgressDialog mRegProgress;
 
@@ -90,8 +82,17 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        myData = new MyData();
+
         rootLayout = findViewById(R.id.rootlayout);
+        // set all the views here
+        _emailText = findViewById(R.id.input_email);
+        _passwordText = findViewById(R.id.input_password);
+        _loginButton = findViewById(R.id.btn_login);
+        _signupLink = findViewById(R.id.link_signup);
+        _forgotPassword = findViewById(R.id.forgot_password);
+
+        myData = new MyData();
+
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -117,7 +118,6 @@ public class StartActivity extends AppCompatActivity {
                     .build();
             mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-            ButterKnife.bind(this);
             SignInButton signInButton = findViewById(R.id.sign_in_button);
             signInButton.setSize(SignInButton.SIZE_STANDARD);
 
@@ -514,18 +514,18 @@ public class StartActivity extends AppCompatActivity {
                                 Snackbar.make(rootLayout, "Login failed", Snackbar.LENGTH_LONG).show();
                                 mRegProgress.dismiss();
                             } else {
-                                Log.e("GoogleSignIn",acct.getPhotoUrl().toString());
+                                Log.e("GoogleSignIn", acct.getPhotoUrl().toString());
                                 String lowQualityPic = acct.getPhotoUrl().toString();
                                 String highQualityPic = lowQualityPic.replace("s96-c", "s240-c");
 
-                                registerUser(acct.getDisplayName(),lowQualityPic, highQualityPic, acct.getEmail());
+                                registerUser(acct.getDisplayName(), lowQualityPic, highQualityPic, acct.getEmail());
                             }
                         }
                     });
         }
     }
 
-    private void registerUser(final String displayName,final String thumb, final String profilepic, final String email) {
+    private void registerUser(final String displayName, final String thumb, final String profilepic, final String email) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = currentUser.getUid();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -592,24 +592,25 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public String getTokenId() {
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "getInstanceId failed", task.getException());
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        token = task.getResult().getToken();
-
-                        // Log and toast
-                        Log.d(TAG, token);
-
-                    }
-                });
-        return token;
+//        FirebaseInstanceId.getInstance().getInstanceId()
+//                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+//                        if (!task.isSuccessful()) {
+//                            Log.w(TAG, "getInstanceId failed", task.getException());
+//                            return;
+//                        }
+//
+//                        // Get new Instance ID token
+//                        token = task.getResult().getToken();
+//
+//                        // Log and toast
+//                        Log.d(TAG, token);
+//
+//                    }
+//                });
+//        return token;
+        return null;
     }
 
     private boolean checkGooglePlayServices() {

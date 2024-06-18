@@ -124,13 +124,13 @@ public class ProfileImageActivity extends AppCompatActivity {
                 finish();
                 overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                 return true;
-            case R.id.download_image:
-                if (myData.isInternetConnected(ProfileImageActivity.this)) {
-                    requestPermission();
-                } else {
-                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
-                }
-                return true;
+//            case R.id.download_image:
+//                if (myData.isInternetConnected(ProfileImageActivity.this)) {
+//                    requestPermission();
+//                } else {
+//                    Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+//                }
+//                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -174,6 +174,7 @@ public class ProfileImageActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             downloadFile(image);
         }

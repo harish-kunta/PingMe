@@ -58,9 +58,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.harish.hk185080.chatterbox.Services.NetworkChangeReceiver;
+import com.harish.hk185080.chatterbox.activities.login.StartActivity;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.harish.hk185080.chatterbox.utils.RevealAnimation;
 
@@ -531,24 +530,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void addToken() {
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "getInstanceId failed", task.getException());
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-
-                        // Log and toast
-                        String msg = token;
-                        Log.d(TAG, msg);
-                        mUserRef.child("device_token").setValue(msg);
-                    }
-                });
+//        FirebaseInstanceId.getInstance().getInstanceId()
+//                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+//                        if (!task.isSuccessful()) {
+//                            Log.w(TAG, "getInstanceId failed", task.getException());
+//                            return;
+//                        }
+//
+//                        // Get new Instance ID token
+//                        String token = task.getResult().getToken();
+//
+//                        // Log and toast
+//                        String msg = token;
+//                        Log.d(TAG, msg);
+//                        mUserRef.child("device_token").setValue(msg);
+//                    }
+//                });
     }
 
     @Override
@@ -892,6 +891,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -900,8 +900,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
             }
         }
-
-
     }
 
     @Override
