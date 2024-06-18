@@ -77,46 +77,34 @@ import com.harish.hk185080.chatterbox.data.MyData;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RegisterHelper {
-
-    private static final String TAG = "RegisterHelper";
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public final static String AUTH_KEY_FCM = "AIzaSyA0FB_ByKW7-UIGhLzpE4E0NpROWccjwbs";
+    public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
+    private static final String TAG = "MainActivity";
+    public static CoordinatorLayout rootLayout;
+    public static View Header;
+    public static AppBarLayout appBarLayout;
+    public String deviceToken;
+    IntentFilter intentFilter;
+    NetworkChangeReceiver receiver;
+    String CHANNEL_ID = "MESSAGES";
+    boolean nullvalue = false;
+    TabLayout tabLayout;
+    ViewPager mpager;
+    Toolbar toolbar;
+    FirebaseUser currentUser;
+    Menu menu;
+    ImageView notfound;
+    GoogleSignInClient mGoogleSignInClient;
+    NavigationView navigationView;
+    CircleImageView circleImageView;
     private FirebaseAuth mAuth;
     private FirebaseUser mCurrentUser;
+    private DatabaseReference mUserDatabase;
+    private MyData myData;
     private DatabaseReference mUserRef;
 
-    public RegisterHelper() {
-        mAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mAuth.getCurrentUser();
-    }
-
-    public FirebaseUser getCurrentUser() {
-        return mAuth.getCurrentUser();
-    }
-
-    public void updateUserStatus(Context context) {
-        if (mCurrentUser != null) {
-            mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mCurrentUser.getUid());
-            mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-            String deviceToken = FirebaseInstanceId.getInstance().getToken();
-            if (!TextUtils.isEmpty(deviceToken)) {
-                mUserRef.child("device_token").setValue(deviceToken);
-            }
-        }
-    }
-
-    public void signOut(Context context) {
-        mAuth.signOut();
-        if (mCurrentUser != null) {
-            mUserRef.child("device_token").setValue(null);
-            mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
-        }
-        Intent startIntent = new Intent(context, LoginActivity.class);
-        context.startActivity(startIntent);
-        // Ensure MainActivity is finished to prevent going back to it on back press
-        ((MainActivity) context).finish();
-    }
-
-    public void sendFeedback(Context context) {
+    public static void sendFeedback(Context context) {
         String body = null;
         int code;
         try {
@@ -126,7 +114,6 @@ public class RegisterHelper {
                     Build.VERSION.RELEASE + "\n App Version: " + body + "." + code + "\n Device Brand: " + Build.BRAND +
                     "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Error getting package info: " + e.getMessage());
         }
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
@@ -136,30 +123,626 @@ public class RegisterHelper {
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
     }
 
-    public void updateDeviceToken() {
-        String deviceToken = FirebaseInstanceId.getInstance().getToken();
-        if (!TextUtils.isEmpty(deviceToken) && mUserRef != null) {
-            mUserRef.child("device_token").setValue(deviceToken);
-        }
-    }
+    public void init() {
 
-    public void updateUserUI(final Context context, final FirebaseUser currentUser, final NavigationView navigationView,
-                             final TextView textView, final TextView textView2, final CircleImageView circleImageView) {
-        if (currentUser != null) {
-            mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser.getUid());
-            mUserRef.keepSynced(true);
-            mUserRef.addValueEventListener(new ValueEventListener() {
+        //Firebase notifications
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId = getString(R.string.default_notification_channel_id);
+            String channelName = getString(R.string.default_notification_channel_name);
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_LOW));
+        }
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d(TAG, "Key: " + key + " Value: " + value);
+            }
+        }
+
+
+        navigationView = findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+            navigationView.setItemIconTintList(null);
+
+        }
+        rootLayout = findViewById(R.id.rootlayout);
+        toolbar = findViewById(R.id.toolbar);
+        // toolbar.setTitleTextColor(this.getResources().getColor(R.color.invertcolor));
+        setTitle("Chats");
+        tabLayout = findViewById(R.id.mainTabLayout);
+
+
+        mpager = findViewById(R.id.viewpagermain);
+
+        if (mpager != null && tabLayout != null) {
+
+            mpager.setOffscreenPageLimit(2);
+
+            mpager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    // Update UI here based on dataSnapshot
-                    // Example: update navigation drawer header, user name, image, etc.
+                public Fragment getItem(int position) {
+                    switch (position % 3) {
+                        case 0:
+
+                            ChatsFragment chatsFragment = new ChatsFragment();
+                            return chatsFragment;
+
+                        case 1:
+
+                            FavouritesFragment favouritesFragment = new FavouritesFragment();
+                            return favouritesFragment;
+
+                        case 2:
+
+                            FriendsFragment friendsFragment = new FriendsFragment();
+                            return friendsFragment;
+
+                        default:
+                            return null;
+                    }
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(TAG, "Failed to read user data.", databaseError.toException());
+                public int getCount() {
+                    return 3;
+                }
+
+                @Override
+                public CharSequence getPageTitle(int position) {
+                    switch (position % 3) {
+                        case 0:
+                            return "";
+                        case 1:
+                            return "";
+                        case 2:
+                            return "";
+
+
+                    }
+                    return "";
                 }
             });
+            mpager
+                    .setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+                        @Override
+                        public void onPageSelected(int position) {
+                            // TODO Auto-generated method stub
+                            switch (position) {
+                                case 0:
+
+                                    setTitle("Chats");
+                                    break;
+                                case 1:
+
+                                    setTitle("Favourites");
+                                    break;
+                                case 2:
+
+                                    setTitle("Friends");
+                                    break;
+                                default:
+                                    return;
+                            }
+
+                        }
+
+                        @Override
+                        public void onPageScrolled(int arg0, float arg1, int arg2) {
+                            // TODO Auto-generated method stub
+
+                        }
+
+                        @Override
+                        public void onPageScrollStateChanged(int pos) {
+                            // TODO Auto-generated method stub
+
+                        }
+                    });
+            tabLayout.setupWithViewPager(mpager);
+
+            tabLayout.getTabAt(0).setIcon(R.drawable.ic_chat_white_24dp);
+            tabLayout.getTabAt(1).setIcon(R.drawable.ic_favorite_border_white_24dp);
+            tabLayout.getTabAt(2).setIcon(R.drawable.ic_people_outline_white_24dp);
+
+
+            tabLayout.setOnTabSelectedListener(
+                    new TabLayout.ViewPagerOnTabSelectedListener(mpager) {
+                        @Override
+                        public void onTabReselected(TabLayout.Tab tab) {
+                            super.onTabSelected(tab);
+                            RecyclerView recyclerView;
+                            int numTab = tab.getPosition();
+                            //  if (fab != null)
+                            //    animateIn(fab);
+
+                            switch (numTab) {
+                                case 0:
+
+                                    recyclerView = findViewById(R.id.conv_list);
+                                    setTitle("Chats");
+                                    if (recyclerView != null) {
+                                        recyclerView.smoothScrollToPosition(0);
+                                    }
+
+                                    break;
+                                case 1:
+                                    setTitle("Favourites");
+                                    recyclerView = findViewById(R.id.friends_list);
+
+                                    if (recyclerView != null) {
+                                        recyclerView.smoothScrollToPosition(0);
+                                    }
+                                    break;
+                                case 2:
+                                    setTitle("Friends");
+                                    recyclerView = findViewById(R.id.conv_list);
+
+                                    if (recyclerView != null) {
+                                        recyclerView.smoothScrollToPosition(0);
+                                    }
+                                    break;
+
+                            }
+                            if (appBarLayout != null)
+                                appBarLayout.setExpanded(true, true);
+
+                        }
+
+                    });
+
+
+        }
+
+
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        if (drawer != null) {
+            drawer.setDrawerListener(toggle);
+        }
+        toggle.syncState();
+
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //Move to Profile Activity
+        Bundle extras = getIntent().getExtras();
+        String userId;
+        String notificationType;
+        String userName;
+        if (extras != null) {
+            userId = extras.getString("user_id");
+            notificationType = extras.getString("type");
+            userName = extras.getString("user_name");
+            if (notificationType != null) {
+                if (notificationType.equals("request")) {
+                    sendToProfile(userId);
+                } else if (notificationType.equals("message")) {
+                    sendToChat(userId, userName);
+                }
+            }
+
+        }
+
+        myData = new MyData();
+
+
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        appBarLayout = findViewById(R.id.mainappbar);
+        //notfound = (ImageView) findViewById(R.id.notfound);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // startRevealActivity(view);
+                startActivity(new Intent(MainActivity.this, UsersActivity.class));
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                // startActivity(new Intent(MainActivity.this, ChatMain.class));
+            }
+        });
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+
+            init();
+            Header = navigationView.getHeaderView(0);
+            final TextView textView = Header.findViewById(R.id.name);
+
+
+            final TextView textView2 = Header.findViewById(R.id.score);
+            circleImageView = Header.findViewById(R.id.CimageView);
+
+
+            if (mAuth.getCurrentUser() != null) {
+                mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
+            }
+            Header.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openUserPage();
+                }
+            });
+
+            intentFilter = new IntentFilter();
+            intentFilter.addAction(CONNECTIVITY_ACTION);
+            receiver = new NetworkChangeReceiver();
+
+            textView2.setVisibility(View.VISIBLE);
+            final String current_uid = mCurrentUser.getUid();
+
+            mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
+            mUserDatabase.keepSynced(true);
+            mUserDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Object nameobj, imageobj, statusobj, thumb_imageobj;
+
+
+                    try {
+                        nameobj = dataSnapshot.child("name").getValue();
+                        imageobj = dataSnapshot.child("image").getValue();
+                        statusobj = dataSnapshot.child("status").getValue();
+                        thumb_imageobj = dataSnapshot.child("thumb_image").getValue();
+                        if (nameobj == null) {
+                            Log.e("Harishtest", "call");
+                            openEditPage();
+                        } else if (imageobj == null) {
+
+                            openEditPage();
+
+                        } else if (statusobj == null) {
+
+                            openEditPage();
+                        } else if (thumb_imageobj == null) {
+
+                            openEditPage();
+
+                        } else {
+
+                            String name = nameobj.toString();
+
+
+                            final String image = imageobj.toString();
+                            String status = statusobj.toString();
+                            String thumb_image = thumb_imageobj.toString();
+
+                            textView.setText(name);
+                            //textView1.setText(status);
+                            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(current_uid);
+                            myRef.keepSynced(true);
+                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    // textView2.setText(dataSnapshot.getChildrenCount()+"");
+                                    textView2.setText(getString(R.string.friends, dataSnapshot.getChildrenCount()));
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            if (!image.equals("default")) {
+                                Glide
+                                        .with(getApplicationContext())
+                                        .load(image)
+                                        .into(circleImageView);
+
+                            } else {
+                                circleImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_account_circle_white_48dp));
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+        } else {
+            sendToStart();
+        }
+
+
+    }
+
+    private void openEditPage() {
+        Intent uploadIntent = new Intent(MainActivity.this, EditProfileActivity.class);
+        uploadIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(uploadIntent);
+    }
+
+    private void sendToChat(String userId, String userName) {
+        Intent chatIntent = new Intent(MainActivity.this, ChatOpenActivity.class);
+        chatIntent.putExtra("user_id", userId);
+        chatIntent.putExtra("user_name", userName);
+        startActivity(chatIntent);
+    }
+
+    private void sendToProfile(String userId) {
+        Intent profileIntent = new Intent(MainActivity.this, MaterialProfileActivity.class);
+        profileIntent.putExtra("user_id", userId);
+        startActivity(profileIntent);
+    }
+
+    private void openUserPage() {
+        Intent settingsIntent = new Intent(MainActivity.this, MaterialSettingsActivity.class);
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, Header.findViewById(R.id.CimageView), "profileImage");
+        startActivity(settingsIntent, optionsCompat.toBundle());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            sendToStart();
+        } else {
+            mUserRef.child("online").setValue("true");
         }
     }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
+
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
+
+    private void sendToStart() {
+
+        Intent startIntent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(startIntent);
+        finish();
+    }
+
+    private void feedback() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer != null) {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        }
+
+
+        View viewInflated = LayoutInflater.from(MainActivity.this).inflate(R.layout.feedback_dialog, (ViewGroup) findViewById(android.R.id.content), false);
+// Set up the input
+        final EditText input = viewInflated.findViewById(R.id.feedback_title);
+        final EditText messageInput = viewInflated.findViewById(R.id.feedback_description);
+
+        final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                .setView(viewInflated)
+                .setTitle("Please provide your valuable feedback here")
+                .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        // TODO Do something
+
+                        //Dismiss once everything is OK.
+                        if (myData.isInternetConnected(MainActivity.this)) {
+                            final String inputString = input.getText().toString();
+                            final String messageInputString = messageInput.getText().toString();
+                            if (!TextUtils.isEmpty(inputString) && !TextUtils.isEmpty(messageInputString)) {
+                                dialog.dismiss();
+                                final String feedbackTitle = input.getText().toString().trim();
+                                String feedbackDescription = messageInput.getText().toString().trim();
+                                final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                emailIntent.setType("text/plain");
+                                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"harishtanu007@gmail.com"});
+                                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, feedbackTitle);
+                                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, feedbackDescription);
+
+
+                                emailIntent.setType("message/rfc822");
+
+                                try {
+                                    startActivity(Intent.createChooser(emailIntent,
+                                            "Send email using..."));
+                                } catch (android.content.ActivityNotFoundException ex) {
+                                    Snackbar.make(rootLayout, "No email clients installed.", Snackbar.LENGTH_LONG).show();
+                                }
+                            } else if (TextUtils.isEmpty(inputString)) {
+                                Snackbar.make(rootLayout, "Title cannot be Empty", Snackbar.LENGTH_LONG).show();
+                            } else if (TextUtils.isEmpty(messageInputString)) {
+                                Snackbar.make(rootLayout, "Description cannot be Empty", Snackbar.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Snackbar.make(rootLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                negative.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+            }
+        });
+        dialog.show();
+
+    }
+
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                    }
+                });
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        if (id == R.id.myaccount) {
+            openUserPage();
+            return false;
+        } else if (id == R.id.share) {
+            shareApp();
+            return false;
+
+        } else if (id == R.id.aboutus) {
+            startActivity(new Intent(MainActivity.this, AboutActivity.class));
+            return false;
+        } else if (id == R.id.app_settings) {
+            startActivity(new Intent(MainActivity.this, NewSettingsActivty.class));
+            return false;
+        } else if (id == R.id.privacy_policy) {
+            startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
+            return false;
+        } else if (id == R.id.logout_button) {
+            logout();
+            return false;
+        } else if (id == R.id.allUsers) {
+            openPopularUsers();
+            return false;
+        } else if (id == R.id.myRequests) {
+            Intent i = new Intent(MainActivity.this, Request_Activity.class);
+            startActivity(i);
+            return false;
+
+        } else if (id == R.id.feedback) {
+
+            sendFeedback(getApplicationContext());
+            return false;
+        }
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+
+        return false;
+    }
+
+
+    private void logout() {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(MainActivity.this);
+        }
+        builder
+                .setMessage("Are you sure you want to Log out?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with logout
+                        signOut();
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        if (currentUser != null) {
+                            mUserRef.child("device_token").setValue(null);
+                            mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
+                            FirebaseAuth.getInstance().signOut();
+                            sendToStart();
+                        }
+
+
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+
+    }
+
+    private void shareApp() {
+        try {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "Ping Me");
+            String sAux = "\nCheck out new app  PingMe\n\n";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=com.harish.hk185080.chatterbox\n\n";
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "choose one"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openPopularUsers() {
+        Intent popularUsersIntent = new Intent(MainActivity.this, PopularUsersActivity.class);
+        startActivity(popularUsersIntent);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer != null) {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                finish();
+            }
+        }
+    }
+
+
 }
