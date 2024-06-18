@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
-
+import com.harish.hk185080.chatterbox.activities.home.MainActivity;
 
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {

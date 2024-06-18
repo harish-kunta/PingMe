@@ -11,7 +11,7 @@ import android.widget.ScrollView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.harish.hk185080.chatterbox.R;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.database.DataSourceHelper;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
@@ -68,7 +68,7 @@ public class RegisterHelper {
     }
 
     private void openLoginPage() {
-        Intent intent = new Intent(context, StartActivity.class);
+        Intent intent = new Intent(context, LoginActivity.class);
         context.startActivity(intent);
         activity.finish();
     }

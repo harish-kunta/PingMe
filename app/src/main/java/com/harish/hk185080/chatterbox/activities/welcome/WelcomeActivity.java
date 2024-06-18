@@ -14,9 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.harish.hk185080.chatterbox.MainActivity;
+import com.harish.hk185080.chatterbox.activities.home.MainActivity;
 import com.harish.hk185080.chatterbox.R;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -30,7 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
         findViewById(R.id.agree_and_continue_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
             }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.harish.hk185080.chatterbox.MainActivity"
+    tools:context="com.harish.hk185080.chatterbox.activities.home.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <androidx.viewpager.widget.ViewPager

@@ -27,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -60,7 +59,7 @@ import com.harish.hk185080.chatterbox.PrivacyPolicyActivity;
 import com.harish.hk185080.chatterbox.R;
 import com.harish.hk185080.chatterbox.Request_Activity;
 import com.harish.hk185080.chatterbox.Services.NetworkChangeReceiver;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.UsersActivity;
 import com.harish.hk185080.chatterbox.adapter.AdapterListInbox;
 import com.harish.hk185080.chatterbox.data.MyData;
@@ -85,7 +84,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.fabric.sdk.android.Fabric;
 
 import static com.harish.hk185080.chatterbox.data.Constants.CONNECTIVITY_ACTION;
 
@@ -178,7 +176,6 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
         myData = new MyData();
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        Fabric.with(this, new Crashlytics());
         fab = findViewById(R.id.fab);
         text = findViewById(R.id.header);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -709,7 +706,7 @@ public class BottomNavigationShifting extends AppCompatActivity implements Navig
     }
 
     private void sendToStart() {
-        Intent startIntent = new Intent(getApplicationContext(), StartActivity.class);
+        Intent startIntent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

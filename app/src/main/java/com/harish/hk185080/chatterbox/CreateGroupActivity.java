@@ -34,7 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -440,7 +440,7 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(CreateGroupActivity.this, StartActivity.class);
+        Intent startIntent = new Intent(CreateGroupActivity.this, LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

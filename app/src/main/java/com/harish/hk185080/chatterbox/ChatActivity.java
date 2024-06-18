@@ -29,7 +29,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -342,7 +342,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(ChatActivity.this, StartActivity.class);
+        Intent startIntent = new Intent(ChatActivity.this, LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

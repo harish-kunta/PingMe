@@ -52,7 +52,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.harish.hk185080.chatterbox.utils.PhotoFullPopupWindow;
 
@@ -486,7 +486,7 @@ public class MaterialSettingsActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(getApplicationContext(), StartActivity.class);
+        Intent startIntent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

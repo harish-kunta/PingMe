@@ -51,7 +51,7 @@ import com.harish.hk185080.chatterbox.Network.ApiUtils;
 import com.harish.hk185080.chatterbox.Network.FirebaseMessage;
 import com.harish.hk185080.chatterbox.Network.MessageData;
 import com.harish.hk185080.chatterbox.Network.NotifyData;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -496,7 +496,7 @@ public class ChatOpenActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(ChatOpenActivity.this, StartActivity.class);
+        Intent startIntent = new Intent(ChatOpenActivity.this, LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

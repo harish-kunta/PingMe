@@ -50,7 +50,7 @@ import com.harish.hk185080.chatterbox.Network.ApiUtils;
 import com.harish.hk185080.chatterbox.Network.FirebaseMessage;
 import com.harish.hk185080.chatterbox.Network.MessageData;
 import com.harish.hk185080.chatterbox.Network.NotifyData;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.data.MyData;
 import com.harish.hk185080.chatterbox.utils.PhotoFullPopupWindow;
 
@@ -762,7 +762,7 @@ public class MaterialProfileActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(MaterialProfileActivity.this, StartActivity.class);
+        Intent startIntent = new Intent(MaterialProfileActivity.this, LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

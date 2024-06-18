@@ -51,7 +51,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".activities.home.MainActivity"
             android:exported="true"
             android:launchMode = "singleTop">
             <intent-filter>
@@ -67,7 +67,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.login.StartActivity"
+        <activity android:name=".activities.login.LoginActivity"
             android:launchMode = "singleTop"/>
         <activity
             android:name=".activities.welcome.WelcomeActivity"
@@ -82,11 +82,11 @@
         </activity>
         <activity
             android:name=".activities.register.RegisterActivity"
-            android:parentActivityName=".activities.login.StartActivity"
+            android:parentActivityName=".activities.login.LoginActivity"
             android:launchMode = "singleTop"/>
         <activity
             android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".activities.home.MainActivity"
             android:launchMode = "singleTop"/>
         <activity
             android:name=".StatusActivity"
@@ -94,14 +94,14 @@
             android:launchMode = "singleTop"/>
         <activity
             android:name=".UsersActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".activities.home.MainActivity"
             android:launchMode = "singleTop"/>
         <activity android:name=".ProfileActivity"
             android:launchMode = "singleTop"/>
         <activity android:name=".NewMainActivtiy.BottomNavigationShifting"/>
         <activity
             android:name=".ChatActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".activities.home.MainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:launchMode = "singleTop"/>
 
@@ -121,21 +121,21 @@
             android:launchMode = "singleTop"/>
         <activity
             android:name=".ChatOpenActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".activities.home.MainActivity"
             android:launchMode="singleInstance"
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.harish.hk185080.chatterbox.MainActivity" />
+                android:value="com.harish.hk185080.chatterbox.activities.home.MainActivity" />
         </activity>
         <activity
             android:name=".Request_Activity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".activities.home.MainActivity"
             android:launchMode = "singleTop"/>
 
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.harish.hk185080.chatterbox.MainActivity" />
+            android:value="com.harish.hk185080.chatterbox.activities.home.MainActivity" />
         <activity
             android:name=".SettingsImageActivity"
             android:parentActivityName=".SettingsActivity"

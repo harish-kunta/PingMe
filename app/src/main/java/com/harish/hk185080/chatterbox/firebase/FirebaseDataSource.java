@@ -54,8 +54,18 @@ public class FirebaseDataSource implements IDataSource {
                 if (firebaseUser != null) {
                     firebaseUser.sendEmailVerification().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
-                            // Redirect the user to the OTP verification page
-                            callback.onSuccess();
+                            //save the user details in the database
+                            uploadUser(user, new IDataSourceCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    callback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+
+                                }
+                            });
                         }
                     });
                 } else {
@@ -64,6 +74,14 @@ public class FirebaseDataSource implements IDataSource {
             } else {
                 callback.onFailure("Error creating the user");
             }
+        });
+    }
+
+
+    public void uploadUser(User user, IDataSourceCallback callback) {
+        //TODO: verify the error message and change it to on complete listener if error message is too long
+        usersDb.child(firebaseUser.getUid()).setValue(user).addOnSuccessListener(unused -> callback.onSuccess()).addOnFailureListener(e -> {
+
         });
     }
 }

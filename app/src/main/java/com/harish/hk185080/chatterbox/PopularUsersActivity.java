@@ -25,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.welcomeScreen.Popular;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -213,7 +213,7 @@ public class PopularUsersActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(PopularUsersActivity.this, StartActivity.class);
+        Intent startIntent = new Intent(PopularUsersActivity.this, LoginActivity.class);
         startActivity(startIntent);
         finish();
     }

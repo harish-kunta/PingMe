@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.harish.hk185080.chatterbox.R;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText nameText, emailText, mobileText, passwordText, reEnterPasswordText;
@@ -58,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     // Navigate to the login activity
     private void navigateToLogin() {
-        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         finish(); // Finish the current activity
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out); // Apply transition animation

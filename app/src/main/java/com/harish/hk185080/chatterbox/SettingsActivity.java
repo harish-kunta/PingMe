@@ -34,7 +34,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.harish.hk185080.chatterbox.activities.login.StartActivity;
+import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -459,7 +459,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void sendToStart() {
 
-        Intent startIntent = new Intent(SettingsActivity.this, StartActivity.class);
+        Intent startIntent = new Intent(SettingsActivity.this, LoginActivity.class);
         startActivity(startIntent);
         finish();
     }
