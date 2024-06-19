@@ -85,10 +85,28 @@ public class User {
         return lastLogin;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID='" + userID + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", profilePictureURL='" + profilePictureURL + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", gender='" + gender + '\'' +
+                ", location='" + location + '\'' +
+                ", bio='" + bio + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", lastLogin='" + lastLogin + '\'' +
+                '}';
+    }
+
     public static class Builder {
         private String userID;
         private String username;
-        private String passwordHash;
         private String email;
         private String phoneNumber;
         private String profilePictureURL;
@@ -101,9 +119,8 @@ public class User {
         private Instant updatedAt = Instant.now();
         private Instant lastLogin;
 
-        public Builder(String username, String passwordHash, String email) {
+        public Builder(String username, String email) {
             this.username = username;
-            this.passwordHash = passwordHash;
             this.email = email;
         }
 
@@ -160,25 +177,6 @@ public class User {
         public User build() {
             return new User(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID='" + userID + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", profilePictureURL='" + profilePictureURL + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
-                ", gender='" + gender + '\'' +
-                ", location='" + location + '\'' +
-                ", bio='" + bio + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", lastLogin='" + lastLogin + '\'' +
-                '}';
     }
 
     // Getters for each field can be added here as needed

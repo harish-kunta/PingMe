@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ScrollView;
 
@@ -12,11 +13,18 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.harish.hk185080.chatterbox.activities.home.MainActivity;
 import com.harish.hk185080.chatterbox.R;
+import com.harish.hk185080.chatterbox.activities.home.MainActivity;
+import com.harish.hk185080.chatterbox.activities.register.RegisterWithDetailsActivity;
+import com.harish.hk185080.chatterbox.cache.UserCache;
+import com.harish.hk185080.chatterbox.database.DataSourceHelper;
+import com.harish.hk185080.chatterbox.interfaces.IDataSource;
+import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
+import com.harish.hk185080.chatterbox.interfaces.IUserDetailsCallback;
+import com.harish.hk185080.chatterbox.model.User;
 
 public class LoginHelper {
+    private static String TAG = "LoginActivity";
     private Context context;
     private ScrollView rootLayout;
     private ProgressDialog progressDialog;
@@ -39,20 +47,39 @@ public class LoginHelper {
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    progressDialog.dismiss();
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user != null) {
-                            updateUI(user);
-                        } else {
-                            onLoginFailed();
+        IDataSource dataSource = DataSourceHelper.getDataSource();
+        dataSource.login(email, password, new IDataSourceCallback() {
+            @Override
+            public void onSuccess() {
+
+                dataSource.getCurrentUserDetails(new IUserDetailsCallback() {
+                    @Override
+                    public void onUserDetailsFetched(User userDetails) {
+                        progressDialog.dismiss();
+                        if (userDetails.getUserID() == null || userDetails.getUserID().isEmpty() || userDetails.getFullName() == null || userDetails.getFullName().isEmpty() || userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
+                            // add a log statement
+                            Log.w(TAG, "User details doesn't exist in the database, redirecting to RegisterWithDetailsActivity");
+                            openSaveDetailsActivity();
                         }
-                    } else {
-                        onLoginFailed();
+
+                        UserCache.getInstance().cacheUser(userDetails);
+                    }
+
+                    @Override
+                    public void onUserDetailsFetchFailed(String errorMessage) {
+                        progressDialog.dismiss();
+                        Log.w(TAG, "User details doesn't exist in the database, redirecting to RegisterWithDetailsActivity");
+                        openSaveDetailsActivity();
                     }
                 });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                progressDialog.dismiss();
+                Snackbar.make(rootLayout, errorMessage, Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     private boolean validate(String email, String password) {
@@ -71,19 +98,16 @@ public class LoginHelper {
         return valid;
     }
 
-    private void updateUI(FirebaseUser user) {
-        String currentUserId = user.getUid();
-        String deviceToken = null; // Set your device token logic here if needed
-
-        // Example: Saving device token to Firebase Realtime Database
-        // mUserDatabase.child(currentUserId).child("device_token").setValue(deviceToken)
-        //         .addOnSuccessListener(aVoid -> sendToMain());
-
-        sendToMain();
-    }
-
     private void sendToMain() {
         context.startActivity(new Intent(context, MainActivity.class));
+        if (context instanceof LoginActivity) {
+            ((LoginActivity) context).finish();
+        }
+    }
+
+    private void openSaveDetailsActivity() {
+        Intent intent = new Intent(context, RegisterWithDetailsActivity.class);
+        context.startActivity(intent);
         if (context instanceof LoginActivity) {
             ((LoginActivity) context).finish();
         }
@@ -98,16 +122,6 @@ public class LoginHelper {
             // Process input and send password reset email
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(rootLayout.getWindowToken(), 0);
-
-            // Example: Sending password reset email
-//             mAuth.sendPasswordResetEmail(email)
-//                     .addOnCompleteListener(task -> {
-//                         if (task.isSuccessful()) {
-//                             Snackbar.make(rootLayout, "Reset Link sent to " + email, Snackbar.LENGTH_LONG).show();
-//                         } else if (task.getException() instanceof FirebaseAuthInvalidUserException) {
-//                             Snackbar.make(rootLayout, "Provided Email ID is not Registered!", Snackbar.LENGTH_LONG).show();
-//                         }
-//                     });
         });
         builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);

@@ -4,6 +4,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.harish.hk185080.chatterbox.fragments.chats.ChatsFragment;
+
 class SectionPagerAdapter extends FragmentPagerAdapter {
     public SectionPagerAdapter(FragmentManager fm) {
         super(fm);

@@ -1,45 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/rootlayout"
-    tools:context=".ChatsFragment">
+    tools:context=".fragments.chats.ChatsFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/conv_list"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"></androidx.recyclerview.widget.RecyclerView>
+        android:orientation="vertical">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/likes_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/no_message_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal|center_vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:src="@drawable/mailbox" />
+                <TextView
+                    android:id="@+id/toolbar_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:textColor="@android:color/black"
+                    android:layout_gravity="left"
+                    android:fontFamily="@font/arizonia"
+                    android:text="Chats"
+                    android:textSize="32sp" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp"
-            android:text="No Messages Yet." />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="2dp"
-            android:text="Start a Conversation." />
-
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="80dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </LinearLayout>
-
-</RelativeLayout>
+</androidx.core.widget.NestedScrollView>

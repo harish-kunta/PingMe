@@ -47,7 +47,7 @@ public class RegisterHelperTest {
         String mobile = "1234567890";
         String password = "password123";
         String confirmPassword = "password123";
-        User user = new User.Builder(name, password, email)
+        User user = new User.Builder(name, email)
                 .build();
 
         // Stubbing behavior of mockDataSource

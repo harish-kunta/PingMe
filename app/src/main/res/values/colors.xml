@@ -354,6 +354,9 @@
     <color name="blueColorPrimaryDark">#1976D2</color>
     <color name="colorTransBg">#26000000</color>
 
+    <color name="bottom_navigation">#FFFFFF</color>
+    <color name="chat_message_color">#606060</color>
+
     <!-- Text -->
 
     <!-- Theme 2 -->

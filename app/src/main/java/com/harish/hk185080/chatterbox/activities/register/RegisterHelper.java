@@ -46,7 +46,7 @@ public class RegisterHelper {
             mRegProgress.setCanceledOnTouchOutside(false);
             mRegProgress.setMessage("Creating Account...");
             mRegProgress.show();
-            User user = new User.Builder(name, password, email)
+            User user = new User.Builder(name, email)
                     .build();
 
             IDataSource dataSource = DataSourceHelper.getDataSource();
