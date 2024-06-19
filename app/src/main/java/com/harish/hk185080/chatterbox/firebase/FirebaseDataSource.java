@@ -1,248 +1,182 @@
 package com.harish.hk185080.chatterbox.firebase;
 
-
-import static com.harish.hk185080.chatterbox.model.FirebaseConstants.CHATS;
-import static com.harish.hk185080.chatterbox.model.FirebaseConstants.PROFILE_IMAGES;
-import static com.harish.hk185080.chatterbox.model.FirebaseConstants.USERS;
-
 import android.net.Uri;
-import android.os.Build;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
 import com.harish.hk185080.chatterbox.interfaces.IOnUploadProfileImageListener;
 import com.harish.hk185080.chatterbox.interfaces.IUserDetailsCallback;
 import com.harish.hk185080.chatterbox.model.User;
 
-
 public class FirebaseDataSource implements IDataSource {
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
-    private FirebaseUser firebaseUser;
-    private StorageReference storageReference;
-    private DatabaseReference usersDb;
-    private DatabaseReference chatsDb;
-    private FirebaseDatabase firebaseDatabase;
-
+    private static final String TAG = "FirebaseDataSource";
+    private AuthenticationManager authManager;
+    private UserManager userManager;
+    private ProfileImageManager profileImageManager;
 
     public FirebaseDataSource() {
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = firebaseDatabase.getReference();
-        mDatabase.keepSynced(true);
-        firebaseUser = mAuth.getCurrentUser();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
-        usersDb = firebaseDatabase.getReference(USERS);
-        usersDb.keepSynced(true);
-        chatsDb = firebaseDatabase.getReference(CHATS);
-        chatsDb.keepSynced(true);
+        authManager = new AuthenticationManager();
+        userManager = new UserManager();
+        profileImageManager = new ProfileImageManager();
+        Log.d(TAG, "FirebaseDataSource initialized.");
     }
-
-    public String getCurrentUserId() {
-        if (firebaseUser == null)
-            firebaseUser = mAuth.getCurrentUser();
-        return firebaseUser.getUid();
-    }
-
 
     @Override
     public void createUser(User user, String password, IDataSourceCallback callback) {
-        mAuth.createUserWithEmailAndPassword(user.getEmail(), password).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                if (firebaseUser != null) {
-                    firebaseUser.sendEmailVerification().addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            //save the user details in the database
-                            uploadUser(user, new IDataSourceCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    callback.onSuccess();
-                                }
-
-                                @Override
-                                public void onFailure(String errorMessage) {
-
-                                }
-                            });
+        Log.d(TAG, "createUser called.");
+        try {
+            authManager.createUser(user, password, new IDataSourceCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        String userId = authManager.getCurrentUserId();
+                        if (userId != null) {
+                            tryUploadUser(user, userId, callback, 3);
+                        } else {
+                            Log.e(TAG, "Error retrieving user ID after creation");
+                            callback.onFailure("Error retrieving user ID after creation");
                         }
-                    });
-                } else {
-                    callback.onFailure(task.getException().getMessage());
-                }
-            } else {
-                callback.onFailure("Error creating the user");
-            }
-        });
-    }
-
-
-    public void uploadUser(User user, IDataSourceCallback callback) {
-        //TODO: verify the error message and change it to on complete listener if error message is too long
-        usersDb.child(firebaseUser.getUid()).setValue(user).addOnSuccessListener(unused -> callback.onSuccess()).addOnFailureListener(e -> {
-
-        });
-    }
-
-    @Override
-    public void getCurrentUserDetails(IUserDetailsCallback callback) {
-        if (mAuth.getCurrentUser() != null) {
-            getUserDetails(mAuth.getCurrentUser().getUid(), new IUserDetailsCallback() {
-                @Override
-                public void onUserDetailsFetched(User userDetails) {
-                    callback.onUserDetailsFetched(userDetails);
+                    } catch (Exception e) {
+                        handleException("Exception while retrieving user ID or uploading user", e, callback);
+                    }
                 }
 
                 @Override
-                public void onUserDetailsFetchFailed(String errorMessage) {
-                    callback.onUserDetailsFetchFailed(errorMessage);
+                public void onFailure(String errorMessage) {
+                    Log.e(TAG, "Failed to create user: " + errorMessage);
+                    callback.onFailure(errorMessage);
                 }
             });
-        } else {
-            callback.onUserDetailsFetchFailed("User details not found");
-        }
-    }
-
-    @Override
-    public void getUserDetails(String userId, IUserDetailsCallback callback) {
-        DatabaseReference userRef = usersDb.child(userId);
-        userRef.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                addUserDetails(snapshot, userId, callback);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    @Override
-    public void saveDetails(User user, IDataSourceCallback callback) {
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        if (firebaseUser != null) {
-            if (user.getProfilePictureURL() != null) {
-                //TODO: update this
-                uploadProfileImage(null, new IOnUploadProfileImageListener() {
-                    @Override
-                    public void onSuccess(String imageUrl) {
-                        uploadUser(user, callback, imageUrl);
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        callback.onFailure(errorMessage);
-                    }
-                });
-            } else {
-                uploadUser(user, callback, null);
-            }
-        } else {
-            callback.onFailure("Error saving the user details");
-        }
-    }
-
-    public void uploadUser(User user, IDataSourceCallback callback, String imageUrl) {
-
-        //TODO: verify the error message and change it to on complete listener if error message is too long
-        usersDb.child(firebaseUser.getUid()).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                callback.onSuccess();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
-    }
-
-    private void addUserDetails(DataSnapshot snapshot, String userId, IUserDetailsCallback callback) {
-        if (snapshot.exists()) {
-            User user = snapshot.getValue(User.class);
-            callback.onUserDetailsFetched(user);
-        } else {
-            callback.onUserDetailsFetchFailed("User not found");
-        }
-    }
-
-
-    @Override
-    public void logoutUser(IDataSourceCallback callback) {
-        mAuth.signOut();
-        callback.onSuccess();
-    }
-
-    @Override
-    public void uploadProfileImage(Uri imageUri, IOnUploadProfileImageListener listener) {
-        if (imageUri != null) {
-            String userId = getCurrentUserId();
-            if (userId != null) {
-                StorageReference imageRef = storageReference.child(PROFILE_IMAGES).child(userId + ".jpg");
-                imageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
-                    // Get image URL after successful upload
-                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String imageUrl = uri.toString();
-                        listener.onSuccess(imageUrl);
-                    }).addOnFailureListener(e -> {
-                        listener.onFailure(e.getMessage());
-                    });
-                }).addOnFailureListener(e -> {
-                    listener.onFailure(e.getMessage());
-                });
-            } else {
-                listener.onFailure("Error uploading the user profile picture");
-            }
+        } catch (Exception e) {
+            handleException("Exception in createUser", e, callback);
         }
     }
 
     @Override
     public void login(String email, String password, IDataSourceCallback callback) {
-        mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-            if (mAuth.getCurrentUser().isEmailVerified()) {
-                // user is signed in and email is verified
-                callback.onSuccess();
+        Log.d(TAG, "login called.");
+        authManager.login(email, password, callback);
+    }
+
+    @Override
+    public void logoutUser(IDataSourceCallback callback) {
+        Log.d(TAG, "logoutUser called.");
+        authManager.logout(callback);
+    }
+
+    @Override
+    public void getCurrentUserDetails(IUserDetailsCallback callback) {
+        Log.d(TAG, "getCurrentUserDetails called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                userManager.getUserDetails(userId, callback);
             } else {
-                // user is signed in but email is not verified
-                // callback.onFailure("Please verify your email to login");
-                FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                if (firebaseUser != null) {
-                    firebaseUser.sendEmailVerification().addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            // Redirect the user to the OTP verification page
-                            callback.onFailure("User email not verified, Verification email sent to " + firebaseUser.getEmail());
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
+                Log.e(TAG, "No current user found.");
+                callback.onUserDetailsFetchFailed("No current user found");
+            }
+        } catch (Exception e) {
+            handleException("Exception while getting current user details", e, callback);
+        }
+    }
+
+    @Override
+    public void getUserDetails(String userId, IUserDetailsCallback callback) {
+        Log.d(TAG, "getUserDetails called for user ID: " + userId);
+        try {
+            userManager.getUserDetails(userId, callback);
+        } catch (Exception e) {
+            handleException("Exception while getting user details for user ID: " + userId, e, callback);
+        }
+    }
+
+    @Override
+    public void saveDetails(User user, IDataSourceCallback callback) {
+        Log.d(TAG, "saveDetails called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                if (user.getProfilePictureURL() != null) {
+                    profileImageManager.uploadProfileImage(null, userId, new IOnUploadProfileImageListener() {
                         @Override
-                        public void onFailure(@NonNull Exception e) {
-                            callback.onFailure("Error sending verification email");
+                        public void onSuccess(String imageUrl) {
+                            // TODO : user.setProfilePictureURL(imageUrl); // Assuming you set the profile picture URL here
+                            userManager.uploadUser(user, userId, callback);
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Log.e(TAG, "Failed to upload profile image: " + errorMessage);
+                            callback.onFailure(errorMessage);
                         }
                     });
                 } else {
-                    callback.onFailure("Error logging in");
+                    userManager.uploadUser(user, userId, callback);
+                }
+            } else {
+                Log.e(TAG, "Error saving the user details: userId is null.");
+                callback.onFailure("Error saving the user details");
+            }
+        } catch (Exception e) {
+            handleException("Exception while saving user details", e, callback);
+        }
+    }
+
+    @Override
+    public void uploadProfileImage(Uri imageUri, IOnUploadProfileImageListener listener) {
+        Log.d(TAG, "uploadProfileImage called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                profileImageManager.uploadProfileImage(imageUri, userId, listener);
+            } else {
+                Log.e(TAG, "Error uploading the user profile picture: userId is null.");
+                listener.onFailure("Error uploading the user profile picture, userId is null.");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while uploading profile image: " + e.getMessage(), e);
+            listener.onFailure("Exception while uploading profile image: " + e.getMessage());
+        }
+    }
+
+    private void tryUploadUser(User user, String userId, IDataSourceCallback callback, int retryCount) {
+        Log.d(TAG, "Attempting to upload user details for user ID: " + userId);
+        userManager.uploadUser(user, userId, new IDataSourceCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "User details uploaded successfully.");
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e(TAG, "Failed to upload user details: " + errorMessage);
+                if (retryCount > 0) {
+                    Log.d(TAG, "Retrying to upload user details. Attempts remaining: " + (retryCount - 1));
+                    tryUploadUser(user, userId, callback, retryCount - 1);
+                } else {
+                    Log.e(TAG, "Max retry attempts reached. Reporting failure.");
+                    reportFailureToUploadUser(userId);
+                    callback.onFailure("Failed to upload user details after multiple attempts.");
                 }
             }
-        }).addOnFailureListener(e -> {
-            callback.onFailure(e.getMessage());
         });
+    }
+
+    private void reportFailureToUploadUser(String userId) {
+        // Implement logic to report failure, e.g., log to a monitoring system or notify an admin.
+        Log.e(TAG, "Reporting failure to upload user details for user ID: " + userId);
+        authManager.reportFailureToUploadUser(userId);
+    }
+
+    private void handleException(String message, Exception exception, IDataSourceCallback callback) {
+        Log.e(TAG, message + ": " + exception.getMessage(), exception);
+        callback.onFailure(message + ": " + exception.getMessage());
+    }
+
+    private void handleException(String message, Exception exception, IUserDetailsCallback callback) {
+        Log.e(TAG, message + ": " + exception.getMessage(), exception);
+        callback.onUserDetailsFetchFailed(message + ": " + exception.getMessage());
     }
 }

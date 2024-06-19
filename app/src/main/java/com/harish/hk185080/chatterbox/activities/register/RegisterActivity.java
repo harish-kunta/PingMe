@@ -2,19 +2,19 @@ package com.harish.hk185080.chatterbox.activities.register;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
 import com.harish.hk185080.chatterbox.R;
 import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText nameText, emailText, mobileText, passwordText, reEnterPasswordText;
-    private Button signupButton;
+    private AppCompatButton signupButton;
     private TextView loginLink;
     private ScrollView rootLayout;
     private RegisterHelper registerHelper;

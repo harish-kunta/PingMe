@@ -17,6 +17,10 @@ public class User {
     private Instant updatedAt;
     private Instant lastLogin;
 
+    public User() {
+    }
+
+    // Private constructor to enforce the use of the Builder
     private User(Builder builder) {
         this.userID = builder.userID;
         this.username = builder.username;
@@ -33,6 +37,7 @@ public class User {
         this.lastLogin = builder.lastLogin;
     }
 
+    // Getters for each field
     public String getUserID() {
         return userID;
     }
@@ -98,12 +103,13 @@ public class User {
                 ", gender='" + gender + '\'' +
                 ", location='" + location + '\'' +
                 ", bio='" + bio + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", lastLogin='" + lastLogin + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", lastLogin=" + lastLogin +
                 '}';
     }
 
+    // Builder class
     public static class Builder {
         private String userID;
         private String username;
@@ -119,9 +125,16 @@ public class User {
         private Instant updatedAt = Instant.now();
         private Instant lastLogin;
 
+        // Constructor with required fields
         public Builder(String username, String email) {
             this.username = username;
             this.email = email;
+        }
+
+        // Optional fields with method chaining
+        public Builder userID(String userID) {
+            this.userID = userID;
+            return this;
         }
 
         public Builder phoneNumber(String phoneNumber) {
@@ -174,13 +187,13 @@ public class User {
             return this;
         }
 
+        // Build method to create an instance of User
         public User build() {
             return new User(this);
         }
     }
-
-    // Getters for each field can be added here as needed
 }
+
 
 
 
