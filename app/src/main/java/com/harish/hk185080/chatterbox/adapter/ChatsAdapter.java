@@ -1,14 +1,12 @@
 package com.harish.hk185080.chatterbox.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.harish.hk185080.chatterbox.ChatActivity;
 import com.harish.hk185080.chatterbox.R;
 import com.harish.hk185080.chatterbox.model.ChatThread;
 import com.harish.hk185080.chatterbox.viewholder.ChatsViewHolder;
@@ -43,8 +41,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         holder.mUserLastMessage.setText(chatThread.getEmail());
         holder.setPostImage(chatThread, holder.itemView.getContext());
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ChatActivity.class);
-            context.startActivity(intent);
+//            Intent intent = new Intent(context, ChatActivity.class);
+//            context.startActivity(intent);
         });
     }
 
