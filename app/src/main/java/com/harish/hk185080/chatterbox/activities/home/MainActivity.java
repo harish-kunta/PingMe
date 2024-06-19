@@ -10,10 +10,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -21,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.harish.hk185080.chatterbox.R;
 import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.activities.register.RegisterWithDetailsActivity;
+import com.harish.hk185080.chatterbox.adapter.ViewPagerAdapter;
 import com.harish.hk185080.chatterbox.cache.UserCache;
 import com.harish.hk185080.chatterbox.database.DataSourceHelper;
 import com.harish.hk185080.chatterbox.databinding.ActivityMainBinding;
@@ -35,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ConstraintLayout rootLayout;
 
+    private ViewPager2 viewPager;
+    BottomNavigationView bottomNav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,28 +45,20 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         rootLayout = binding.rootLayout;
-        BottomNavigationView bottomNav = binding.navView;
+        bottomNav = binding.bottomNavView;
 
-        // Set up NavController and AppBarConfiguration
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_chats, R.id.navigation_profile).build();
-
-        // Connect NavController to BottomNavigationView
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(bottomNav, navController);
+        viewPager = binding.viewPager;
+        setupViewPager();
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_activity_main);
                 int id = item.getItemId();
-
                 if (id == R.id.menu_chats) {
-                    navController.navigate(R.id.navigation_chats);
+                    viewPager.setCurrentItem(0, true);
                     return true;
                 } else if (id == R.id.menu_settings) {
-                    navController.navigate(R.id.navigation_profile);
+                    viewPager.setCurrentItem(1, true);
                     return true;
                 }
                 return false;
@@ -104,6 +97,16 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             handleException(e);
         }
+    }
+
+    private void setupViewPager() {
+        viewPager.setAdapter(new ViewPagerAdapter(this));
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                bottomNav.getMenu().getItem(position).setChecked(true);
+            }
+        });
     }
 
     private void openSaveDetailsActivity() {
