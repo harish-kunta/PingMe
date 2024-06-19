@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.harish.hk185080.chatterbox.fragments.settings.ProfileFragment"
+        android:name="com.harish.hk185080.chatterbox.fragments.settings.SettingsFragment"
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_profile" />
 

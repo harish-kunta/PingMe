@@ -81,5 +81,7 @@
     <string name="user_status">User Status</string>
     <string name="user_name">User Name</string>
     <string name="mobile_number">Mobile Number</string>
+    <string name="contacts">Contacts</string>
+    <string name="account_settings">Account settings</string>
 
 </resources>

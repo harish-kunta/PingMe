@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item
-    android:id="@+id/menu_chats"
-    android:title="@string/menu_chats"
-    android:icon="@drawable/ic_baseline_chat_24" />
-
-<item
-    android:id="@+id/menu_settings"
-    android:title="@string/menu_settings"
-    android:icon="@drawable/baseline_settings_24" />
+    <item
+        android:id="@+id/menu_contacts"
+        android:icon="@drawable/baseline_people_24"
+        android:title="@string/contacts" />
+    <item
+        android:id="@+id/menu_chats"
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="@string/menu_chats" />
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/baseline_settings_24"
+        android:title="@string/menu_settings" />
 </menu>

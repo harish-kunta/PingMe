@@ -6,10 +6,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,6 +25,7 @@ import com.harish.hk185080.chatterbox.adapter.ViewPagerAdapter;
 import com.harish.hk185080.chatterbox.cache.UserCache;
 import com.harish.hk185080.chatterbox.database.DataSourceHelper;
 import com.harish.hk185080.chatterbox.databinding.ActivityMainBinding;
+import com.harish.hk185080.chatterbox.fragments.settings.account_settings.AccountSettingsFragment;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
 import com.harish.hk185080.chatterbox.interfaces.IUserDetailsCallback;
@@ -29,12 +33,11 @@ import com.harish.hk185080.chatterbox.model.User;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    BottomNavigationView bottomNav;
     private IDataSource dataSource;
     private ActivityMainBinding binding;
     private ConstraintLayout rootLayout;
-
     private ViewPager2 viewPager;
-    BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +57,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                if (id == R.id.menu_chats) {
+                if (id == R.id.menu_contacts) {
                     viewPager.setCurrentItem(0, true);
                     return true;
-                } else if (id == R.id.menu_settings) {
+                }
+                if (id == R.id.menu_chats) {
                     viewPager.setCurrentItem(1, true);
+                    return true;
+                } else if (id == R.id.menu_settings) {
+                    viewPager.setCurrentItem(2, true);
                     return true;
                 }
                 return false;
@@ -104,7 +111,14 @@ public class MainActivity extends AppCompatActivity {
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                bottomNav.getMenu().getItem(position).setChecked(true);
+                if (position == 3) { // Assuming AccountSettingsFragment is at index 3
+                    // Perform custom handling for AccountSettingsFragment visibility
+                    // For example, hide bottom navigation or modify toolbar
+                    // You can also set a custom title for the toolbar
+                    binding.toolbar.setTitle("Account Settings");
+                } else {
+                    bottomNav.getMenu().getItem(position).setChecked(true);
+                }
             }
         });
     }
@@ -149,5 +163,17 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.bottom_nav_menu, menu);
         return true;
+    }
+
+    public void navigateToSettingsFragment(String title) {
+        Fragment fragment = null;
+        switch (title) {
+            case "Account Settings":
+                viewPager.setCurrentItem(3, true);
+                break;
+            default:
+                // Default behavior
+                break;
+        }
     }
 }

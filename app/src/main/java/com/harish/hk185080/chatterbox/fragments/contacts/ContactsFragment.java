@@ -1,4 +1,4 @@
-package com.harish.hk185080.chatterbox.fragments.settings;
+package com.harish.hk185080.chatterbox.fragments.contacts;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.harish.hk185080.chatterbox.databinding.FragmentProfileBinding;
 
-public class ProfileFragment extends Fragment {
+public class ContactsFragment extends Fragment {
 
     private FragmentProfileBinding binding;
 
@@ -20,7 +20,7 @@ public class ProfileFragment extends Fragment {
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ProfileViewModel profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        ContactsViewModel contactsViewModel = new ViewModelProvider(this).get(ContactsViewModel.class);
 
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
