@@ -4,7 +4,6 @@ import java.time.Instant;
 
 public class User {
     private String userID;
-    private String username;
     private String email;
     private String phoneNumber;
     private String profilePictureURL;
@@ -13,9 +12,9 @@ public class User {
     private String gender;
     private String location;
     private String bio;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private Instant lastLogin;
+    private long createdAt;
+    private long updatedAt;
+    private long lastLogin;
 
     public User() {
     }
@@ -23,7 +22,6 @@ public class User {
     // Private constructor to enforce the use of the Builder
     private User(Builder builder) {
         this.userID = builder.userID;
-        this.username = builder.username;
         this.email = builder.email;
         this.phoneNumber = builder.phoneNumber;
         this.profilePictureURL = builder.profilePictureURL;
@@ -32,18 +30,14 @@ public class User {
         this.gender = builder.gender;
         this.location = builder.location;
         this.bio = builder.bio;
-        this.createdAt = builder.createdAt;
-        this.updatedAt = builder.updatedAt;
-        this.lastLogin = builder.lastLogin;
+        this.createdAt = builder.createdAt.toEpochMilli();
+        this.updatedAt = builder.updatedAt.toEpochMilli();
+        this.lastLogin = builder.lastLogin != null ? builder.lastLogin.toEpochMilli() : 0L;
     }
 
     // Getters for each field
     public String getUserID() {
         return userID;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public String getEmail() {
@@ -79,22 +73,21 @@ public class User {
     }
 
     public Instant getCreatedAt() {
-        return createdAt;
+        return Instant.ofEpochMilli(createdAt);
     }
 
     public Instant getUpdatedAt() {
-        return updatedAt;
+        return Instant.ofEpochMilli(updatedAt);
     }
 
     public Instant getLastLogin() {
-        return lastLogin;
+        return Instant.ofEpochMilli(lastLogin);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "userID='" + userID + '\'' +
-                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", profilePictureURL='" + profilePictureURL + '\'' +
@@ -112,7 +105,6 @@ public class User {
     // Builder class
     public static class Builder {
         private String userID;
-        private String username;
         private String email;
         private String phoneNumber;
         private String profilePictureURL;
@@ -121,13 +113,13 @@ public class User {
         private String gender;
         private String location;
         private String bio;
-        private Instant createdAt = Instant.now();
-        private Instant updatedAt = Instant.now();
+        private Instant createdAt;
+        private Instant updatedAt;
         private Instant lastLogin;
 
         // Constructor with required fields
-        public Builder(String username, String email) {
-            this.username = username;
+        public Builder(String fullName, String email) {
+            this.fullName = fullName;
             this.email = email;
         }
 

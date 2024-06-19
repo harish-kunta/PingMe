@@ -37,35 +37,61 @@ public class MainActivity extends FragmentActivity {
         setContentView(binding.getRoot());
         rootLayout = binding.rootLayout;
         BottomNavigationView navView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_chats, R.id.navigation_settings).build();
+
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_chats, R.id.navigation_settings).build();
+
         NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_activity_main);
-        //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        //navController.navigate(ProfileFragmentDirections.actionGlobalHomeFragment(currentUser));
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         dataSource = DataSourceHelper.getDataSource();
-        dataSource.getCurrentUserDetails(new IUserDetailsCallback() {
-            @Override
-            public void onUserDetailsFetched(User userDetails) {
-                if (userDetails.getUserID() == null || userDetails.getUserID().isEmpty() || userDetails.getFullName() == null || userDetails.getFullName().isEmpty() || userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
-                    // add a log statement
-                    Log.w(TAG, "User details doesn't exist in the database, redirecting to RegisterWithDetailsActivity");
-                    openSaveDetailsActivity();
+
+        try {
+            dataSource.getCurrentUserDetails(new IUserDetailsCallback() {
+                @Override
+                public void onUserDetailsFetched(User userDetails) {
+                    try {
+                        if (userDetails == null) {
+                            Log.w(TAG, "User details are null, redirecting to RegisterWithDetailsActivity");
+                            openSaveDetailsActivity();
+                        } else {
+                            if (userDetails.getFullName() == null || userDetails.getFullName().isEmpty()) {
+                                Log.w(TAG, "User full name is null or empty");
+                                openSaveDetailsActivity();
+                            }
+                            if (userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
+                                Log.w(TAG, "User email is null or empty");
+                                openSaveDetailsActivity();
+                            }
+
+                            // Check other conditions if needed
+
+                            if (userDetails.getFullName() == null || userDetails.getFullName().isEmpty()
+                                    || userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
+                                Log.w(TAG, "Redirecting to RegisterWithDetailsActivity due to missing details");
+                                openSaveDetailsActivity();
+                            }
+                            else {
+                                UserCache.getInstance().cacheUser(userDetails);
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        handleException(e);
+                    }
                 }
 
-                UserCache.getInstance().cacheUser(userDetails);
-            }
-
-            @Override
-            public void onUserDetailsFetchFailed(String errorMessage) {
-                Log.e(TAG, "Error fetching user details: " + errorMessage);
-                Log.e(TAG, "User details not found, redirecting to LoginActivity");
-                Snackbar.make(rootLayout, errorMessage, Snackbar.LENGTH_LONG).show();
-                logoutUser();
-            }
-        });
+                @Override
+                public void onUserDetailsFetchFailed(String errorMessage) {
+                    Log.e(TAG, "Error fetching user details: " + errorMessage);
+                    Log.e(TAG, "User details not found, redirecting to LoginActivity");
+                    Snackbar.make(rootLayout, errorMessage, Snackbar.LENGTH_LONG).show();
+                    logoutUser();
+                }
+            });
+        } catch (Exception e) {
+            handleException(e);
+        }
     }
 
     private void openSaveDetailsActivity() {
@@ -75,17 +101,21 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void logoutUser() {
-        dataSource.logoutUser(new IDataSourceCallback() {
-            @Override
-            public void onSuccess() {
-                sendToStart();
-            }
+        try {
+            dataSource.logoutUser(new IDataSourceCallback() {
+                @Override
+                public void onSuccess() {
+                    sendToStart();
+                }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                sendToStart();
-            }
-        });
+                @Override
+                public void onFailure(String errorMessage) {
+                    sendToStart();
+                }
+            });
+        } catch (Exception e) {
+            handleException(e);
+        }
     }
 
     private void sendToStart() {
@@ -94,4 +124,9 @@ public class MainActivity extends FragmentActivity {
         finish();
     }
 
+    private void handleException(Exception e) {
+        Log.e(TAG, "Exception occurred: " + e.getMessage(), e);
+        Snackbar.make(rootLayout, "An error occurred: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
+    }
 }
+
