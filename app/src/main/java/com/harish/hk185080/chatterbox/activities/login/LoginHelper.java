@@ -56,13 +56,27 @@ public class LoginHelper {
                     @Override
                     public void onUserDetailsFetched(User userDetails) {
                         progressDialog.dismiss();
-                        if (userDetails.getUserID() == null || userDetails.getUserID().isEmpty() || userDetails.getFullName() == null || userDetails.getFullName().isEmpty() || userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
-                            // add a log statement
-                            Log.w(TAG, "User details doesn't exist in the database, redirecting to RegisterWithDetailsActivity");
+                        if (userDetails == null) {
+                            Log.w(TAG, "User details are null, redirecting to RegisterWithDetailsActivity");
                             openSaveDetailsActivity();
-                        }
+                        } else {
+                            if (userDetails.getFullName() == null || userDetails.getFullName().isEmpty()) {
+                                Log.w(TAG, "User full name is null or empty");
+                            }
+                            if (userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
+                                Log.w(TAG, "User email is null or empty");
+                            }
 
-                        UserCache.getInstance().cacheUser(userDetails);
+                            // Check other conditions if needed
+
+                            if (userDetails.getFullName() == null || userDetails.getFullName().isEmpty()
+                                    || userDetails.getEmail() == null || userDetails.getEmail().isEmpty()) {
+                                Log.w(TAG, "Redirecting to RegisterWithDetailsActivity due to missing details");
+                                openSaveDetailsActivity();
+                            } else {
+                                sendToMain();
+                            }
+                        }
                     }
 
                     @Override
@@ -81,6 +95,7 @@ public class LoginHelper {
             }
         });
     }
+
 
     private boolean validate(String email, String password) {
         boolean valid = true;

@@ -112,6 +112,8 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
+    // Add the dependencies for the Remote Config and Analytics libraries
+    implementation("com.google.firebase:firebase-config")
 
 
     // Mockito dependencies for unit testing

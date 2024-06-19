@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
 import com.harish.hk185080.chatterbox.model.User;
 
@@ -53,40 +54,72 @@ public class AuthenticationManager {
 
     public void login(String email, String password, IDataSourceCallback callback) {
         Log.d(TAG, "Logging in with email: " + email);
+
         try {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(authResult -> {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        if (firebaseUser != null && firebaseUser.isEmailVerified()) {
-                            Log.d(TAG, "User logged in and email is verified.");
-                            callback.onSuccess();
-                        } else if (firebaseUser != null) {
-                            Log.w(TAG, "User logged in but email is not verified.");
-                            firebaseUser.sendEmailVerification().addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "Verification email sent to: " + firebaseUser.getEmail());
-                                    callback.onFailure("User email not verified, Verification email sent to " + firebaseUser.getEmail());
-                                } else {
-                                    Log.e(TAG, "Failed to send verification email: " + task.getException().getMessage());
-                                    callback.onFailure("Error sending verification email");
-                                }
-                            }).addOnFailureListener(e -> {
-                                Log.e(TAG, "Failed to send verification email: " + e.getMessage());
-                                callback.onFailure("Error sending verification email");
-                            });
+            FirebaseRemoteConfig.getInstance().fetchAndActivate()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            boolean emailVerificationRequired = FirebaseRemoteConfig.getInstance()
+                                    .getBoolean("email_verification_required");
+
+                            mAuth.signInWithEmailAndPassword(email, password)
+                                    .addOnSuccessListener(authResult -> handleLoginSuccess(mAuth.getCurrentUser(), emailVerificationRequired, callback))
+                                    .addOnFailureListener(e -> handleLoginFailure(e, callback));
                         } else {
-                            Log.e(TAG, "Error logging in: Firebase user is null.");
-                            callback.onFailure("Error logging in");
+                            Log.e(TAG, "Failed to fetch and activate remote config: " + task.getException().getMessage());
+                            handleDefaultLoginFlow(email, password, callback);
                         }
                     }).addOnFailureListener(e -> {
-                        Log.e(TAG, "Error logging in: " + e.getMessage());
-                        callback.onFailure(e.getMessage());
+                        Log.e(TAG, "Failed to fetch and activate remote config: " + e.getMessage());
+                        handleDefaultLoginFlow(email, password, callback);
                     });
         } catch (Exception e) {
             Log.e(TAG, "Exception in login: " + e.getMessage(), e);
             callback.onFailure("Exception in login: " + e.getMessage());
         }
     }
+
+    private void handleLoginSuccess(FirebaseUser firebaseUser, boolean emailVerificationRequired, IDataSourceCallback callback) {
+        if (firebaseUser != null && (!emailVerificationRequired || firebaseUser.isEmailVerified())) {
+            Log.d(TAG, "User logged in and email is verified.");
+            callback.onSuccess();
+        } else if (firebaseUser != null && !firebaseUser.isEmailVerified()) {
+            Log.w(TAG, "User logged in but email is not verified.");
+            sendVerificationEmail(firebaseUser.getEmail(), callback);
+        } else {
+            Log.e(TAG, "Error logging in: Firebase user is null.");
+            callback.onFailure("Error logging in");
+        }
+    }
+
+    private void handleLoginFailure(Exception e, IDataSourceCallback callback) {
+        Log.e(TAG, "Error logging in: " + e.getMessage());
+        callback.onFailure(e.getMessage());
+    }
+
+    private void handleDefaultLoginFlow(String email, String password, IDataSourceCallback callback) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> handleLoginSuccess(mAuth.getCurrentUser(), true, callback))
+                .addOnFailureListener(e -> handleLoginFailure(e, callback));
+    }
+
+    private void sendVerificationEmail(String userEmail, IDataSourceCallback callback) {
+        mAuth.getCurrentUser().sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Verification email sent to: " + userEmail);
+                        callback.onFailure("User email not verified, Verification email sent to " + userEmail);
+                    } else {
+                        String errorMessage = "Failed to send verification email: " + task.getException().getMessage();
+                        Log.e(TAG, errorMessage);
+                        callback.onFailure("Error sending verification email");
+                    }
+                }).addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to send verification email: " + e.getMessage());
+                    callback.onFailure("Error sending verification email");
+                });
+    }
+
 
     public void logout(IDataSourceCallback callback) {
         Log.d(TAG, "Logging out user.");

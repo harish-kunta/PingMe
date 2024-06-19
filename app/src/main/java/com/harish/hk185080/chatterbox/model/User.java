@@ -1,6 +1,6 @@
 package com.harish.hk185080.chatterbox.model;
 
-import java.time.Instant;
+import com.google.firebase.database.ServerValue;
 
 public class User {
     private String userID;
@@ -12,9 +12,9 @@ public class User {
     private String gender;
     private String location;
     private String bio;
-    private long createdAt;
-    private long updatedAt;
-    private long lastLogin;
+    private Object createdAt;
+    private Object updatedAt;
+    private Object lastSeenAt;
 
     public User() {
     }
@@ -30,9 +30,9 @@ public class User {
         this.gender = builder.gender;
         this.location = builder.location;
         this.bio = builder.bio;
-        this.createdAt = builder.createdAt.toEpochMilli();
-        this.updatedAt = builder.updatedAt.toEpochMilli();
-        this.lastLogin = builder.lastLogin != null ? builder.lastLogin.toEpochMilli() : 0L;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+        this.lastSeenAt = builder.lastSeenAt;
     }
 
     // Getters for each field
@@ -72,16 +72,16 @@ public class User {
         return bio;
     }
 
-    public Instant getCreatedAt() {
-        return Instant.ofEpochMilli(createdAt);
+    public Object getCreatedAt() {
+        return createdAt;
     }
 
-    public Instant getUpdatedAt() {
-        return Instant.ofEpochMilli(updatedAt);
+    public Object getUpdatedAt() {
+        return updatedAt;
     }
 
-    public Instant getLastLogin() {
-        return Instant.ofEpochMilli(lastLogin);
+    public Object getLastSeenAt() {
+        return lastSeenAt;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class User {
                 ", bio='" + bio + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", lastLogin=" + lastLogin +
+                ", lastLogin=" + lastSeenAt +
                 '}';
     }
 
@@ -113,9 +113,10 @@ public class User {
         private String gender;
         private String location;
         private String bio;
-        private Instant createdAt;
-        private Instant updatedAt;
-        private Instant lastLogin;
+        private Object createdAt = ServerValue.TIMESTAMP; // Default Firebase timestamp
+        private Object updatedAt = ServerValue.TIMESTAMP; // Default Firebase timestamp
+        private Object lastSeenAt = ServerValue.TIMESTAMP; // Default Firebase timestamp
+
 
         // Constructor with required fields
         public Builder(String fullName, String email) {
@@ -164,18 +165,18 @@ public class User {
             return this;
         }
 
-        public Builder createdAt(Instant createdAt) {
+        public Builder createdAt(Object createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
-        public Builder updatedAt(Instant updatedAt) {
+        public Builder updatedAt(Object updatedAt) {
             this.updatedAt = updatedAt;
             return this;
         }
 
-        public Builder lastLogin(Instant lastLogin) {
-            this.lastLogin = lastLogin;
+        public Builder lastSeenAt(Object lastSeenAt) {
+            this.lastSeenAt = lastSeenAt;
             return this;
         }
 
