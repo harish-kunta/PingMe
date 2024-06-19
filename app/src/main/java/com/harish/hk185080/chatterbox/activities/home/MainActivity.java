@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,7 +24,6 @@ import com.harish.hk185080.chatterbox.adapter.ViewPagerAdapter;
 import com.harish.hk185080.chatterbox.cache.UserCache;
 import com.harish.hk185080.chatterbox.database.DataSourceHelper;
 import com.harish.hk185080.chatterbox.databinding.ActivityMainBinding;
-import com.harish.hk185080.chatterbox.fragments.settings.account_settings.AccountSettingsFragment;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
 import com.harish.hk185080.chatterbox.interfaces.IUserDetailsCallback;

@@ -10,17 +10,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
+import com.harish.hk185080.chatterbox.interfaces.IUserContactDetailsCallback;
 import com.harish.hk185080.chatterbox.interfaces.IUserDetailsCallback;
 import com.harish.hk185080.chatterbox.model.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserManager {
     private static final String TAG = "UserManager";
     private DatabaseReference usersDb;
+    private DatabaseReference contactsDb;
 
     public UserManager() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         usersDb = firebaseDatabase.getReference("users");
         usersDb.keepSynced(true);
+        contactsDb = firebaseDatabase.getReference("contacts");
+        contactsDb.keepSynced(true);
         Log.d(TAG, "UserManager initialized.");
     }
 
@@ -71,6 +78,32 @@ public class UserManager {
         } catch (Exception e) {
             Log.e(TAG, "Exception in getUserDetails: " + e.getMessage(), e);
             callback.onUserDetailsFetchFailed("Exception in getUserDetails: " + e.getMessage());
+        }
+    }
+
+    public void fetchContactsForCurrentUser(String currentUserId, IUserContactDetailsCallback callback) {
+        Log.d(TAG, "Fetching contacts for user ID: " + currentUserId);
+        try {
+            contactsDb.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    List<User> contactsList = new ArrayList<>();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User contact = dataSnapshot.getValue(User.class); // Assuming contact names are stored as keys
+                        contactsList.add(contact);
+                    }
+                    callback.onUserDetailsFetched(contactsList);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(TAG, "Failed to fetch contacts: " + error.getMessage());
+                    callback.onUserDetailsFetchFailed(error.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in fetchContactsForCurrentUser: " + e.getMessage(), e);
+            callback.onUserDetailsFetchFailed("Exception in fetchContactsForCurrentUser: " + e.getMessage());
         }
     }
 }

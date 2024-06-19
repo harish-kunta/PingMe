@@ -6,6 +6,7 @@ import android.util.Log;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
 import com.harish.hk185080.chatterbox.interfaces.IOnUploadProfileImageListener;
+import com.harish.hk185080.chatterbox.interfaces.IUserContactDetailsCallback;
 import com.harish.hk185080.chatterbox.interfaces.IUserDetailsCallback;
 import com.harish.hk185080.chatterbox.model.User;
 
@@ -57,6 +58,22 @@ public class FirebaseDataSource implements IDataSource {
     public void login(String email, String password, IDataSourceCallback callback) {
         Log.d(TAG, "login called.");
         authManager.login(email, password, callback);
+    }
+
+    @Override
+    public void fetchContactsForCurrentUser(IUserContactDetailsCallback callback) {
+        Log.d(TAG, "getCurrentUserDetails called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                userManager.fetchContactsForCurrentUser(userId, callback);
+            } else {
+                Log.e(TAG, "No current user found.");
+                callback.onUserDetailsFetchFailed("No current user found");
+            }
+        } catch (Exception e) {
+            handleException("Exception while getting current user details", e, callback);
+        }
     }
 
     @Override
@@ -176,6 +193,11 @@ public class FirebaseDataSource implements IDataSource {
     }
 
     private void handleException(String message, Exception exception, IUserDetailsCallback callback) {
+        Log.e(TAG, message + ": " + exception.getMessage(), exception);
+        callback.onUserDetailsFetchFailed(message + ": " + exception.getMessage());
+    }
+
+    private void handleException(String message, Exception exception, IUserContactDetailsCallback callback) {
         Log.e(TAG, message + ": " + exception.getMessage(), exception);
         callback.onUserDetailsFetchFailed(message + ": " + exception.getMessage());
     }

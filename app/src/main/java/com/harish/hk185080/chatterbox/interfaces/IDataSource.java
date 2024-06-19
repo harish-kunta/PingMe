@@ -20,4 +20,6 @@ public interface IDataSource {
     void uploadProfileImage(Uri imageUri, IOnUploadProfileImageListener listener);
 
     void login(String email, String password, IDataSourceCallback callback);
+
+    void fetchContactsForCurrentUser(IUserContactDetailsCallback iUserContactDetailsCallback);
 }
