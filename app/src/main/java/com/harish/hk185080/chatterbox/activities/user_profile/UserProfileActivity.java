@@ -3,6 +3,7 @@ package com.harish.hk185080.chatterbox.activities.user_profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,15 +14,15 @@ public class UserProfileActivity extends AppCompatActivity {
     public static final String EXTRA_USER_NAME = "extra_user_name";
 
     private TextView textViewUserProfile;
-    private Button buttonSendMessage;
+    private ImageView buttonSendMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        textViewUserProfile = findViewById(R.id.textViewUserProfile);
-        buttonSendMessage = findViewById(R.id.buttonSendMessage);
+        textViewUserProfile = findViewById(R.id.display_name);
+        buttonSendMessage = findViewById(R.id.message_icon);
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(EXTRA_USER_NAME)) {

@@ -98,6 +98,8 @@
             android:name=".UsersActivity"
             android:parentActivityName=".activities.home.MainActivity"
             android:launchMode = "singleTop"/>
+        <activity android:name=".activities.user_profile.UserProfileActivity"
+            android:launchMode = "singleTop"/>
         <activity android:name=".ProfileActivity"
             android:launchMode = "singleTop"/>
 
