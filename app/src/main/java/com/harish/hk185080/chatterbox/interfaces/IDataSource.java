@@ -7,7 +7,7 @@ import com.harish.hk185080.chatterbox.model.User;
 
 public interface IDataSource {
 
-    void createUser(User user, String password, IDataSourceCallback callback);
+    void createUser(String name, String email, String password, IDataSourceCallback callback);
 
     void logoutUser(IDataSourceCallback iDataSourceCallback);
 
@@ -24,4 +24,8 @@ public interface IDataSource {
     void fetchContactsForCurrentUser(IUserContactDetailsCallback iUserContactDetailsCallback);
 
     void searchUsersByName(String name, IUserContactDetailsCallback iUserContactDetailsCallback, int i);
+
+    void sendFriendRequest(String recipientUserId, IDataSourceCallback friendRequestSentSuccessfully);
+
+    void acceptFriendRequest(String senderUserId, IDataSourceCallback friendRequestAccepted);
 }

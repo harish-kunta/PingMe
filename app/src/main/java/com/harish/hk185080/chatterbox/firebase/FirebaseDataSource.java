@@ -15,24 +15,28 @@ public class FirebaseDataSource implements IDataSource {
     private AuthenticationManager authManager;
     private UserManager userManager;
     private ProfileImageManager profileImageManager;
+    private FriendRequestsManager friendRequestsManager;
 
     public FirebaseDataSource() {
         authManager = new AuthenticationManager();
         userManager = new UserManager();
         profileImageManager = new ProfileImageManager();
+        friendRequestsManager = new FriendRequestsManager();
         Log.d(TAG, "FirebaseDataSource initialized.");
     }
 
     @Override
-    public void createUser(User user, String password, IDataSourceCallback callback) {
+    public void createUser(String name, String email, String password, IDataSourceCallback callback) {
         Log.d(TAG, "createUser called.");
         try {
-            authManager.createUser(user, password, new IDataSourceCallback() {
+            authManager.createUser(email, password, new IDataSourceCallback() {
                 @Override
                 public void onSuccess() {
                     try {
                         String userId = authManager.getCurrentUserId();
                         if (userId != null) {
+                            User user = new User.Builder(userId, name, email)
+                                    .build();
                             tryUploadUser(user, userId, callback, 3);
                         } else {
                             Log.e(TAG, "Error retrieving user ID after creation");
@@ -89,6 +93,38 @@ public class FirebaseDataSource implements IDataSource {
             }
         } catch (Exception e) {
             handleException("Exception while getting current user details", e, callback);
+        }
+    }
+
+    @Override
+    public void sendFriendRequest(String recipientUserId, IDataSourceCallback friendRequestSentSuccessfully) {
+        Log.d(TAG, "getCurrentUserDetails called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                friendRequestsManager.sendFriendRequest(userId, recipientUserId, friendRequestSentSuccessfully);
+            } else {
+                Log.e(TAG, "No current user found.");
+                friendRequestSentSuccessfully.onFailure("No current user found");
+            }
+        } catch (Exception e) {
+            handleException("Exception while getting current user details", e, friendRequestSentSuccessfully);
+        }
+    }
+
+    @Override
+    public void acceptFriendRequest(String senderUserId, IDataSourceCallback friendRequestAccepted) {
+        Log.d(TAG, "getCurrentUserDetails called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                friendRequestsManager.acceptFriendRequest(userId, senderUserId, friendRequestAccepted);
+            } else {
+                Log.e(TAG, "No current user found.");
+                friendRequestAccepted.onFailure("No current user found");
+            }
+        } catch (Exception e) {
+            handleException("Exception while getting current user details", e, friendRequestAccepted);
         }
     }
 
@@ -216,5 +252,14 @@ public class FirebaseDataSource implements IDataSource {
     private void handleException(String message, Exception exception, IUserContactDetailsCallback callback) {
         Log.e(TAG, message + ": " + exception.getMessage(), exception);
         callback.onUserDetailsFetchFailed(message + ": " + exception.getMessage());
+    }
+
+    // Use friendRequestsManager to send and accept friend requests
+    public void sendFriendRequest(String currentUserId, String targetUserId, IDataSourceCallback callback) {
+        friendRequestsManager.sendFriendRequest(currentUserId, targetUserId, callback);
+    }
+
+    public void acceptFriendRequest(String currentUserId, String requesterUserId, IDataSourceCallback callback) {
+        friendRequestsManager.acceptFriendRequest(currentUserId, requesterUserId, callback);
     }
 }

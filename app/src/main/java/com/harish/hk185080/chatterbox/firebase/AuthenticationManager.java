@@ -16,10 +16,10 @@ public class AuthenticationManager {
         mAuth = FirebaseAuth.getInstance();
     }
 
-    public void createUser(User user, String password, IDataSourceCallback callback) {
-        Log.d(TAG, "Creating user with email: " + user.getEmail());
+    public void createUser(String email, String password, IDataSourceCallback callback) {
+        Log.d(TAG, "Creating user with email: " + email);
         try {
-            mAuth.createUserWithEmailAndPassword(user.getEmail(), password)
+            mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "User signed up successfully.");

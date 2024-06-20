@@ -15,7 +15,6 @@ import com.harish.hk185080.chatterbox.activities.login.LoginActivity;
 import com.harish.hk185080.chatterbox.database.DataSourceHelper;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
-import com.harish.hk185080.chatterbox.model.User;
 import com.harish.hk185080.chatterbox.utils.StringResourceHelper;
 
 public class RegisterHelper {
@@ -46,15 +45,14 @@ public class RegisterHelper {
             mRegProgress.setCanceledOnTouchOutside(false);
             mRegProgress.setMessage("Creating Account...");
             mRegProgress.show();
-            User user = new User.Builder(name, email)
-                    .build();
+
 
             IDataSource dataSource = DataSourceHelper.getDataSource();
-            dataSource.createUser(user, password, new IDataSourceCallback() {
+            dataSource.createUser(name, email, password, new IDataSourceCallback() {
                 @Override
                 public void onSuccess() {
                     mRegProgress.dismiss();
-                    Snackbar.make(rootLayout, "Verification email sent to " + user.getEmail(), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(rootLayout, "Verification email sent to " + email, Snackbar.LENGTH_LONG).show();
                     openLoginPage();
                 }
 

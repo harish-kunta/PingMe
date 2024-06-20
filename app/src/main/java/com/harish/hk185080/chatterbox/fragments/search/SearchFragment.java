@@ -46,6 +46,7 @@ public class SearchFragment extends Fragment {
             // Handle item click (open UserProfileActivity)
             Intent intent = new Intent(requireContext(), UserProfileActivity.class);
             intent.putExtra(UserProfileActivity.EXTRA_USER_NAME, user.getFullName());
+            intent.putExtra(UserProfileActivity.EXTRA_USER_ID, user.getUserID());
             startActivity(intent);
         });
         recyclerViewSearchResults.setAdapter(searchAdapter);

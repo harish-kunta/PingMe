@@ -71,7 +71,7 @@ public class RegisterWithDetailsActivity extends AppCompatActivity {
 
         IDataSource dataSource = DataSourceHelper.getDataSource();
 
-        User updateUser = new User.Builder(name, user.getEmail())
+        User updateUser = new User.Builder(user.getUserID(), name, user.getEmail())
                 .phoneNumber(mobile)
                 .bio(userStatus)
                 .build();

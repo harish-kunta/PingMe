@@ -119,15 +119,10 @@ public class User {
 
 
         // Constructor with required fields
-        public Builder(String fullName, String email) {
+        public Builder(String userID, String fullName, String email) {
+            this.userID = userID;
             this.fullName = fullName;
             this.email = email;
-        }
-
-        // Optional fields with method chaining
-        public Builder userID(String userID) {
-            this.userID = userID;
-            return this;
         }
 
         public Builder phoneNumber(String phoneNumber) {
