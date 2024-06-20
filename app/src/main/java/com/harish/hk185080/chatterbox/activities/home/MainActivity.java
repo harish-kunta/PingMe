@@ -6,12 +6,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -42,14 +40,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        // Set the ActionBar
-        setSupportActionBar(binding.toolbar);
 
         rootLayout = binding.rootLayout;
         bottomNav = binding.bottomNavView;
 
         viewPager = binding.viewPager;
         setupViewPager();
+
+        // Hide specific menu items based on your condition
+        Menu menu = bottomNav.getMenu();
+        menu.findItem(R.id.menu_account_settings).setVisible(false); // Hide Dashboard item
+        menu.findItem(R.id.menu_search).setVisible(false); // Hide Dashboard item
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -109,14 +110,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                if (position == 3) { // Assuming AccountSettingsFragment is at index 3
-                    // Perform custom handling for AccountSettingsFragment visibility
-                    // For example, hide bottom navigation or modify toolbar
-                    // You can also set a custom title for the toolbar
-                    binding.toolbar.setTitle("Account Settings");
-                } else {
-                    bottomNav.getMenu().getItem(position).setChecked(true);
-                }
+                bottomNav.getMenu().getItem(position).setChecked(true);
             }
         });
     }
@@ -163,15 +157,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void navigateToSettingsFragment(String title) {
-        Fragment fragment = null;
-        switch (title) {
-            case "Account Settings":
-                viewPager.setCurrentItem(3, true);
-                break;
-            default:
-                // Default behavior
-                break;
-        }
-    }
 }

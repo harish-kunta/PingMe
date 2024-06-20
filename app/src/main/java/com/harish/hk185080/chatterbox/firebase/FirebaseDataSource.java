@@ -77,6 +77,22 @@ public class FirebaseDataSource implements IDataSource {
     }
 
     @Override
+    public void searchUsersByName(String name, IUserContactDetailsCallback callback, int i) {
+        Log.d(TAG, "getCurrentUserDetails called.");
+        try {
+            String userId = authManager.getCurrentUserId();
+            if (userId != null) {
+                userManager.searchUsersByName(name, userId, callback, i);
+            } else {
+                Log.e(TAG, "No current user found.");
+                callback.onUserDetailsFetchFailed("No current user found");
+            }
+        } catch (Exception e) {
+            handleException("Exception while getting current user details", e, callback);
+        }
+    }
+
+    @Override
     public void logoutUser(IDataSourceCallback callback) {
         Log.d(TAG, "logoutUser called.");
         authManager.logout(callback);

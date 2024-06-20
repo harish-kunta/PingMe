@@ -8,13 +8,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.harish.hk185080.chatterbox.R;
 import com.harish.hk185080.chatterbox.activities.home.MainActivity;
 import com.harish.hk185080.chatterbox.adapter.SettingsAdapter;
+import com.harish.hk185080.chatterbox.fragments.contacts.ContactsFragment;
 import com.harish.hk185080.chatterbox.fragments.settings.account_settings.AccountSettingsFragment;
 import com.harish.hk185080.chatterbox.model.SettingsItem;
 
@@ -62,8 +65,7 @@ public class SettingsFragment extends Fragment {
 
     private void navigateToSettingsFragment(String title) {
         // Communicate navigation request to MainActivity
-        if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).navigateToSettingsFragment(title);
-        }
+        ViewPager2 viewPager = requireActivity().findViewById(R.id.view_pager);
+        viewPager.setCurrentItem(3, true);
     }
 }

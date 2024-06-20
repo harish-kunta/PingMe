@@ -100,11 +100,6 @@
             android:launchMode = "singleTop"/>
         <activity android:name=".ProfileActivity"
             android:launchMode = "singleTop"/>
-        <activity
-            android:name=".ChatActivity"
-            android:parentActivityName=".activities.home.MainActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:launchMode = "singleTop"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -129,10 +124,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.harish.hk185080.chatterbox.activities.home.MainActivity" />
         </activity>
-        <activity
-            android:name=".Request_Activity"
-            android:parentActivityName=".activities.home.MainActivity"
-            android:launchMode = "singleTop"/>
 
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"

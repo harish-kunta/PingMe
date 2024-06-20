@@ -12,9 +12,32 @@
         tools:layout="@layout/fragment_chats" />
 
     <fragment
-        android:id="@+id/navigation_profile"
+        android:id="@+id/navigation_settings"
         android:name="com.harish.hk185080.chatterbox.fragments.settings.SettingsFragment"
         android:label="@string/menu_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/navigation_contacts"
+        android:name="com.harish.hk185080.chatterbox.fragments.contacts.ContactsFragment"
+        android:label="@string/menu_contacts"
+        tools:layout="@layout/fragment_contacts"
+        >
+        <action
+            android:id="@+id/navigation_search"
+            app:destination="@id/searchFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.harish.hk185080.chatterbox.fragments.search.SearchFragment"
+        android:label="@string/menu_search"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/accountSettingsFragment"
+        android:name="com.harish.hk185080.chatterbox.fragments.settings.account_settings.AccountSettingsFragment"
+        android:label="@string/account_settings"
+        tools:layout="@layout/fragment_account_settings" />
 
 </navigation>

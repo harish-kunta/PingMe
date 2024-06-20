@@ -106,6 +106,36 @@ public class UserManager {
             callback.onUserDetailsFetchFailed("Exception in fetchContactsForCurrentUser: " + e.getMessage());
         }
     }
+
+    public void searchUsersByName(String name, String currentUserId, IUserContactDetailsCallback callback, int limit) {
+        Log.d(TAG, "Searching users with name: " + name);
+        try {
+            usersDb.orderByChild("fullName").startAt(name).endAt(name + "\uf8ff").limitToFirst(limit).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    List<User> userList = new ArrayList<>();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = dataSnapshot.getValue(User.class);
+                        // Exclude current user's profile
+                        if (!dataSnapshot.getKey().equals(currentUserId)) {
+                            userList.add(user);
+                        }
+                    }
+                    callback.onUserDetailsFetched(userList);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(TAG, "Failed to search users: " + error.getMessage());
+                    callback.onUserDetailsFetchFailed(error.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in searchUsersByName: " + e.getMessage(), e);
+            callback.onUserDetailsFetchFailed("Exception in searchUsersByName: " + e.getMessage());
+        }
+    }
+
 }
 
 

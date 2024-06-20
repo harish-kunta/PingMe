@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".fragments.contacts.ContactsFragment">
 
+    <Button
+        android:id="@+id/temp_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:layout_gravity="center"
+        android:gravity="center"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewContacts"
         android:layout_width="match_parent"

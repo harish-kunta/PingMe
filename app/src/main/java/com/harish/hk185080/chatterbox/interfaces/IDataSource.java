@@ -22,4 +22,6 @@ public interface IDataSource {
     void login(String email, String password, IDataSourceCallback callback);
 
     void fetchContactsForCurrentUser(IUserContactDetailsCallback iUserContactDetailsCallback);
+
+    void searchUsersByName(String name, IUserContactDetailsCallback iUserContactDetailsCallback, int i);
 }

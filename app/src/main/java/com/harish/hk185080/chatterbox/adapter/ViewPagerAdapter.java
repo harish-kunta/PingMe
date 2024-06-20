@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.harish.hk185080.chatterbox.fragments.chats.ChatsFragment;
 import com.harish.hk185080.chatterbox.fragments.contacts.ContactsFragment;
+import com.harish.hk185080.chatterbox.fragments.search.SearchFragment;
 import com.harish.hk185080.chatterbox.fragments.settings.SettingsFragment;
 import com.harish.hk185080.chatterbox.fragments.settings.account_settings.AccountSettingsFragment;
 
@@ -28,6 +29,8 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
                 return new SettingsFragment();
             case 3:
                 return new AccountSettingsFragment();
+            case 4:
+                return new SearchFragment();
             default:
                 return null;
         }
@@ -35,6 +38,6 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 4; // Number of fragments
+        return 5; // Number of fragments
     }
 }

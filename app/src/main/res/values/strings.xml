@@ -83,5 +83,7 @@
     <string name="mobile_number">Mobile Number</string>
     <string name="contacts">Contacts</string>
     <string name="account_settings">Account settings</string>
+    <string name="menu_contacts">Contacts</string>
+    <string name="menu_search">Search</string>
 
 </resources>
