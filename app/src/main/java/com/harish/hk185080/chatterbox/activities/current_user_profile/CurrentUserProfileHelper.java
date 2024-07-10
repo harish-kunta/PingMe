@@ -1,5 +1,4 @@
-package com.harish.hk185080.chatterbox.activities.user_profile;
-
+package com.harish.hk185080.chatterbox.activities.current_user_profile;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,14 +10,14 @@ import com.harish.hk185080.chatterbox.database.DataSourceHelper;
 import com.harish.hk185080.chatterbox.interfaces.IDataSource;
 import com.harish.hk185080.chatterbox.interfaces.IDataSourceCallback;
 
-public class UserProfileHelper {
-    private static final String TAG = "UserProfileHelper";
+public class CurrentUserProfileHelper {
+    private static final String TAG = "CurrentUserProfileHelper";
     private Context context;
     private Activity activity;
     private ConstraintLayout rootLayout;
     private IDataSource dataSource;
 
-    public UserProfileHelper(Context context, ConstraintLayout rootLayout) {
+    public CurrentUserProfileHelper(Context context, ConstraintLayout rootLayout) {
         this.activity = (Activity) context;
         this.context = context;
         this.rootLayout = rootLayout;
