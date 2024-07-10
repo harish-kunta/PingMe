@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "969270325233-ndfvahmaap4v8sjlq3e6odni7b323n4t.apps.googleusercontent.com",
+          "client_id": "969270325233-1688er1as86hu4oqg938t22rt6viji7v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.harish.hk185080.chatterbox",
-            "certificate_hash": "ec8919c8e01f65f418809d7e962b8812cac98867"
+            "certificate_hash": "1e80b2d6ff18c57954c2e9b554d8d3411add7395"
           }
         },
         {
@@ -31,11 +31,11 @@
           }
         },
         {
-          "client_id": "969270325233-1688er1as86hu4oqg938t22rt6viji7v.apps.googleusercontent.com",
+          "client_id": "969270325233-kt99duggqk4rpu65jo5t56abmgc55j7t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.harish.hk185080.chatterbox",
-            "certificate_hash": "1e80b2d6ff18c57954c2e9b554d8d3411add7395"
+            "certificate_hash": "268120a0248b0c4d6791be3542dae309eac251e8"
           }
         },
         {
@@ -47,11 +47,19 @@
           }
         },
         {
-          "client_id": "969270325233-kt99duggqk4rpu65jo5t56abmgc55j7t.apps.googleusercontent.com",
+          "client_id": "969270325233-ndfvahmaap4v8sjlq3e6odni7b323n4t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.harish.hk185080.chatterbox",
-            "certificate_hash": "268120a0248b0c4d6791be3542dae309eac251e8"
+            "certificate_hash": "ec8919c8e01f65f418809d7e962b8812cac98867"
+          }
+        },
+        {
+          "client_id": "969270325233-p7593gqb1r4vgle5lmjklj5iha2km7ak.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.harish.hk185080.chatterbox",
+            "certificate_hash": "7fd18e7e53707c230505e647763e2ba968278a0e"
           }
         },
         {
@@ -76,7 +84,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "969270325233-i2ltvjbnkbqf6qf6lvhnqn4g6qodkog7.apps.googleusercontent.com",
+              "client_id": "969270325233-ef97fseno7ogfaacn2lh6dhrld6136k2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -85,7 +85,7 @@
             android:textColor="@android:color/white" />
 
         <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
+            android:id="@+id/google_sign_in_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal|center" />

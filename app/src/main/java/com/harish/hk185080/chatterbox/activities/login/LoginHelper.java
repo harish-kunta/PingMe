@@ -113,7 +113,7 @@ public class LoginHelper {
         return valid;
     }
 
-    private void sendToMain() {
+    public void sendToMain() {
         context.startActivity(new Intent(context, MainActivity.class));
         if (context instanceof LoginActivity) {
             ((LoginActivity) context).finish();
@@ -149,5 +149,6 @@ public class LoginHelper {
     private void onLoginFailed() {
         Snackbar.make(rootLayout, context.getString(R.string.login_failed), Snackbar.LENGTH_LONG).show();
     }
+
 }
 
